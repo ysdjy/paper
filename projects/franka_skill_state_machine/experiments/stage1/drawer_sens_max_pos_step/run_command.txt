@@ -1,0 +1,1 @@
+projects/franka_skill_state_machine/entries/run_stage1_pilot.py --skill open_drawer --drawer top_drawer --sampler one_param --repeats 5 --seed 42 --base_reset_index 100 --headless --param max_pos_step --values 0.010,0.020,0.030 --run_id drawer_sens_max_pos_step

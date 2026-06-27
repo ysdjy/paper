@@ -1,0 +1,1 @@
+projects/franka_skill_state_machine/entries/run_stage1_pilot.py --skill place --sampler one_param --repeats 5 --seed 42 --base_reset_index 100 --headless --param settle_after_release_duration --values 0.2,0.5,1.0 --run_id place_sens_settle_after_release_duration

@@ -1,0 +1,13 @@
+{
+  "action_dim": 8,
+  "control_dt": 0.05,
+  "control_frequency_hz": 20.0,
+  "decimation": 5,
+  "ik_command_type": "pose",
+  "ik_max_joint_step": 0.2,
+  "ik_method": "dls",
+  "ik_relative": false,
+  "physics_dt": 0.01,
+  "task_id": "Isaac-Stack-Cube-Franka-JointPolicy-v0",
+  "type": "joint_position_with_dls_ik"
+}

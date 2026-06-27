@@ -1,0 +1,1 @@
+projects/franka_skill_state_machine/entries/run_stage1_pilot.py --skill place --sampler one_param --repeats 5 --seed 42 --base_reset_index 100 --headless --param release_clearance --values 0.0,0.02,0.04 --run_id place_sens_release_clearance

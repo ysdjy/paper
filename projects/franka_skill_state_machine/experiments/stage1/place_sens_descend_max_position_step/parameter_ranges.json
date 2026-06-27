@@ -1,0 +1,27 @@
+{
+  "descend_max_position_step": [
+    0.003,
+    0.006,
+    0.009
+  ],
+  "move_max_position_step": [
+    0.006,
+    0.012,
+    0.018
+  ],
+  "open_duration": [
+    0.25,
+    0.45,
+    0.9
+  ],
+  "release_clearance": [
+    0.0,
+    0.02,
+    0.04
+  ],
+  "settle_after_release_duration": [
+    0.2,
+    0.5,
+    1.0
+  ]
+}

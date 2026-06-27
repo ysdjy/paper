@@ -1,0 +1,14 @@
+{
+  "drawer": "top_drawer",
+  "episodes_planned": 15,
+  "param": "max_pos_step",
+  "place_object": "cube_1",
+  "place_point": "point_a",
+  "repeats": 5,
+  "run_id": "drawer_sens_max_pos_step",
+  "sampler": "one_param",
+  "seed": 42,
+  "skill": "open_drawer",
+  "speed_scale": 1.0,
+  "values": "0.010,0.020,0.030"
+}

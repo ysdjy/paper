@@ -1,0 +1,14 @@
+{
+  "drawer": "top_drawer",
+  "episodes_planned": 15,
+  "param": "pull_lead",
+  "place_object": "cube_1",
+  "place_point": "point_a",
+  "repeats": 5,
+  "run_id": "drawer_sens_pull_lead",
+  "sampler": "one_param",
+  "seed": 42,
+  "skill": "open_drawer",
+  "speed_scale": 1.0,
+  "values": "0.04,0.08,0.12"
+}

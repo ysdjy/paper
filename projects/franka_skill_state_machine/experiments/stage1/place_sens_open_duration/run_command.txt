@@ -1,0 +1,1 @@
+projects/franka_skill_state_machine/entries/run_stage1_pilot.py --skill place --sampler one_param --repeats 5 --seed 42 --base_reset_index 100 --headless --param open_duration --values 0.25,0.45,0.90 --run_id place_sens_open_duration

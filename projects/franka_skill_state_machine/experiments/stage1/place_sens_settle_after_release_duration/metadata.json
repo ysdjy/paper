@@ -1,0 +1,14 @@
+{
+  "drawer": "top_drawer",
+  "episodes_planned": 15,
+  "param": "settle_after_release_duration",
+  "place_object": "cube_1",
+  "place_point": "point_a",
+  "repeats": 5,
+  "run_id": "place_sens_settle_after_release_duration",
+  "sampler": "one_param",
+  "seed": 42,
+  "skill": "place",
+  "speed_scale": 1.0,
+  "values": "0.2,0.5,1.0"
+}

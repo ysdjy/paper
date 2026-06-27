@@ -1,0 +1,1 @@
+projects/franka_skill_state_machine/entries/run_stage1_pilot.py --skill place --sampler one_param --repeats 5 --seed 42 --base_reset_index 100 --headless --param move_max_position_step --values 0.006,0.012,0.018 --run_id place_sens_move_max_position_step

@@ -1,0 +1,14 @@
+{
+  "drawer": "top_drawer",
+  "episodes_planned": 15,
+  "param": "grasp_offset_local_xyz",
+  "place_object": "cube_1",
+  "place_point": "point_a",
+  "repeats": 5,
+  "run_id": "drawer_sens_grasp_offset_local_xyz",
+  "sampler": "one_param",
+  "seed": 42,
+  "skill": "open_drawer",
+  "speed_scale": 1.0,
+  "values": "0,0,0;0,0.03,0;0,-0.03,0"
+}

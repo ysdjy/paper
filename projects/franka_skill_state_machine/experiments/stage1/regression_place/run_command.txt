@@ -1,0 +1,1 @@
+projects/franka_skill_state_machine/entries/run_stage1_pilot.py --skill place --episodes 10 --seed 42 --sampler fixed --base_reset_index 0 --run_id regression_place --headless

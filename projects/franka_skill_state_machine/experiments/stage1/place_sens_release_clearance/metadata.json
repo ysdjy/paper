@@ -1,0 +1,14 @@
+{
+  "drawer": "top_drawer",
+  "episodes_planned": 15,
+  "param": "release_clearance",
+  "place_object": "cube_1",
+  "place_point": "point_a",
+  "repeats": 5,
+  "run_id": "place_sens_release_clearance",
+  "sampler": "one_param",
+  "seed": 42,
+  "skill": "place",
+  "speed_scale": 1.0,
+  "values": "0.0,0.02,0.04"
+}

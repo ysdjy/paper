@@ -1,0 +1,1557 @@
+{
+  "summaries": [
+    {
+      "param": "close_duration",
+      "skill": "open_drawer",
+      "levels": [
+        {
+          "level": "close_duration=0.5",
+          "level_value": 0.5,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 11.169999999999792,
+            "std": 3.0913750985606767,
+            "min": 9.549999999999457,
+            "max": 17.35000000000011
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.017703646421432507,
+            "std": 0.0005100345608730287,
+            "min": 0.01673152744770051,
+            "max": 0.01822718679904939
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.246261265873909,
+            "std": 0.08570778776339545,
+            "min": 0.2031547874212265,
+            "max": 0.4176764190196991
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "close_duration=1.0",
+          "level_value": 1.0,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.04999999999943,
+            "std": 2.842170943040401e-15,
+            "min": 10.049999999999429,
+            "max": 10.049999999999436
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.017997777462005628,
+            "std": 0.00018766089083292671,
+            "min": 0.017633777856826793,
+            "max": 0.0181620091199875
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.2037566065788269,
+            "std": 6.420589786991752e-05,
+            "min": 0.20363526046276093,
+            "max": 0.2038201540708542
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "close_duration=1.5",
+          "level_value": 1.5,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.460000000001164,
+            "std": 0.0734846922820547,
+            "min": 10.400000000002294,
+            "max": 10.5499999999994
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.017604243755340587,
+            "std": 0.00041420234267249424,
+            "min": 0.017222058773040783,
+            "max": 0.01811216473579408
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.20382246673107146,
+            "std": 2.3748427849660157e-05,
+            "min": 0.2037789523601532,
+            "max": 0.20384714007377625
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 1.061658405760335,
+          "corr_level_vs_metric": -0.6264814271068156,
+          "level_means": [
+            11.169999999999792,
+            10.04999999999943,
+            10.460000000001164
+          ],
+          "effective": false
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 1.0617892453461308,
+          "corr_level_vs_metric": -0.24287321342378407,
+          "level_means": [
+            0.017703646421432507,
+            0.017997777462005628,
+            0.017604243755340587
+          ],
+          "effective": false
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 1.486250655105926,
+          "corr_level_vs_metric": -0.8653531584031351,
+          "level_means": [
+            0.246261265873909,
+            0.2037566065788269,
+            0.20382246673107146
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "affects_failure": false,
+        "any_effective": false
+      }
+    },
+    {
+      "param": "grasp_offset_local_xyz",
+      "skill": "open_drawer",
+      "levels": [
+        {
+          "level": "grasp_offset_local_xyz=[0.0, -0.03, 0.0]",
+          "level_value": null,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 8.770000000001138,
+            "std": 0.22494443758341653,
+            "min": 8.550000000000281,
+            "max": 9.199999999999477
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.014026099443435658,
+            "std": 0.001203573658000426,
+            "min": 0.012448179721832264,
+            "max": 0.015510487556457508
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.187004554271698,
+            "std": 0.018809508953850907,
+            "min": 0.17690545320510864,
+            "max": 0.2246088981628418
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "grasp_offset_local_xyz=[0.0, 0.0, 0.0]",
+          "level_value": null,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 11.669999999999764,
+            "std": 3.091375098560695,
+            "min": 10.049999999999429,
+            "max": 17.85000000000012
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.017334777116775522,
+            "std": 0.00041360804799923023,
+            "min": 0.0166564702987671,
+            "max": 0.01781245768070222
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.24625343978404998,
+            "std": 0.0857116901602127,
+            "min": 0.20316854119300842,
+            "max": 0.4176764190196991
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "grasp_offset_local_xyz=[0.0, 0.03, 0.0]",
+          "level_value": null,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.819999999999386,
+            "std": 0.16309506430299234,
+            "min": 10.649999999999395,
+            "max": 11.099999999999369
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.06871940493583681,
+            "std": 0.0016929345006560295,
+            "min": 0.06604137718677522,
+            "max": 0.07121282517910005
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.2708134651184082,
+            "std": 0.018890098203115754,
+            "min": 0.23303768038749695,
+            "max": 0.2807668149471283
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 2.500420616409993,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            8.770000000001138,
+            11.669999999999764,
+            10.819999999999386
+          ],
+          "effective": true
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 49.56923148114445,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.014026099443435658,
+            0.017334777116775522,
+            0.06871940493583681
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 2.037307264455205,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.187004554271698,
+            0.24625343978404998,
+            0.2708134651184082
+          ],
+          "effective": true
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "max_pos_step",
+      "skill": "open_drawer",
+      "levels": [
+        {
+          "level": "max_pos_step=0.01",
+          "level_value": 0.01,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 16.599999999999486,
+            "std": 4.650161287525788,
+            "min": 14.24999999999919,
+            "max": 25.900000000000233
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.021879327297210704,
+            "std": 0.000669853643442147,
+            "min": 0.02143463194370271,
+            "max": 0.023202729225158703
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.2468096911907196,
+            "std": 0.0854356287594558,
+            "min": 0.20328958332538605,
+            "max": 0.4176764190196991
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "max_pos_step=0.02",
+          "level_value": 0.02,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 9.689999999999667,
+            "std": 0.0583095189481119,
+            "min": 9.600000000000549,
+            "max": 9.749999999999446
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.01719871163368226,
+            "std": 0.0003013957984191234,
+            "min": 0.016624686121940624,
+            "max": 0.01750239431858064
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.20602133572101594,
+            "std": 0.0002987108372165193,
+            "min": 0.2057161182165146,
+            "max": 0.20656424760818481
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "max_pos_step=0.03",
+          "level_value": 0.03,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 8.680000000001973,
+            "std": 0.02449489742783735,
+            "min": 8.650000000001967,
+            "max": 8.700000000001978
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.008910199999809276,
+            "std": 0.0002032959707390577,
+            "min": 0.008742359280586254,
+            "max": 0.009196442365646373
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.20549151599407195,
+            "std": 8.805146226685659e-05,
+            "min": 0.20542171597480774,
+            "max": 0.2056647092103958
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 5.020108212574918,
+          "corr_level_vs_metric": -0.9186369168449013,
+          "level_means": [
+            16.599999999999486,
+            9.689999999999667,
+            8.680000000001973
+          ],
+          "effective": true
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 33.12548112215361,
+          "corr_level_vs_metric": -0.9873459234043154,
+          "level_means": [
+            0.021879327297210704,
+            0.01719871163368226,
+            0.008910199999809276
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 1.4443145204940313,
+          "corr_level_vs_metric": -0.8715592863949885,
+          "level_means": [
+            0.2468096911907196,
+            0.20602133572101594,
+            0.20549151599407195
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "pull_lead",
+      "skill": "open_drawer",
+      "levels": [
+        {
+          "level": "pull_lead=0.04",
+          "level_value": 0.04,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 11.669999999999764,
+            "std": 3.091375098560695,
+            "min": 10.049999999999429,
+            "max": 17.85000000000012
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.018188154697418225,
+            "std": 0.0003421052950749952,
+            "min": 0.017643582820892345,
+            "max": 0.018606674671173107
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.24624859392642975,
+            "std": 0.08571408244419493,
+            "min": 0.2031831592321396,
+            "max": 0.4176764190196991
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "pull_lead=0.08",
+          "level_value": 0.08,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.04999999999943,
+            "std": 2.842170943040401e-15,
+            "min": 10.049999999999429,
+            "max": 10.049999999999436
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.018082243204116832,
+            "std": 3.142441580787301e-05,
+            "min": 0.018033427000045787,
+            "max": 0.018126857280731212
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.2037915527820587,
+            "std": 2.061408478888648e-05,
+            "min": 0.2037644237279892,
+            "max": 0.20382128655910492
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "pull_lead=0.12",
+          "level_value": 0.12,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 9.940000000001186,
+            "std": 0.05830951894730228,
+            "min": 9.900000000002251,
+            "max": 10.049999999999429
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.01715858876705171,
+            "std": 0.000317964534538951,
+            "min": 0.01698282063007356,
+            "max": 0.01779359281063081
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.20371679663658143,
+            "std": 8.056341561275628e-05,
+            "min": 0.2036486268043518,
+            "max": 0.20382237434387207
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 1.6477840261041787,
+          "corr_level_vs_metric": -0.8930189571631163,
+          "level_means": [
+            11.669999999999764,
+            10.04999999999943,
+            9.940000000001186
+          ],
+          "effective": true
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 4.466700643640799,
+          "corr_level_vs_metric": -0.9089846410359671,
+          "level_means": [
+            0.018188154697418225,
+            0.018082243204116832,
+            0.01715858876705171
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 1.486861333892389,
+          "corr_level_vs_metric": -0.8667861534124204,
+          "level_means": [
+            0.24624859392642975,
+            0.2037915527820587,
+            0.20371679663658143
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "target_open_position",
+      "skill": "open_drawer",
+      "levels": [
+        {
+          "level": "target_open_position=0.1",
+          "level_value": 0.1,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.809999999999812,
+            "std": 2.9452334372678974,
+            "min": 9.299999999999471,
+            "max": 16.700000000000102
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.018125526607036598,
+            "std": 0.00033175582249586486,
+            "min": 0.01754076629877091,
+            "max": 0.018446958065032965
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.2829867541790009,
+            "std": 0.0673479949177079,
+            "min": 0.24883800745010376,
+            "max": 0.4176764190196991
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "target_open_position=0.2",
+          "level_value": 0.2,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.109999999999427,
+            "std": 0.17146428199481553,
+            "min": 9.999999999999432,
+            "max": 10.449999999999413
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.017718836665153514,
+            "std": 0.0004002360532977219,
+            "min": 0.01718498468399049,
+            "max": 0.01813122332096101
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.21333083212375642,
+            "std": 0.01872026707355115,
+            "min": 0.20385029911994934,
+            "max": 0.2507705092430115
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        },
+        {
+          "level": "target_open_position=0.3",
+          "level_value": 0.3,
+          "n": 5,
+          "n_success": 5,
+          "success_rate": 1.0,
+          "elapsed_time": {
+            "n": 5,
+            "mean": 10.37000000000106,
+            "std": 0.5045790324604597,
+            "min": 9.85000000000224,
+            "max": 11.199999999999363
+          },
+          "primary_error_success": {
+            "n": 5,
+            "mean": 0.016646844148635855,
+            "std": 0.0006497585312548103,
+            "min": 0.015965926647186268,
+            "max": 0.017710375785827626
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 5,
+            "mean": 0.20927883684635162,
+            "std": 0.003139062968432678,
+            "min": 0.20383378863334656,
+            "max": 0.21306760609149933
+          },
+          "settling_time_success": null,
+          "failure_modes": {}
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 0.5799059679716211,
+          "corr_level_vs_metric": -0.621756760836761,
+          "level_means": [
+            10.809999999999812,
+            10.109999999999427,
+            10.37000000000106
+          ],
+          "effective": false
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 3.210454907466405,
+          "corr_level_vs_metric": -0.9678774505608663,
+          "level_means": [
+            0.018125526607036598,
+            0.017718836665153514,
+            0.016646844148635855
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 2.4787622776253224,
+          "corr_level_vs_metric": -0.8894373659509872,
+          "level_means": [
+            0.2829867541790009,
+            0.21333083212375642,
+            0.20927883684635162
+          ],
+          "effective": true
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "descend_max_position_step",
+      "skill": "place",
+      "levels": [
+        {
+          "level": "descend_max_position_step=0.003",
+          "level_value": 0.003,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 5.149999999999707,
+            "std": 0.3082207001484313,
+            "min": 4.799999999999727,
+            "max": 5.5499999999996845
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.00268673209939152,
+            "std": 0.0003705256385728717,
+            "min": 0.0023162064608186483,
+            "max": 0.0030572577379643917
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24856487661600113,
+            "std": 0.05629124492406845,
+            "min": 0.19227363169193268,
+            "max": 0.3048561215400696
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.14999999999999147,
+            "std": 0.0,
+            "min": 0.14999999999999147,
+            "max": 0.14999999999999147
+          },
+          "failure_modes": {
+            "PLACE_VERIFICATION_FAILED": 1
+          }
+        },
+        {
+          "level": "descend_max_position_step=0.006",
+          "level_value": 0.006,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 7.216666666668307,
+            "std": 4.446784106396203,
+            "min": 3.8500000000008754,
+            "max": 13.50000000000307
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002391822636127472,
+            "std": 0.00011764559894800186,
+            "min": 0.00227417703717947,
+            "max": 0.002509468235075474
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24865086376667023,
+            "std": 0.05706195533275604,
+            "min": 0.19158890843391418,
+            "max": 0.30571281909942627
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "POSITION_TIMEOUT": 1
+          }
+        },
+        {
+          "level": "descend_max_position_step=0.009",
+          "level_value": 0.009,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 7.166666666668296,
+            "std": 4.479087208598572,
+            "min": 3.9000000000008868,
+            "max": 13.50000000000307
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.0025573543971404433,
+            "std": 0.0001583116827532649,
+            "min": 0.0023990427143871784,
+            "max": 0.0027156660798937082
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24899109452962875,
+            "std": 0.056719906628131866,
+            "min": 0.1922711879014969,
+            "max": 0.3057110011577606
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "POSITION_TIMEOUT": 1
+          }
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 0.6714249749556614,
+          "corr_level_vs_metric": 0.8552286863999852,
+          "level_means": [
+            5.149999999999707,
+            7.216666666668307,
+            7.166666666668296
+          ],
+          "effective": false
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 1.3685255434389185,
+          "corr_level_vs_metric": -0.43760833881027117,
+          "level_means": [
+            0.00268673209939152,
+            0.002391822636127472,
+            0.0025573543971404433
+          ],
+          "effective": false
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 0.007518259437383016,
+          "corr_level_vs_metric": 0.9454987560936273,
+          "level_means": [
+            0.24856487661600113,
+            0.24865086376667023,
+            0.24899109452962875
+          ],
+          "effective": false
+        },
+        "settling_time": {
+          "effect_spread_over_noise": 0.0,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.14999999999999147,
+            0.1500000000000341,
+            0.1500000000000341
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          0.6666666666666666,
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "affects_failure": false,
+        "any_effective": false
+      }
+    },
+    {
+      "param": "move_max_position_step",
+      "skill": "place",
+      "levels": [
+        {
+          "level": "move_max_position_step=0.006",
+          "level_value": 0.006,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 5.466666666666356,
+            "std": 0.418993502999194,
+            "min": 4.8999999999997215,
+            "max": 5.899999999999665
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.0026337173767387867,
+            "std": 9.908108040690422e-05,
+            "min": 0.0025346362963318825,
+            "max": 0.002732798457145691
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24898580461740494,
+            "std": 0.05671065300703049,
+            "min": 0.19227515161037445,
+            "max": 0.3056964576244354
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.14999999999999147,
+            "std": 0.0,
+            "min": 0.14999999999999147,
+            "max": 0.14999999999999147
+          },
+          "failure_modes": {
+            "OBJECT_OUT_OF_BOUNDS": 1
+          }
+        },
+        {
+          "level": "move_max_position_step=0.012",
+          "level_value": 0.012,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.2833333333343075,
+            "std": 0.34721111093340656,
+            "min": 3.8500000000008754,
+            "max": 4.700000000001069
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.0023447948042303324,
+            "std": 7.923180237412453e-05,
+            "min": 0.002265563001856208,
+            "max": 0.002424026606604457
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.2482208088040352,
+            "std": 0.056636206805706024,
+            "min": 0.19158460199832916,
+            "max": 0.3048570156097412
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "OBJECT_OUT_OF_BOUNDS": 1
+          }
+        },
+        {
+          "level": "move_max_position_step=0.018",
+          "level_value": 0.018,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.0000000000009095,
+            "std": 0.26770630673687773,
+            "min": 3.7000000000008413,
+            "max": 4.350000000000989
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.0024058083072304726,
+            "std": 0.00013014348223805428,
+            "min": 0.0022756648249924183,
+            "max": 0.002535951789468527
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24863973259925842,
+            "std": 0.057055115699768066,
+            "min": 0.19158461689949036,
+            "max": 0.3056948482990265
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "PLACE_VERIFICATION_FAILED": 1
+          }
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 4.255685777211107,
+          "corr_level_vs_metric": -0.9425926769111072,
+          "level_means": [
+            5.466666666666356,
+            4.2833333333343075,
+            4.0000000000009095
+          ],
+          "effective": true
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 2.810017285497543,
+          "corr_level_vs_metric": -0.7483055802280631,
+          "level_means": [
+            0.0026337173767387867,
+            0.0023447948042303324,
+            0.0024058083072304726
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 0.013468080010262794,
+          "corr_level_vs_metric": -0.45170196216530545,
+          "level_means": [
+            0.24898580461740494,
+            0.2482208088040352,
+            0.24863973259925842
+          ],
+          "effective": false
+        },
+        "settling_time": {
+          "effect_spread_over_noise": 0.0,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.14999999999999147,
+            0.1500000000000341,
+            0.1500000000000341
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          0.6666666666666666,
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "open_duration",
+      "skill": "place",
+      "levels": [
+        {
+          "level": "open_duration=0.25",
+          "level_value": 0.25,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.21666666666643,
+            "std": 0.3880148908940717,
+            "min": 3.749999999999787,
+            "max": 4.699999999999733
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.0023985966108739376,
+            "std": 0.00013673235662281513,
+            "min": 0.0022618642542511225,
+            "max": 0.0025353289674967527
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24863746017217636,
+            "std": 0.05705849081277847,
+            "min": 0.1915789693593979,
+            "max": 0.30569595098495483
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.14999999999999147,
+            "std": 0.0,
+            "min": 0.14999999999999147,
+            "max": 0.14999999999999147
+          },
+          "failure_modes": {
+            "OBJECT_OUT_OF_BOUNDS": 1
+          }
+        },
+        {
+          "level": "open_duration=0.45",
+          "level_value": 0.45,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 7.30000000000166,
+            "std": 4.38482230730909,
+            "min": 4.100000000000932,
+            "max": 13.50000000000307
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002591971540823579,
+            "std": 8.546398021280766e-05,
+            "min": 0.002506507560610771,
+            "max": 0.0026774355210363865
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24899207800626755,
+            "std": 0.056721217930316925,
+            "min": 0.19227086007595062,
+            "max": 0.3057132959365845
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "POSITION_TIMEOUT": 1
+          }
+        },
+        {
+          "level": "open_duration=0.9",
+          "level_value": 0.9,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 7.600000000001728,
+            "std": 4.172728923219742,
+            "min": 4.5500000000010346,
+            "max": 13.50000000000307
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002590639516711235,
+            "std": 8.058222010731697e-05,
+            "min": 0.002510057296603918,
+            "max": 0.002671221736818552
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24899226427078247,
+            "std": 0.05672106146812439,
+            "min": 0.19227120280265808,
+            "max": 0.30571332573890686
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "POSITION_TIMEOUT": 1
+          }
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 1.1346403192637082,
+          "corr_level_vs_metric": 0.7888071853985633,
+          "level_means": [
+            4.21666666666643,
+            7.30000000000166,
+            7.600000000001728
+          ],
+          "effective": false
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 1.9160035496115113,
+          "corr_level_vs_metric": 0.7329846924975203,
+          "level_means": [
+            0.0023985966108739376,
+            0.002591971540823579,
+            0.002590639516711235
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 0.006242859164212065,
+          "corr_level_vs_metric": 0.7373507480231339,
+          "level_means": [
+            0.24863746017217636,
+            0.24899207800626755,
+            0.24899226427078247
+          ],
+          "effective": false
+        },
+        "settling_time": {
+          "effect_spread_over_noise": 0.0,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.14999999999999147,
+            0.1500000000000341,
+            0.1500000000000341
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          0.6666666666666666,
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "release_clearance",
+      "skill": "place",
+      "levels": [
+        {
+          "level": "release_clearance=0.0",
+          "level_value": 0.0,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.483333333333081,
+            "std": 0.271825107171652,
+            "min": 4.199999999999761,
+            "max": 4.849999999999724
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002633970114402473,
+            "std": 9.962113108485937e-05,
+            "min": 0.0025343489833176136,
+            "max": 0.0027335912454873323
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24898570030927658,
+            "std": 0.05671051889657974,
+            "min": 0.19227518141269684,
+            "max": 0.3056962192058563
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.14999999999999147,
+            "std": 0.0,
+            "min": 0.14999999999999147,
+            "max": 0.14999999999999147
+          },
+          "failure_modes": {
+            "OBJECT_OUT_OF_BOUNDS": 1
+          }
+        },
+        {
+          "level": "release_clearance=0.02",
+          "level_value": 0.02,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.116666666667602,
+            "std": 0.19293061504654763,
+            "min": 3.8500000000008754,
+            "max": 4.300000000000978
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.0029581055277958512,
+            "std": 0.0003849143395200372,
+            "min": 0.002573191188275814,
+            "max": 0.0033430198673158884
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24788641929626465,
+            "std": 0.05703526735305786,
+            "min": 0.1908511519432068,
+            "max": 0.3049216866493225
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "PLACE_VERIFICATION_FAILED": 1
+          }
+        },
+        {
+          "level": "release_clearance=0.04",
+          "level_value": 0.04,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.116666666667602,
+            "std": 0.19293061504654763,
+            "min": 3.8500000000008754,
+            "max": 4.300000000000978
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.003687878604978323,
+            "std": 0.0005182293243706226,
+            "min": 0.0031696492806077003,
+            "max": 0.004206107929348946
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24899067729711533,
+            "std": 0.056782759726047516,
+            "min": 0.1922079175710678,
+            "max": 0.30577343702316284
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "PLACE_VERIFICATION_FAILED": 1
+          }
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 1.6725298028407098,
+          "corr_level_vs_metric": -0.8660254037844387,
+          "level_means": [
+            4.483333333333081,
+            4.116666666667602,
+            4.116666666667602
+          ],
+          "effective": true
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 3.153008050910621,
+          "corr_level_vs_metric": 0.976188408176442,
+          "level_means": [
+            0.002633970114402473,
+            0.0029581055277958512,
+            0.003687878604978323
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 0.01942650706131269,
+          "corr_level_vs_metric": 0.003912038673881435,
+          "level_means": [
+            0.24898570030927658,
+            0.24788641929626465,
+            0.24899067729711533
+          ],
+          "effective": false
+        },
+        "settling_time": {
+          "effect_spread_over_noise": 0.0,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.14999999999999147,
+            0.1500000000000341,
+            0.1500000000000341
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          0.6666666666666666,
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    },
+    {
+      "param": "settle_after_release_duration",
+      "skill": "place",
+      "levels": [
+        {
+          "level": "settle_after_release_duration=0.2",
+          "level_value": 0.2,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 4.116666666666435,
+            "std": 0.3880148908940717,
+            "min": 3.6499999999997925,
+            "max": 4.5999999999997385
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002397722448222339,
+            "std": 0.00013603491242974997,
+            "min": 0.002261687535792589,
+            "max": 0.002533757360652089
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.2486373409628868,
+            "std": 0.0570584312081337,
+            "min": 0.1915789097547531,
+            "max": 0.3056957721710205
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.14999999999999147,
+            "std": 0.0,
+            "min": 0.14999999999999147,
+            "max": 0.14999999999999147
+          },
+          "failure_modes": {
+            "OBJECT_OUT_OF_BOUNDS": 1
+          }
+        },
+        {
+          "level": "settle_after_release_duration=0.5",
+          "level_value": 0.5,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 7.300000000001646,
+            "std": 4.3848223073090695,
+            "min": 4.100000000000932,
+            "max": 13.500000000003027
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002595394034869969,
+            "std": 8.239771705120802e-05,
+            "min": 0.002512996317818761,
+            "max": 0.002677791751921177
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24899230152368546,
+            "std": 0.056720905005931854,
+            "min": 0.1922713965177536,
+            "max": 0.3057132065296173
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "POSITION_TIMEOUT": 1
+          }
+        },
+        {
+          "level": "settle_after_release_duration=1.0",
+          "level_value": 1.0,
+          "n": 3,
+          "n_success": 2,
+          "success_rate": 0.6666666666666666,
+          "elapsed_time": {
+            "n": 3,
+            "mean": 7.633333333335069,
+            "std": 4.1491632355890005,
+            "min": 4.600000000001046,
+            "max": 13.50000000000307
+          },
+          "primary_error_success": {
+            "n": 2,
+            "mean": 0.002591096912510693,
+            "std": 7.851200643926859e-05,
+            "min": 0.0025125849060714245,
+            "max": 0.0026696089189499617
+          },
+          "max_tcp_tracking_error_success": {
+            "n": 2,
+            "mean": 0.24899230152368546,
+            "std": 0.05672096461057663,
+            "min": 0.19227133691310883,
+            "max": 0.3057132661342621
+          },
+          "settling_time_success": {
+            "n": 2,
+            "mean": 0.1500000000000341,
+            "std": 0.0,
+            "min": 0.1500000000000341,
+            "max": 0.1500000000000341
+          },
+          "failure_modes": {
+            "POSITION_TIMEOUT": 1
+          }
+        }
+      ],
+      "verdict": {
+        "elapsed_time": {
+          "effect_spread_over_noise": 1.1824702406477925,
+          "corr_level_vs_metric": 0.8359213384342203,
+          "level_means": [
+            4.116666666666435,
+            7.300000000001646,
+            7.633333333335069
+          ],
+          "effective": false
+        },
+        "primary_error": {
+          "effect_spread_over_noise": 1.997054966509653,
+          "corr_level_vs_metric": 0.773800437773084,
+          "level_means": [
+            0.002397722448222339,
+            0.002595394034869969,
+            0.002591096912510693
+          ],
+          "effective": true
+        },
+        "max_tcp_tracking_error": {
+          "effect_spread_over_noise": 0.006245629346373735,
+          "corr_level_vs_metric": 0.7857142857142857,
+          "level_means": [
+            0.2486373409628868,
+            0.24899230152368546,
+            0.24899230152368546
+          ],
+          "effective": false
+        },
+        "settling_time": {
+          "effect_spread_over_noise": 0.0,
+          "corr_level_vs_metric": null,
+          "level_means": [
+            0.14999999999999147,
+            0.1500000000000341,
+            0.1500000000000341
+          ],
+          "effective": false
+        },
+        "success_rate_range": 0.0,
+        "success_rates": [
+          0.6666666666666666,
+          0.6666666666666666,
+          0.6666666666666666
+        ],
+        "affects_failure": false,
+        "any_effective": true
+      }
+    }
+  ],
+  "regressions": [
+    {
+      "run": "regression_drawer_middle",
+      "skill": "open_drawer",
+      "n": 10,
+      "n_success": 0,
+      "rate": 0.0
+    },
+    {
+      "run": "regression_drawer_top",
+      "skill": "open_drawer",
+      "n": 10,
+      "n_success": 10,
+      "rate": 1.0
+    },
+    {
+      "run": "regression_place",
+      "skill": "place",
+      "n": 10,
+      "n_success": 10,
+      "rate": 1.0
+    }
+  ]
+}
