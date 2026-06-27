@@ -39,6 +39,17 @@ class PlaceJointSkill:
     def current_state(self) -> str:
         return self.inner.current_state
 
+    @property
+    def resolver(self):
+        return self.inner.resolver
+
+    @property
+    def last_telemetry(self) -> dict:
+        return self.inner.last_telemetry
+
+    def outcomes(self, state: SceneState) -> dict:
+        return self.inner.outcomes(state)
+
     def start(self, state: SceneState):
         self.inner.start(state)
         self.status = self.inner.status
@@ -57,8 +68,14 @@ class PlaceJointSkill:
     def result(self, state: SceneState) -> SkillResult:
         return self.inner.result(state)
 
+    def viz_poses(self) -> list:
+        """(name, PoseState) pairs for live target-pose arrows: the current desired TCP pose."""
+        tgt = getattr(self, "_last_desired", None)
+        return [("phase_target", tgt)] if tgt is not None else []
+
     def _to_joint_command(self, state: SceneState, pose_command: SkillCommand) -> SkillCommand:
         desired = pose_command.tcp_pose_w
+        self._last_desired = desired
         gripper = pose_command.gripper_command
         if self.status in (ExecutionStatus.SUCCEEDED, ExecutionStatus.FAILED, ExecutionStatus.STOPPED):
             q_des = self.last_q_des
