@@ -32,6 +32,16 @@ class SkillResult:
     orientation_error: float | None = None
     gripper_width: float | None = None
     state_history: list[dict[str, Any]] = field(default_factory=list)
+    # --- stage-1 experiment extension (all optional, backward compatible) ---
+    # ``outcomes`` holds the multi-dimensional execution result (object errors, settling time,
+    # tracking error, drawer position error, handle_detached, etc.) per the stage-1 schema.
+    # ``legacy_reached`` is a DEBUG-only flag: did the old state machine reach the end-of-open-gripper
+    # position. It must NEVER be used as ``success`` (success is the verified object/mechanism state).
+    outcomes: dict[str, Any] = field(default_factory=dict)
+    legacy_reached: bool | None = None
+    task_target: dict[str, Any] = field(default_factory=dict)
+    requested_parameters: dict[str, Any] = field(default_factory=dict)
+    effective_parameters: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -48,6 +58,11 @@ class SkillResult:
             "orientation_error": self.orientation_error,
             "gripper_width": self.gripper_width,
             "state_history": self.state_history,
+            "outcomes": self.outcomes,
+            "legacy_reached": self.legacy_reached,
+            "task_target": self.task_target,
+            "requested_parameters": self.requested_parameters,
+            "effective_parameters": self.effective_parameters,
         }
 
     def to_json(self) -> str:
@@ -71,6 +86,11 @@ class SkillResult:
             orientation_error=data.get("orientation_error"),
             gripper_width=data.get("gripper_width"),
             state_history=list(data.get("state_history", [])),
+            outcomes=dict(data.get("outcomes", {})),
+            legacy_reached=data.get("legacy_reached"),
+            task_target=dict(data.get("task_target", {})),
+            requested_parameters=dict(data.get("requested_parameters", {})),
+            effective_parameters=list(data.get("effective_parameters", [])),
         )
 
     @classmethod
