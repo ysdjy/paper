@@ -105,3 +105,7 @@ franka_ws/
 **/*.bin
 **/*.onnx
 **/*.engine
+
+# stage-1 pilot datasets (large): keep code + small examples only
+projects/franka_skill_state_machine/experiments/**/trajectories/*.npz
+projects/franka_skill_state_machine/experiments/**/*.full.jsonl
