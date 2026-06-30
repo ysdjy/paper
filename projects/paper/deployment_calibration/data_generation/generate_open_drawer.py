@@ -18,10 +18,14 @@ import os as _os
 import sys as _sys
 import time
 
-# make both this project and the skill backend importable
+# make both this paper package and the paper-owned (frozen) skill backend importable.
+# Isolation: the paper imports its OWN skill_backend copy, NOT the shared franka_skill_state_machine,
+# so platform/perception-project churn cannot infect paper experiments. The SCENE (gym task + assets
+# in source/) stays shared on purpose.
 _HERE = _os.path.dirname(_os.path.abspath(__file__))
-_sys.path.insert(0, _os.path.dirname(_HERE))                                   # projects/deployment_calibration
-_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.dirname(_HERE)), "franka_skill_state_machine"))
+_PAPER = _os.path.dirname(_os.path.dirname(_HERE))                             # projects/paper
+_sys.path.insert(0, _os.path.dirname(_HERE))                                   # projects/paper/deployment_calibration
+_sys.path.insert(0, _os.path.join(_PAPER, "skill_backend"))                    # projects/paper/skill_backend
 
 from isaaclab.app import AppLauncher
 
@@ -66,7 +70,16 @@ from adapters.isaac_open_drawer import reset_full, run_open_drawer_episode
 from runtime.drawer_target_config import DRAWER_TARGETS
 
 TASK_ID = "Isaac-Stack-Cube-Franka-JointPolicy-v0"
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+
+def _find_repo_root(start: Path) -> Path:
+    for p in [start, *start.parents]:
+        if (p / "isaaclab.sh").exists():
+            return p
+    return start.parents[4]
+
+
+REPO_ROOT = _find_repo_root(Path(__file__).resolve())
 
 
 def main():

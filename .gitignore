@@ -111,4 +111,4 @@ projects/franka_skill_state_machine/experiments/**/trajectories/*.npz
 projects/franka_skill_state_machine/experiments/**/*.full.jsonl
 
 # deployment_calibration datasets (large): keep code, configs, eval reports, small examples
-projects/deployment_calibration/data/**/trajectories/*.npz
+projects/paper/deployment_calibration/data/**/trajectories/*.npz
