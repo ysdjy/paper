@@ -27,9 +27,9 @@ paper/
 ```
 
 ## 当前状态（round-1, open_drawer）
-- 审计/契约/偏差登记：见仓库 `docs/paper_*_v1.md`（HEAD f2e77e7 审计）。
+- 审计/契约/偏差登记：见`projects/paper/docs/paper_*_v1.md`（HEAD f2e77e7 审计）。
 - 干净独立-episode 管线（修复 episode 独立性 R1）+ B0/B1/B2 + regret 评估：就绪并验证。
-- Kill test 裁决 **MODIFY**（见 `docs/paper_round1_kill_test_v1.md`）：H1 成立、管线可信，但干净 sim 平稳→
+- Kill test 裁决 **MODIFY**（见 `projects/paper/docs/paper_round1_kill_test_v1.md`）：H1 成立、管线可信，但干净 sim 平稳→
   历史 H 无可校准漂移。
 
 ## 选定的部署漂移轴（round-1）
