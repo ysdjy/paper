@@ -25,7 +25,7 @@ import time
 _HERE = _os.path.dirname(_os.path.abspath(__file__))
 _PAPER = _os.path.dirname(_os.path.dirname(_HERE))                             # projects/paper
 _sys.path.insert(0, _os.path.dirname(_HERE))                                   # projects/paper/deployment_calibration
-_sys.path.insert(0, _os.path.join(_PAPER, "skill_backend"))                    # projects/paper/skill_backend
+_sys.path.insert(0, _os.path.join(_PAPER, "franka_skill_state_machine"))                    # projects/paper/skill_backend
 _sys.path.insert(0, _os.path.join(_PAPER, "scene"))                            # projects/paper/scene (stackpkg + paper_tasks)
 
 from isaaclab.app import AppLauncher
@@ -89,7 +89,11 @@ def main():
     torch.manual_seed(args_cli.seed)
     set_speed_scale(1.0)
     # build the paper-owned env cfg directly (no parse_env_cfg -> no isaaclab_tasks coupling)
+    _os.environ.setdefault("PAPER_ENABLE_SEKTION", "1")   # full latest scene includes Sektion
     env_cfg = FrankaCubeStackJointPolicyEnvCfg()
+    # reproduce the user's LATEST scene from the frozen ground-truth capture (poses/scales/props)
+    from apply_captured import apply_captured_scene
+    apply_captured_scene(env_cfg, include_props=not bool(int(_os.environ.get("PAPER_NO_PROPS", "0"))))
     env_cfg.scene.num_envs = 1
     env_cfg.sim.device = args_cli.device
     env_cfg.sim.use_fabric = not args_cli.disable_fabric

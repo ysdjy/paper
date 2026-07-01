@@ -1,0 +1,362 @@
+{
+  "records": [
+    {
+      "image_path": "/tmp/qwen_front_w3dqh5hi.png",
+      "primary_label": "fridge",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "fridge",
+          "confidence": 0.95,
+          "evidence": "冰箱门打开，里面可以看到水果"
+        }
+      ],
+      "attributes": {
+        "color": "white",
+        "shape": "rectangle",
+        "texture": "smooth"
+      },
+      "scene": "一个冰箱，门打开，里面有三个水果。",
+      "reasoning": "根据图片，冰箱门打开，里面可以看到三个水果，因此主要对象是冰箱。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"fridge\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"fridge\",\n      \"confidence\": 0.95,\n      \"evidence\": \"冰箱门打开，里面可以看到水果\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"white\",\n    \"shape\": \"rectangle\",\n    \"texture\": \"smooth\"\n  },\n  \"scene\": \"一个冰箱，门打开，里面有三个水果。\",\n  \"reasoning\": \"根据图片，冰箱门打开，里面可以看到三个水果，因此主要对象是冰箱。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_wrist_tt0lyvu_.png",
+      "primary_label": "cube",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "cube",
+          "confidence": 0.95,
+          "evidence": "一个绿色的立方体在空中悬浮"
+        }
+      ],
+      "attributes": {
+        "color": "green",
+        "shape": "cube",
+        "texture": "smooth"
+      },
+      "scene": "一个蓝色背景下的雪地场景，中间有一个白色的建筑物，左侧有一个黑色的物体，右侧有一个红色的物体，上方有一个绿色的立方体在空中悬浮。",
+      "reasoning": "根据图片中的绿色立方体在空中悬浮的明显特征，可以确定其为主要对象。其他物体的颜色和形状也清晰可见。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"cube\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"cube\",\n      \"confidence\": 0.95,\n      \"evidence\": \"一个绿色的立方体在空中悬浮\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"green\",\n    \"shape\": \"cube\",\n    \"texture\": \"smooth\"\n  },\n  \"scene\": \"一个蓝色背景下的雪地场景，中间有一个白色的建筑物，左侧有一个黑色的物体，右侧有一个红色的物体，上方有一个绿色的立方体在空中悬浮。\",\n  \"reasoning\": \"根据图片中的绿色立方体在空中悬浮的明显特征，可以确定其为主要对象。其他物体的颜色和形状也清晰可见。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_front_rc61mk1v.png",
+      "primary_label": "打印机",
+      "confidence": 0.8,
+      "objects": [
+        {
+          "name": "打印机",
+          "confidence": 0.8,
+          "evidence": "右侧有打印机的轮廓"
+        }
+      ],
+      "attributes": {
+        "color": "灰色",
+        "shape": "长方体",
+        "texture": "平滑"
+      },
+      "scene": "一个房间内，打印机位于桌子旁边，旁边有一个带有抽屉的柜子。",
+      "reasoning": "根据图像中的打印机轮廓和位置，可以确认其为打印机。其他物体如柜子和显示器也清晰可见。",
+      "uncertainty": "",
+      "raw_response": "FIRST_PASS:\n```json\n{\n  \"primary_label\": \"打印机\",\n  \"confidence\": 0.8,\n  \"objects\": [\n    {\n      \"name\": \"打印机\",\n      \"confidence\": 0.8,\n      \"evidence\": \"右侧有打印机的轮廓\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"灰色\",\n    \"shape\": \"长方体\",\n    \"texture\": \"平滑\"\n  },\n  \"scene\": \"一个房间内，打印机位于桌子旁边，旁边有一个带有抽屉的柜子。\",\n  \"reasoning\": \"根据图像中的打印机轮廓和位置，可以确认其为打印机。其他物体如柜子和显示器也清晰可见。\",\n  \"uncertainty\": \"\"\n}\n```\n\nREVIEW:\n{\n  \"image_path\": \"/tmp/qwen_front_rc61mk1v.png\",\n  \"primary_label\": \"打印机\",\n  \"confidence\": 0.8,\n  \"objects\": [\n    {\n      \"name\": \"打印机\",\n      \"confidence\": 0.8,\n      \"evidence\": \"右侧有打印机的轮廓\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"灰色\",\n    \"shape\": \"长方体\",\n    \"texture\": \"平滑\"\n  },\n  \"scene\": \"一个房间内，打印机位于桌子旁边，旁边有一个带有抽屉的柜子。\",\n  \"reasoning\": \"根据图像中的打印机轮廓和位置，可以确认其为打印机。其他物体如柜子和显示器也清晰可见。\",\n  \"uncertainty\": \"\",\n  \"raw_response\": \"```json\\n{\\n  \\\"primary_label\\\": \\\"打印机\\\",\\n  \\\"confidence\\\": 0.8,\\n  \\\"objects\\\": [\\n    {\\n      \\\"name\\\": \\\"打印机\\\",\\n      \\\"confidence\\\": 0.8,\\n      \\\"evidence\\\": \\\"右侧有打印机的轮廓\\\"\\n    }\\n  ],\\n  \\\"attributes\\\": {\\n    \\\"color\\\": \\\"灰色\\\",\\n    \\\"shape\\\": \\\"长方体\\\",\\n    \\\"texture\\\": \\\"平滑\\\"\\n  },\\n  \\\"scene\\\": \\\"一个房间内，打印机位于桌子旁边，旁边有一个带有抽屉的柜子。\\\",\\n  \\\"reasoning\\\": \\\"根据图像中的打印机轮廓和位置，可以确认其为打印机。其他物体如柜子和显示器也清晰可见。\\\",\\n  \\\"uncertainty\\\": \\\"\\\"\\n}\\n```\"\n}"
+    },
+    {
+      "image_path": "/tmp/qwen_wrist_nv3zf5ik.png",
+      "primary_label": "knife",
+      "confidence": 0.8,
+      "objects": [
+        {
+          "name": "knife",
+          "confidence": 0.8,
+          "evidence": "在天空中悬浮的物体，形状像刀片"
+        }
+      ],
+      "attributes": {
+        "color": "gray",
+        "shape": "long and thin",
+        "texture": "smooth"
+      },
+      "scene": "一个简单的场景，有三座房子和一片雪地，天空中有一把刀。",
+      "reasoning": "根据图像中的轮廓和形状，这把刀看起来像是悬浮在空中的。其他物体（房子）没有这种特征。",
+      "uncertainty": "",
+      "raw_response": "FIRST_PASS:\n```json\n{\n  \"primary_label\": \"knife\",\n  \"confidence\": 0.8,\n  \"objects\": [\n    {\n      \"name\": \"knife\",\n      \"confidence\": 0.8,\n      \"evidence\": \"在天空中悬浮的物体，形状像刀片\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"gray\",\n    \"shape\": \"long and thin\",\n    \"texture\": \"smooth\"\n  },\n  \"scene\": \"一个简单的场景，有三座房子和一片雪地，天空中有一把刀。\",\n  \"reasoning\": \"根据图像中的轮廓和形状，这把刀看起来像是悬浮在空中的。其他物体（房子）没有这种特征。\",\n  \"uncertainty\": \"\"\n}\n```\n\nREVIEW:\n{\n  \"image_path\": \"/tmp/qwen_wrist_nv3zf5ik.png\",\n  \"primary_label\": \"knife\",\n  \"confidence\": 0.8,\n  \"objects\": [\n    {\n      \"name\": \"knife\",\n      \"confidence\": 0.8,\n      \"evidence\": \"在天空中悬浮的物体，形状像刀片\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"gray\",\n    \"shape\": \"long and thin\",\n    \"texture\": \"smooth\"\n  },\n  \"scene\": \"一个简单的场景，有三座房子和一片雪地，天空中有一把刀。\",\n  \"reasoning\": \"根据图像中的轮廓和形状，这把刀看起来像是悬浮在空中的。其他物体（房子）没有这种特征。\",\n  \"uncertainty\": \"\",\n  \"raw_response\": \"```json\\n{\\n  \\\"primary_label\\\": \\\"knife\\\",\\n  \\\"confidence\\\": 0.8,\\n  \\\"objects\\\": [\\n    {\\n      \\\"name\\\": \\\"knife\\\",\\n      \\\"confidence\\\": 0.8,\\n      \\\"evidence\\\": \\\"在天空中悬浮的物体，形状像刀片\\\"\\n    }\\n  ],\\n  \\\"attributes\\\": {\\n    \\\"color\\\": \\\"gray\\\",\\n    \\\"shape\\\": \\\"long and thin\\\",\\n    \\\"texture\\\": \\\"smooth\\\"\\n  },\\n  \\\"scene\\\": \\\"一个简单的场景，有三座房子和一片雪地，天空中有一把刀。\\\",\\n  \\\"reasoning\\\": \\\"根据图像中的轮廓和形状，这把刀看起来像是悬浮在空中的。其他物体（房子）没有这种特征。\\\",\\n  \\\"uncertainty\\\": \\\"\\\"\\n}\\n```\"\n}"
+    },
+    {
+      "image_path": "/tmp/qwen_front_wnvcdzcz.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中清晰可见，具有多个关节和传感器"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形，带有多个关节和传感器",
+        "texture": "光滑"
+      },
+      "scene": "一个实验室环境，包含一个机器人手臂、柜子和抽屉。",
+      "reasoning": "根据图像中的白色机械臂及其特征，可以确认其为机器人手臂。其他物体如柜子和抽屉也符合实验室环境的常见物品。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中清晰可见，具有多个关节和传感器\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形，带有多个关节和传感器\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个实验室环境，包含一个机器人手臂、柜子和抽屉。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其特征，可以确认其为机器人手臂。其他物体如柜子和抽屉也符合实验室环境的常见物品。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_wrist_j7ptahrh.png",
+      "primary_label": "knife",
+      "confidence": 0.9,
+      "objects": [
+        {
+          "name": "knife",
+          "confidence": 0.9,
+          "evidence": "图像中有一把刀在前景突出显示"
+        }
+      ],
+      "attributes": {
+        "color": "gray",
+        "shape": "straight",
+        "texture": "smooth"
+      },
+      "scene": "一个简单的场景，背景是蓝色的墙壁，前景有一个灰色的物体，上面有多个小孔，旁边有两个黑色的物体。",
+      "reasoning": "根据图像中的刀具形状和位置，以及其与周围环境的关系，可以确定这是主要的对象。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"knife\",\n  \"confidence\": 0.9,\n  \"objects\": [\n    {\n      \"name\": \"knife\",\n      \"confidence\": 0.9,\n      \"evidence\": \"图像中有一把刀在前景突出显示\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"gray\",\n    \"shape\": \"straight\",\n    \"texture\": \"smooth\"\n  },\n  \"scene\": \"一个简单的场景，背景是蓝色的墙壁，前景有一个灰色的物体，上面有多个小孔，旁边有两个黑色的物体。\",\n  \"reasoning\": \"根据图像中的刀具形状和位置，以及其与周围环境的关系，可以确定这是主要的对象。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_left_9jtfmx0s.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中明显可见"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个蓝色背景的房间内，有一个白色的机械臂正在操作。",
+      "reasoning": "根据图像中的白色机械臂及其操作行为，可以确认其为主要对象。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中明显可见\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个蓝色背景的房间内，有一个白色的机械臂正在操作。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其操作行为，可以确认其为主要对象。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_right_g96pabgn.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中明显可见"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个机器人手臂在一个蓝色背景的环境中，旁边有一个木制柜子和一台打印机。",
+      "reasoning": "根据图像中的白色机械臂及其位置，可以确定这是主要对象。其他物体如木柜和打印机也清晰可见。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中明显可见\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个机器人手臂在一个蓝色背景的环境中，旁边有一个木制柜子和一台打印机。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其位置，可以确定这是主要对象。其他物体如木柜和打印机也清晰可见。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_front_xnqbkkbo.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中清晰可见"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个实验室环境，包含一个机器人手臂、柜子和抽屉。",
+      "reasoning": "根据图像中的白色机械臂及其位置，可以确认其为主要对象。其他物体如柜子和抽屉作为背景元素出现。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中清晰可见\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个实验室环境，包含一个机器人手臂、柜子和抽屉。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其位置，可以确认其为主要对象。其他物体如柜子和抽屉作为背景元素出现。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_wrist_slzcsc21.png",
+      "primary_label": "knife",
+      "confidence": 0.85,
+      "objects": [
+        {
+          "name": "knife",
+          "confidence": 0.85,
+          "evidence": "图像中有一把刀在空中悬浮"
+        }
+      ],
+      "attributes": {
+        "color": "gray",
+        "shape": "rectangle",
+        "texture": "smooth"
+      },
+      "scene": "一个蓝色背景的场景，前景中有三块黑色的物体，中间有一个灰色的平台，上面有一把刀在空中悬浮。",
+      "reasoning": "根据图像中的刀在空中悬浮的特征，可以确定其为主要对象。刀的颜色为灰色，形状为矩形，纹理光滑。背景为蓝色，前景有三个黑色的物体。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"knife\",\n  \"confidence\": 0.85,\n  \"objects\": [\n    {\n      \"name\": \"knife\",\n      \"confidence\": 0.85,\n      \"evidence\": \"图像中有一把刀在空中悬浮\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"gray\",\n    \"shape\": \"rectangle\",\n    \"texture\": \"smooth\"\n  },\n  \"scene\": \"一个蓝色背景的场景，前景中有三块黑色的物体，中间有一个灰色的平台，上面有一把刀在空中悬浮。\",\n  \"reasoning\": \"根据图像中的刀在空中悬浮的特征，可以确定其为主要对象。刀的颜色为灰色，形状为矩形，纹理光滑。背景为蓝色，前景有三个黑色的物体。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_front_a2cbsauy.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中清晰可见，具有复杂的关节和结构"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形，带有多个关节和杆状结构",
+        "texture": "光滑，可能是金属或塑料制成"
+      },
+      "scene": "一个实验室环境，包含一个机器人手臂、柜子和抽屉。",
+      "reasoning": "根据图像中的白色机械臂及其复杂的设计，可以确认其为机器人手臂。其他物体如柜子和抽屉也符合实验室的常见配置。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中清晰可见，具有复杂的关节和结构\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形，带有多个关节和杆状结构\",\n    \"texture\": \"光滑，可能是金属或塑料制成\"\n  },\n  \"scene\": \"一个实验室环境，包含一个机器人手臂、柜子和抽屉。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其复杂的设计，可以确认其为机器人手臂。其他物体如柜子和抽屉也符合实验室的常见配置。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_wrist_ji9scct6.png",
+      "primary_label": "knife",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "knife",
+          "confidence": 0.95,
+          "evidence": "一把刀在图像中央突出显示，刀刃向上，刀柄向下。"
+        }
+      ],
+      "attributes": {
+        "color": "灰色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个简单的场景，背景为蓝色，前景有三个黑色的立方体状物体，中间有一个带有刀柄和刀刃的白色立方体。",
+      "reasoning": "根据图像中的刀具特征，特别是刀刃和刀柄的位置关系，可以确认这是一个刀。其他物体和背景没有提供足够的信息来确定它们与刀的关系。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"knife\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"knife\",\n      \"confidence\": 0.95,\n      \"evidence\": \"一把刀在图像中央突出显示，刀刃向上，刀柄向下。\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"灰色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个简单的场景，背景为蓝色，前景有三个黑色的立方体状物体，中间有一个带有刀柄和刀刃的白色立方体。\",\n  \"reasoning\": \"根据图像中的刀具特征，特别是刀刃和刀柄的位置关系，可以确认这是一个刀。其他物体和背景没有提供足够的信息来确定它们与刀的关系。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_left_4q9xilh5.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中明显可见，具有多个关节和传感器"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形，带有多个关节和传感器",
+        "texture": "光滑"
+      },
+      "scene": "一个实验室环境，机器人手臂靠近一台设备，旁边有一个木制柜子。",
+      "reasoning": "根据图像中的白色机械臂及其结构特征，可以确认其为机器人手臂。背景中的设备和柜子进一步支持了这一判断。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中明显可见，具有多个关节和传感器\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形，带有多个关节和传感器\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个实验室环境，机器人手臂靠近一台设备，旁边有一个木制柜子。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其结构特征，可以确认其为机器人手臂。背景中的设备和柜子进一步支持了这一判断。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_right_cjaqs34r.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中明显可见"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个机器人手臂正在操作一个设备，背景是蓝色的墙壁。",
+      "reasoning": "根据图像中的白色机械臂及其位置，可以确认这是主要的对象。其他物体如柜子、打印机等虽然存在，但不是主要的焦点。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中明显可见\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个机器人手臂正在操作一个设备，背景是蓝色的墙壁。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其位置，可以确认这是主要的对象。其他物体如柜子、打印机等虽然存在，但不是主要的焦点。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_front_mu00j4w1.png",
+      "primary_label": "robot arm",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "robot arm",
+          "confidence": 0.95,
+          "evidence": "白色的机械臂在图像中明显可见"
+        }
+      ],
+      "attributes": {
+        "color": "白色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个实验室环境，包含一个机器人手臂、柜子和抽屉。",
+      "reasoning": "根据图像中的白色机械臂及其位置，可以确定这是主要对象。其他物体如柜子和抽屉作为背景元素存在。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"robot arm\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"robot arm\",\n      \"confidence\": 0.95,\n      \"evidence\": \"白色的机械臂在图像中明显可见\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"白色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个实验室环境，包含一个机器人手臂、柜子和抽屉。\",\n  \"reasoning\": \"根据图像中的白色机械臂及其位置，可以确定这是主要对象。其他物体如柜子和抽屉作为背景元素存在。\",\n  \"uncertainty\": \"\"\n}\n```"
+    },
+    {
+      "image_path": "/tmp/qwen_wrist_o03p6ipx.png",
+      "primary_label": "knife",
+      "confidence": 0.95,
+      "objects": [
+        {
+          "name": "knife",
+          "confidence": 0.95,
+          "evidence": "一把刀在图像中心突出显示，刀刃向上，刀柄向下。"
+        }
+      ],
+      "attributes": {
+        "color": "灰色",
+        "shape": "长条形",
+        "texture": "光滑"
+      },
+      "scene": "一个简单的场景，背景为蓝色，前景有三个黑色的立方体状物体，中间有一个带有刀柄和刀刃的白色立方体。",
+      "reasoning": "根据图像中的刀具特征，特别是刀刃和刀柄的位置关系，可以确认这是一个刀具。其他物体和背景没有提供足够的信息来进一步分类。",
+      "uncertainty": "",
+      "raw_response": "```json\n{\n  \"primary_label\": \"knife\",\n  \"confidence\": 0.95,\n  \"objects\": [\n    {\n      \"name\": \"knife\",\n      \"confidence\": 0.95,\n      \"evidence\": \"一把刀在图像中心突出显示，刀刃向上，刀柄向下。\"\n    }\n  ],\n  \"attributes\": {\n    \"color\": \"灰色\",\n    \"shape\": \"长条形\",\n    \"texture\": \"光滑\"\n  },\n  \"scene\": \"一个简单的场景，背景为蓝色，前景有三个黑色的立方体状物体，中间有一个带有刀柄和刀刃的白色立方体。\",\n  \"reasoning\": \"根据图像中的刀具特征，特别是刀刃和刀柄的位置关系，可以确认这是一个刀具。其他物体和背景没有提供足够的信息来进一步分类。\",\n  \"uncertainty\": \"\"\n}\n```"
+    }
+  ],
+  "label_stats": {
+    "fridge": {
+      "count": 1,
+      "avg_confidence": 0.95
+    },
+    "cube": {
+      "count": 1,
+      "avg_confidence": 0.95
+    },
+    "打印机": {
+      "count": 1,
+      "avg_confidence": 0.8
+    },
+    "knife": {
+      "count": 5,
+      "avg_confidence": 0.89
+    },
+    "robot arm": {
+      "count": 8,
+      "avg_confidence": 0.95
+    }
+  }
+}

@@ -52,21 +52,11 @@ CABINET_MIDDLE_HANDLE_PROXY_OFFSET = tuple(v / CABINET_SCALE for v in _HANDLE_OF
 CABINET_HANDLE_PROXY_SIZE = CABINET_BOTTOM_HANDLE_PROXY_SIZE
 
 
-def _paper_assets_root() -> Path | None:
-    for parent in Path(__file__).resolve().parents:
-        if parent.name == "paper" and (parent / "assets").is_dir():
-            return parent / "assets"
-    return None
-
-
-_PAPER_ASSETS = _paper_assets_root()
-
-
 def _repo_path(relative_path: str) -> str:
-    # paper isolation: resolve against projects/paper/assets first (paper owns its scene assets),
-    # then fall back to the repo tree for anything not copied.
-    if _PAPER_ASSETS is not None and (_PAPER_ASSETS / relative_path).exists():
-        return str(_PAPER_ASSETS / relative_path)
+    # paper shares the STABLE scene asset BINARIES (simv2/ SapienAssetPipeline/ Connection/) from the
+    # repo tree. The paper owns its scene CODE (this file) -- that is what the other project edits and
+    # what needs isolation. The USD binaries are stable and NOT copied (copying gave no real isolation:
+    # the crate USDs hold absolute internal references to simv2 anyway).
     for parent in Path(__file__).resolve().parents:
         candidate = parent / relative_path
         if candidate.exists():
@@ -322,9 +312,16 @@ class FrankaCubeStackEnvCfg(StackEnvCfg):
                 ),
             )
 
-        # 顶/中抽屉的把手碰撞代理盒已移除（用户反馈它们的绿色碰撞体凸出在把手外面）。抽屉链接本身
-        # 经 spawn_usd_refined 的 convexDecomposition 已可被夹爪抓取；底部抽屉的代理保留(上面那个)。
-        _ = _handle_proxy   # keep helper defined (unused now)
+        # paper isolation: RESTORE the top/middle handle collision proxies. The other project removed
+        # them (relying on a refined cabinet USD / editable GraspBlock the paper does not copy), which
+        # made the isolated grasp detach on every episode (0/12 vs the pre-removal 6/12). The proxy is
+        # the graspable collision box; its offset tracks the (saved-calibrated) handle offset.
+        self.scene.cabinet_top_handle_proxy = _handle_proxy(
+            CABINET_TOP_DRAWER_LINK, "TopHandleProxy", CABINET_TOP_HANDLE_PROXY_OFFSET, (1.0, 0.4, 0.05)
+        )
+        self.scene.cabinet_middle_handle_proxy = _handle_proxy(
+            CABINET_MIDDLE_DRAWER_LINK, "MiddleHandleProxy", CABINET_MIDDLE_HANDLE_PROXY_OFFSET, (0.4, 1.0, 0.05)
+        )
 
         self.scene.knife = ArticulationCfg(
             prim_path="{ENV_REGEX_NS}/Knife",

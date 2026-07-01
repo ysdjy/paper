@@ -1,0 +1,30 @@
+# Franka V1 Skill Lab — GELLO teleop config (V1).
+# Stage 1 (read-only) values mirror projects/gello_franka_teleop/configs/gello_franka.yaml.
+# Stage 2 adds the GELLO q[0:7] -> Franka joint-target mapping + safety.
+
+control_mode: joint
+target_task: "Isaac-Stack-Cube-Franka-JointPolicy-v0"
+
+device:
+  port: "auto"             # auto = detect via scripts/detect_gello_port.sh
+  baudrate: 57600
+  num_joints: 7
+  read_hz: 30
+  # Per-joint sign + offset (calibrated on real hardware). Placeholders here;
+  # the real values live in the legacy gello config until calibrated for V1.
+  joint_signs: [1, 1, 1, 1, 1, 1, 1]
+  joint_offsets_rad: [0, 0, 0, 0, 0, 0, 0]
+  gripper: {open: 0.0, closed: 1.0}
+
+# Stage 2: GELLO q -> Franka joint target safety pipeline.
+safety:
+  lowpass_alpha: 0.3        # EMA on raw GELLO reads (0..1, higher = snappier)
+  max_step_rad: 0.05        # max per-control-step joint delta
+  joint_limits_margin_rad: 0.05
+  estop_key: "space"        # keyboard emergency stop
+
+# Mock mode for smoke tests without hardware.
+mock:
+  enabled_flag: "--mock_gello"
+  fake_q_amplitude_rad: 0.2
+  fake_q_hz: 0.5

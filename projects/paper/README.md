@@ -12,17 +12,19 @@
   牵连进来）。数据生成入口直接实例化 paper cfg，不调用 `parse_env_cfg`/`import isaaclab_tasks`。
   `skill_backend` 的 `drawer_target_config`/`microwave_door_config`/`target_registry` 均改指
   `stackpkg` 私有副本。
-- **资产隔离**：`paper/assets/` 存 Cabinet_44853 / Knife / CoffeeMachine / Microwave / Dishwasher /
-  panda_instanceable，paper cfg 的 `_repo_path` 优先解析这里。**Sektion 橱柜（310M，另一项目频繁改动）
-  默认禁用**（open_drawer 不需要；`PAPER_ENABLE_SEKTION=1` 可开）。cube 为程序化立方体无需资产。
+- **资产共享（稳定二进制，不复制）**：场景 USD（`simv2/USD/Cabinet_44853`、Knife、
+  `SapienAssetPipeline/usd_assets/*`、`Connection/.../panda_instanceable.usd`）仍从**共享仓库树**解析
+  （paper cfg 的 `_repo_path`）。这些是**稳定二进制**，另一项目不编辑它们（他们改的是 cfg 代码，paper
+  已私有）；且 crate USD 内部为绝对引用，复制无真正隔离意义（实测副本反而破坏抓取）。**Sektion 橱柜
+  （另一项目频繁改动）默认禁用**（open_drawer 不需要；`PAPER_ENABLE_SEKTION=1` 可开）。cube 为程序化
+  立方体无需资产。**关键**：paper 私有 cfg 里**保留了另一项目删除的把手碰撞代理**（TopHandleProxy 等），
+  否则夹爪无处可抓（这正是"复制 cfg 代码"提供隔离的意义）。
 - **数据隔离**：`paper/deployment_calibration/data/`（大文件 .gitignore）。
-- **仅共享框架**：`isaaclab`/`isaaclab_assets`（Isaac Lab 框架本身）+ Isaac Sim。这是运行时基础，不是
-  会被编辑的"项目"。
+- **仅共享框架 + 稳定资产**：`isaaclab`/`isaaclab_assets`（框架）+ Isaac Sim + 稳定场景 USD 二进制。
+  会被编辑的"项目代码"（scene cfg / 技能 / 方法层）全部私有。
 
-> 已验证：`Isaac-Paper-OpenDrawer-Franka-v0` 独立加载并跑 open_drawer 产出数据；把手位姿在 paper 内
-> 回退到 config 偏移（不再依赖另一项目的 grasp_poses.json）——隔离生效。
-> USD 内部为二进制绝对引用，若删除共享 `simv2/` 可能触发子引用告警（非致命）；如需彻底冻结资产可后续
-> 重导出 USD。
+> 已验证：`Isaac-Paper-OpenDrawer-Franka-v0` 独立加载并跑 open_drawer，成功率复现隔离前 kill_test 水平；
+> 把手代理已在 paper cfg 内恢复（不依赖另一项目对共享 cfg 的删除）。
 
 ## 结构
 ```

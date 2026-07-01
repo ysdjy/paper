@@ -1,0 +1,22 @@
+# Franka V1 Skill Lab — central path config.
+# All paths are relative to the IsaacLab repo root unless marked absolute.
+# Consumers that cannot import the python contract may read these instead.
+
+repo_root: "."          # IsaacLab repo root (this file lives at projects/franka_v1_skill_lab/configs/paths.yaml)
+project_root: "projects/franka_v1_skill_lab"
+
+# --- scene -------------------------------------------------------------------
+scene_registry: "projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json"
+v1_active_dir:  "projects/franka_v1_skill_lab/scene/saved_scenes/v1_active"
+v0_seed_dir:    "projects/franka_v1_skill_lab/scene/saved_scenes/v0_seed"
+
+# --- upstream legacy modules (real implementations live here for now) --------
+legacy_skill_state_machine: "projects/franka_skill_state_machine"
+legacy_scene_layout_module: "SceneLayoutModule"
+legacy_gello:               "projects/gello_franka_teleop"
+legacy_pi05:                "pi05_isaacsim_baseline"
+legacy_foundationpose:      "franka_d435_foundationpose"
+sapien_asset_pipeline:      "SapienAssetPipeline"
+
+# --- shared scene assets -----------------------------------------------------
+usd_assets_dir: "SapienAssetPipeline/usd_assets"

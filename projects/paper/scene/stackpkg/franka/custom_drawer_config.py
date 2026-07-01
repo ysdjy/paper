@@ -27,9 +27,11 @@ HANDLE_LOCAL_OFFSET = {
     # front-face (handle) offsets in each drawer LINK local frame, calibrated by
     # debug_drawer_handle_calib.py on the rotated cabinet (front = min world-Y). All three resolve to
     # the same front face (world x~0.272, y~0.53) at descending heights, so grasp poses are consistent.
+    # mesh-AABB-calibrated handle offsets (debug_drawer_handle_calib): the handle proxy collision box
+    # AND the grasp target both use these, so they co-locate ON the handle bar (graspable).
     "top_drawer": (-0.0733, -0.0053, 0.0395),
     "middle_drawer": (0.0306, 0.0389, 0.6824),
-    "bottom_drawer": (0.0741, 0.0220, 0.6737),  # now at the front face (was 0,0,0 = link origin/back)
+    "bottom_drawer": (0.0741, 0.0220, 0.6737),  # front face (unused: bottom locked)
 }
 
 DRAWER_TARGETS = {

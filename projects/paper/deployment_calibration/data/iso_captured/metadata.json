@@ -1,0 +1,12 @@
+{
+  "candidates": 3,
+  "contract": "open_drawer_v1",
+  "drawers": [
+    "top_drawer"
+  ],
+  "episodes_planned": 6,
+  "n_conditions": 2,
+  "run_id": "iso_captured",
+  "seed": 7,
+  "skill": "open_drawer"
+}

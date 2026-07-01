@@ -1,0 +1,43 @@
+# Franka Skill Scene V1 — declarative scene contract.
+# Mirrors scene/scene_contract.py. The python module is the source of truth;
+# this YAML is the human-readable / cross-venv copy.
+
+schema_version: "franka-scene-v1"
+scene_name: "Franka Skill Scene V1"
+base_task_id: "Isaac-Stack-Cube-Franka-JointPolicy-v0"
+control_mode: "joint"        # joint-position action (NOT IK-Rel / IK-Abs)
+robot: "Franka"
+
+objects:
+  - cube_1
+  - cube_2
+  - cube_3
+  - knife
+  - cabinet
+  - microwave
+  - coffee_machine
+
+grasp_targets: [cube_1, cube_2, cube_3, knife]
+
+articulations:
+  cabinet: drawer            # open_drawer / close_drawer
+  microwave: door            # open_door / close_door
+  coffee_machine: prop       # static prop (no skill yet)
+
+drawer_targets: [top_drawer, middle_drawer, bottom_drawer]
+functional_drawers: [top_drawer, middle_drawer]   # bottom_drawer is locked in the asset
+door_targets: [microwave]
+
+skills:
+  - grasp
+  - place
+  - open_drawer
+  - close_drawer
+  - open_door
+  - close_door
+
+consumers:
+  - skill_runtime
+  - teleop_collection
+  - pi05_training
+  - perception_foundationpose
