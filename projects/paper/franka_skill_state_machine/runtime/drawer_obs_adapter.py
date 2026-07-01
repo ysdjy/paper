@@ -112,7 +112,9 @@ class SelectedDrawerObsAdapter:
         self.env_id = env_id
         self.scene = env.unwrapped.scene
         self.device = self.scene.device
-        self.cabinet = self.scene["cabinet"]
+        # 抽屉所属场景成员(默认旧 Cabinet_44853='cabinet'；白柜抽屉='sektion_cabinet')。
+        self.member = cfg.get("member", "cabinet")
+        self.cabinet = self.scene[self.member]
         self.joint_name = cfg["joint_name"]
         self.link_name = cfg["link_name"]
         # SAME front-face handle offset used by the training FrameTransformer (link-local frame)

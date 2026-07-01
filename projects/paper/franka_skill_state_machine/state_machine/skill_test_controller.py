@@ -27,7 +27,7 @@ import torch
 # Legacy skill-state-machine root is already on sys.path by the time test_mode_ui instantiates us
 # (SceneSession._build / test_mode_ui both call ensure_legacy_on_path before this import).
 from runtime.collision_monitor import CollisionMonitor
-from runtime.drawer_target_config import joint_name_for
+from runtime.drawer_target_config import joint_name_for, member_for, functional_drawers, SEKTION_DRAWERS
 from runtime.microwave_door_config import COFFEE_LEVER_JOINT, COFFEE_LEVER_LINK
 from runtime.ik_joint_adapter import IKJointAdapter
 from runtime.base_skill import set_speed_scale
@@ -37,7 +37,7 @@ from runtime.target_registry import TargetRegistry
 from state_machine.skill_executor import JointBackendConfig, SkillExecutor
 from skills.open_drawer_skill import OpenDrawerIKConfig
 from skills.close_drawer_skill import CloseDrawerIKConfig
-from runtime.skill_types import SkillType
+from runtime.skill_types import SkillType, ExecutionStatus
 
 # UI choices (ASCII only -- omni.ui cannot render CJK).
 _SKILLS = [
@@ -49,11 +49,16 @@ _SKILLS = [
     ("Place", SkillType.PLACE),
 ]
 _GRASP_TARGETS = ["cube_1", "cube_2", "cube_3", "knife"]
-_DRAWER_TARGETS = ["middle_drawer", "top_drawer", "bottom_drawer"]
-# 释放抽屉关节(纯物理拉/推)时给的阻尼：stiffness 仍为 0(不会自己弹回关闭)，但阻尼调大，
-# 拉开后残余速度很快衰减、不再自由滑动；机器人拉的时候是慢速,阻力 = damping*v 仍很小(可拉动)。
-# 偏大=更"黏"(拉开后稳稳停住)，太大会让抽屉跟手发滞。25 是兼顾值，可按手感调。
-_DRAWER_FREE_DAMPING = 3.0
+# 所有可单独选中操作的抽屉：旧柜 Cabinet_44853(top/middle/bottom) + 右下角白柜 Sektion(top/bottom)。
+# 选中任一个后用 Open Drawer / Close Drawer 单独开/关。
+_DRAWER_TARGETS = ["middle_drawer", "top_drawer", "bottom_drawer",
+                   "sektion_top_drawer", "sektion_bottom_drawer"]
+# 抽屉关节阻尼随技能阶段动态切换(stiffness 始终 0，无弹簧)：
+#  * PULL/PUSH(机器人主动拖动抽屉)时用【低阻尼】，否则跟手发滞、抽屉跟不上夹爪 -> 报 HANDLE_DETACHED。
+#  * 其余阶段(approach/settle/release/空闲)用【高阻尼】，否则松爪/退回时夹爪会把抽屉一起带回去
+#    (实测 stiffness0+低阻尼时抽屉本身无外力会停住，但 RELEASE 阶段机器人拖动会把它拽回 0)。
+_DRAWER_FREE_DAMPING = 3.0     # 拉/推阶段：能被机器人拉动
+_DRAWER_HOLD_DAMPING = 100.0    # 其余阶段：抵抗松爪/退回时的拖拽，抽屉停在开到的位置
 # Deployed scene replaces the microwave with the fridge (member still keyed "microwave"); the door
 # skill drives the fridge's link_1/joint_1 via the "fridge" door target. "microwave" kept for the old
 # asset (--no_fridge).
@@ -159,6 +164,9 @@ class _GraspPoseRunner:
         self._jsign = None       # +phi 对应关节变化的符号(探测得到)
         self._phi_goal = None
         self._swept = 0.0
+        self._saved_max_step = None   # sweep 期间临时压低 IK 步长(平滑旋转)，结束恢复
+        self._stall_t = 0.0           # 关节失速(手臂到极限拖不动杠杆)累计时长
+        self._j_prev = None
         self._grip_pos = None
         self._grip_quat = None
         self.grasp_pos = grasp_pose_w.pos_w.reshape(3).to(device).clone()
@@ -173,11 +181,14 @@ class _GraspPoseRunner:
         self.high_pos = None
         if self.arrival_z is not None and self.arrival_z > float(self.grasp_pos[2]):
             self.high_pos = self.grasp_pos.clone(); self.high_pos[2] = self.arrival_z
+        # Bug1: 点技能后【先在当前 XY 竖直抬到 home 高度】再水平移到目标上方，避免夹爪斜着扫过物体。
+        # lift_pos 在第一帧按【当时 TCP 的 XY】锁定(= 原地直上)，仅当走高位(high_pos 存在)时启用。
+        self.lift_pos = None
         # 沿接近轴(Z)直线进退用的"胡萝卜"步长。speed 放大它 -> 沿 Z 接近/回退更快(UI 可调)。
         self.lead = float(lead) * max(0.2, float(speed))
         self.pos_tol = float(pos_tol)
         self.ori_tol = float(ori_tol_deg) * 3.14159265 / 180.0
-        self.phase = "high" if self.high_pos is not None else "standoff"
+        self.phase = "lift" if self.high_pos is not None else "standoff"
         self.gripper = 1.0   # 先张开
         self._t = 0.0
         self._total = 0.0
@@ -212,11 +223,14 @@ class _GraspPoseRunner:
         self._total += dt
         self._ph_t = self._ph_t + dt if self.phase == self._last_phase else 0.0
         self._last_phase = self.phase
-        ph_limit = 7.0 if self.phase in ("high", "standoff", "approach", "retreat") else 2.0
+        ph_limit = 7.0 if self.phase in ("lift", "high", "standoff", "approach", "retreat") else 2.0
         if self._ph_t > ph_limit and self.phase not in ("close", "sweep", "done"):
             # 软推进：standoff 超时但已经够近(DLS 在工作空间边缘收敛慢) -> 直接进 approach，让物理贴合，
             # 而不是直接判失败。其它阶段超时才真正放弃。
-            if self.phase == "standoff" and self._pos_err(c, self.above_pos) < 0.05 and self._ori_err(cq) < 0.26:
+            if self.phase == "lift":          # 竖直抬升够不到目标高度 -> 直接进 high(别卡死)
+                print(f"[GraspPoseRunner] lift soft-advance -> high (z={float(c[2]):.3f})", flush=True)
+                self.phase = "high"; self._ph_t = 0.0
+            elif self.phase == "standoff" and self._pos_err(c, self.above_pos) < 0.05 and self._ori_err(cq) < 0.26:
                 print(f"[GraspPoseRunner] standoff soft-advance (pos_err="
                       f"{self._pos_err(c, self.above_pos)*100:.1f}cm ori_err={self._ori_err(cq)*57.3:.1f}deg)",
                       flush=True)
@@ -233,7 +247,13 @@ class _GraspPoseRunner:
                 self.failed = True
                 self.done = True
                 return None, self.gripper
-        if self.phase == "high":                                 # 先到物体正上方的高位(高于 home 点)
+        if self.phase == "lift":                                 # Bug1: 先在当前 XY 竖直抬到 home 高度
+            if self.lift_pos is None:
+                self.lift_pos = c.clone(); self.lift_pos[2] = float(self.arrival_z)
+            tgt_pos, tgt_quat = self.lift_pos, self.grasp_quat
+            if abs(float(c[2] - self.lift_pos[2])) < max(self.pos_tol, 0.03):
+                self.phase = "high"                              # 抬到位再水平移到目标上方
+        elif self.phase == "high":                               # 先到物体正上方的高位(高于 home 点)
             tgt_pos, tgt_quat = self.high_pos, self.grasp_quat
             if self._pos_err(c, self.high_pos) < max(self.pos_tol, 0.02):
                 self.phase = "standoff"
@@ -254,6 +274,13 @@ class _GraspPoseRunner:
                 if want_sweep:
                     self._grip_pos = c.clone(); self._grip_quat = cq.clone()   # 抓住瞬间的把手位姿
                     self.phase = "sweep"; self._t = 0.0
+                    # Bug2: 旋转杠杆时把 IK 每步关节限幅压到很小(0.03 rad)，否则速度滑条把 max_joint_step
+                    # 抬到 0.5，rigid 跟踪会让手臂猛跳/甩动("很大问题")。结束(done/timeout)再恢复。
+                    try:
+                        self._saved_max_step = float(self.adapter.max_joint_step)
+                        self.adapter.max_joint_step = min(self._saved_max_step, 0.03)
+                    except Exception:
+                        self._saved_max_step = None
                     if closed_loop:
                         self._jstart = float(self.joint_reader())
                     rr = float(torch.linalg.norm((self._grip_pos - self.sweep_hinge)[:2]))
@@ -282,15 +309,28 @@ class _GraspPoseRunner:
                         self._phi_goal = (self.joint_target - self._jstart) / self._jsign
                         print(f"[GraspPoseRunner] sweep dir probed: +phi -> joint {'+' if self._jsign>0 else '-'}; "
                               f"jstart={self._jstart:.2f} goal phi={self._phi_goal:.2f}", flush=True)
-                else:                                            # 闭环 P 控制：一直推 phi 直到【关节】到目标
+                else:                                            # 闭环：夹爪【刚性跟随把手实际转角】+小幅超前施力
                     err = self.joint_target - cur_j              # 关节还差多少
-                    dphi = max(-self.sweep_rate * dt, min(self.sweep_rate * dt, err * self._jsign))
-                    self._phi = max(-1.9, min(1.9, self._phi + dphi))   # 安全限幅(防手腕过转)
+                    # 关键修复(消除夹爪与把手错位/打滑)：夹爪绕锚点的转角 = 把手【当前实际】转角(严格刚性,
+                    # 夹爪始终贴在把手上)，再叠加一个【很小的超前量】施加力矩把把手往目标推。旧写法 phi 是自由
+                    # P 累加、会冲到 ±1.9 限幅远超把手实际转角 -> 夹爪目标位姿跑到把手前面很远(~0.9rad≈12cm)
+                    # -> 中途夹爪与把手明显错位打滑。现在夹爪最多只超前 lead(≈1.4cm),打滑极小。
+                    ang_match = self._jsign * (cur_j - self._jstart)   # 与把手当前位姿一致的锚点转角(刚性)
+                    lead = 0.10 if abs(err) >= 0.02 else 0.0           # 到位就不再超前(精确贴合、松开前不拽)
+                    ang = ang_match + self._jsign * (1.0 if err >= 0 else -1.0) * lead
+                    self._phi = max(-1.9, min(1.9, ang))
                     self._dbg = getattr(self, "_dbg", 0) + 1
                     if self._dbg % 20 == 1:
                         gw = float(getattr(state.robot, "gripper_width", -1.0))
-                        print(f"[GraspPoseRunner] sweep drive: phi={self._phi:.2f} "
+                        print(f"[GraspPoseRunner] sweep drive: ang={self._phi:.2f} match={ang_match:.2f} "
                               f"joint={cur_j:.3f}->{self.joint_target:.2f} gw={gw:.3f}", flush=True)
+                    # Bug2 失速检测：还在推 phi 但关节几乎不动(手臂/手腕到极限，拖不动杠杆) -> 别一直推到
+                    # 限幅甩臂，原地收尾。判定窗口 1.2s、阈值很小，正常转动时每帧关节位移远超阈值。
+                    if self._j_prev is not None and abs(cur_j - self._j_prev) < 0.0008:
+                        self._stall_t += dt
+                    else:
+                        self._stall_t = 0.0
+                    self._j_prev = cur_j
                     if abs(err) < 0.02:
                         self._t += dt
                         if self._t > 0.4:
@@ -299,6 +339,10 @@ class _GraspPoseRunner:
                             self.phase = "done"
                     else:
                         self._t = 0.0
+                        if self._stall_t > 1.2:
+                            print(f"[GraspPoseRunner] sweep STALLED at joint={cur_j:.3f} "
+                                  f"(arm limit, target {self.joint_target:.2f}) -> stop", flush=True)
+                            self.phase = "done"
                 ang = self._phi
             else:                                                # 开环回退
                 self._swept = min(self.sweep_angle, self._swept + self.sweep_rate * dt)
@@ -321,8 +365,15 @@ class _GraspPoseRunner:
             if self._pos_err(c, retreat_to) < 0.03:
                 self.phase = "done"
         else:
+            if self._saved_max_step is not None:                 # 恢复 sweep 期间压低的 IK 步长
+                try:
+                    self.adapter.max_joint_step = self._saved_max_step
+                except Exception:
+                    pass
+                self._saved_max_step = None
             self.done = True
             return None, self.gripper
+        # (实测：sweep 时开零空间冗余消解反而扰动 rigid 抓持约束、杠杆完全拖不动，故保持 null_gain=0。)
         res = self.adapter.solve(PoseState(tgt_pos, tgt_quat))
         return (res.q_des if getattr(res, "success", False) else None), self.gripper
 
@@ -437,14 +488,32 @@ class _PlacePoseRunner:
 
 
 class _WaypointMover:
-    """开环把 TCP 依次经过若干世界航点(保持当前朝向、张爪)。用于技能前把臂移到【基座禁入圈外、朝向
-    目标的待命点】，让随后的技能从圈外接近、避免穿过基座圈。done 后交还。"""
+    """开环把 TCP 依次【绕行】若干世界系途径点(张爪)。每个途径点带一个【绕行半径】：TCP 进入该半径内就
+    切到下一段(不必精确到达=blend/zone 语义)，用来在技能之间过渡时绕开已打开的抽屉等障碍。途径点若存了
+    朝向就用它,否则保持当前朝向。done 后交还(随后的技能从最后一个途径点附近起步)。
+
+    waypoints: list of dict {"pos":[x,y,z], "quat":[w,x,y,z]?, "radius": r}  或  裸 pos 张量(兼容)。"""
 
     def __init__(self, adapter, waypoints, *, device, pos_tol: float = 0.05):
         self.adapter = adapter
         self.device = device
-        self.waypoints = [w.reshape(3).to(device).clone() for w in waypoints if w is not None]
-        self.pos_tol = float(pos_tol)
+        # 每个 wp = (kind, data, quat, rad)。kind="task": data=世界 pos(绕行半径 blend); kind="joint":
+        # data=7 臂关节坐标(严格到达,直接命令关节,能复现底座回转)。
+        self.wps = []
+        for w in waypoints or []:
+            if w is None:
+                continue
+            if isinstance(w, dict):
+                if w.get("kind") == "joint" and w.get("joint_pos"):
+                    jp = torch.tensor(w["joint_pos"], dtype=torch.float32, device=device)
+                    self.wps.append(("joint", jp, None, 0.0))
+                else:
+                    pos = torch.tensor(w["pos"], dtype=torch.float32, device=device)
+                    quat = (torch.tensor(w["quat"], dtype=torch.float32, device=device)
+                            if w.get("quat") else None)
+                    self.wps.append(("task", pos, quat, float(w.get("radius", pos_tol))))
+            else:
+                self.wps.append(("task", w.reshape(3).to(device).clone(), None, pos_tol))
         self.i = 0
         self._t = 0.0
         self.done = False
@@ -453,14 +522,26 @@ class _WaypointMover:
         c = state.robot.tcp_pose.pos_w.reshape(3).to(self.device)
         cq = state.robot.tcp_pose.quat_w.reshape(4).to(self.device)
         self._t += dt
-        if self.i >= len(self.waypoints):
+        if self.i >= len(self.wps):
             self.done = True
             return None, 1.0
-        tgt = self.waypoints[self.i]
-        if float(torch.linalg.norm(c[:2] - tgt[:2])) < self.pos_tol and abs(float(c[2] - tgt[2])) < 0.06 \
-                or self._t > 8.0:
-            self.i += 1; self._t = 0.0
-        res = self.adapter.solve(PoseState(tgt, cq))   # 保持当前朝向, 张爪
+        kind, data, quat, rad = self.wps[self.i]
+        if kind == "joint":                     # 关节途径点：严格到达(臂关节 L2<0.06)
+            reached = float(torch.linalg.norm(
+                state.robot.joint_pos[self.adapter._joint_ids] - data)) < 0.06
+        else:                                   # 任务途径点：进绕行半径内即可(blend)
+            reached = float(torch.linalg.norm(c - data)) < max(rad, 0.02)
+        if reached or self._t > 8.0:
+            self.i += 1
+            self._t = 0.0
+            if self.i >= len(self.wps):
+                self.done = True
+                return None, 1.0
+            kind, data, quat, rad = self.wps[self.i]
+        if kind == "joint":
+            return data.clone(), 1.0            # 直接命令关节坐标(严格复现,含底座回转)
+        tq = quat if quat is not None else cq   # 有存朝向就用，否则保持当前朝向
+        res = self.adapter.solve(PoseState(data, tq))
         return (res.q_des if getattr(res, "success", False) else None), 1.0
 
 
@@ -488,8 +569,9 @@ class SkillTestController:
             drawer_env=self.env,
             arm_joint_ids=self.provider._arm_joint_ids,
             drawer_joint_name="joint_0",
-            # 抽屉技能从【当前实时位姿】走 4 段(把手前方->把手->夹爪->沿z后拉)，不先跳到 turn-to-face
-            # 的整臂 seed 关节姿态(那个会在重试时高速甩臂撞到抽屉)。
+            # 抽屉技能顺序：PRELIFT(先竖直抬到 home 高度) -> 直接 reach 把手。reach 阶段用【加权 DLS
+            # 让关节1(底座)优先旋转】平滑转身正对把手(joint1_face_weight)，不再插 TURN_TO_FACE 中间点
+            # (那个是离散关节跳，用户嫌笨)。关节1优先旋转的需求由 IK 约束在 reach 中自然完成。
             drawer_open_ik_config=OpenDrawerIKConfig(use_turn_to_face=False, start_from_current=True),
             drawer_close_ik_config=CloseDrawerIKConfig(use_turn_to_face=False, start_from_current=True),
         )
@@ -510,6 +592,8 @@ class SkillTestController:
         self._place_runner: _PlacePoseRunner | None = None   # 放置进篮子的开环执行器(抬起->上方->松爪)
         self._pre_mover: _WaypointMover | None = None         # 技能前的待命移动(绕开基座圈到目标侧)
         self._pending_after_move: SkillRequest | None = None  # 待命移动完成后再发的技能请求
+        self._drawer_queue: list[str] = []                    # 顺序打开白柜两个抽屉的小队列(top->middle)
+        self._drawer_gap = 0                                  # 两个抽屉之间的稳定等待帧数
         self._coffee_calib: dict | None = None                # 咖啡把手关节轴实测标定的小状态机
         # home 姿态(竖直向下抬起):放置后回 home，物体间转移走 home 高度的弧线，避免缠绕/关节限位
         # 开环抓取/放置 的运动速度。放大沿接近轴的"胡萝卜"步长 + 抬高 IK 每步关节限幅(真正提速)。
@@ -521,6 +605,15 @@ class SkillTestController:
         self._arrival_margin = float(os.environ.get("SKILL_TEST_ARRIVAL_MARGIN", "0.06"))
         self._saved_grasp_poses: dict = {}                   # 从 grasp_poses.json 读到的 {name: entry}(无面板时回退)
         self._grasp_panel = None                             # GraspPosePanel 引用：用它的【实时】抓取位姿
+        self._wp_panel = None                                # SkillWaypointsPanel 引用：技能过渡的绕行途径点
+        self._transited_req = None                           # 已完成途径点绕行的请求(避免重复绕行)
+        self._transit = None                                 # CuroboTransit(懒建, False=建失败); None=未建
+        self._transit_runner = None                          # 正在执行的 cuRobo 过渡轨迹执行器
+        self._transit_stage = None                           # None / "retract"(先抬离) / "curobo"(规划中)
+        self._curobo_pregrasp = None                         # 暂存 cuRobo 目标(把手前 pre-grasp)
+        # cuRobo 过渡默认【关】(opt-in)：目前操作完抽屉后机器人正处于"刚打开的抽屉障碍盒"里，start-in-
+        # collision 导致规划失败,需要先"竖直抬离"的 retract-first 才有用(待做)。设 SKILL_TEST_CUROBO=1 试。
+        self._use_curobo = os.environ.get("SKILL_TEST_CUROBO", "") not in ("", "0")
         self._freed: set[tuple[str, str]] = set()  # (asset_name, joint_name) we already freed
 
         # selections (defaults; overwritten by combo boxes if a window is built)
@@ -565,6 +658,34 @@ class SkillTestController:
             self._saved_grasp_poses = self._load_grasp_poses()
             print("[COFFEE] headless grasp test enabled", flush=True)
 
+        # headless 验证：SKILL_TEST_OPEN_BOTH=1 触发"打开两个抽屉"；SKILL_TEST_CLOSE_ALL=1 触发"关闭所有抽屉"
+        self._open_both_test = os.environ.get("SKILL_TEST_OPEN_BOTH", "") not in ("", "0")
+        self._close_all_test = os.environ.get("SKILL_TEST_CLOSE_ALL", "") not in ("", "0")
+        self._open_sektion_test = os.environ.get("SKILL_TEST_OPEN_SEKTION", "") not in ("", "0")
+        self._open_both_started = False
+        self._close_all_started = False
+        self._open_sektion_started = False
+        if self._open_both_test:
+            print("[OPENBOTH] headless open-both-drawers test enabled", flush=True)
+        if self._close_all_test:
+            print("[CLOSEALL] headless close-all-drawers test enabled", flush=True)
+        if self._open_sektion_test:
+            print("[OPENSEKTION] headless open-sektion-drawers test enabled", flush=True)
+
+        # headless 连贯序列测试：SKILL_TEST_SEQUENCE="open_drawer:bottom_drawer,open_drawer:top_drawer"
+        # 走抽屉队列(_pending 路径 -> 途径点/cuRobo 无碰撞过渡),依次执行,验证连贯不撞。
+        _seq = os.environ.get("SKILL_TEST_SEQUENCE", "")
+        if _seq:
+            q = []
+            for item in _seq.split(","):
+                nm, _, tg = item.strip().partition(":")
+                st = _SKILL_BY_NAME.get(nm.strip())
+                if st is not None and tg.strip():
+                    q.append((st, tg.strip()))
+            if q:
+                self._drawer_queue = q
+                print(f"[SEQUENCE] {_seq} ({len(q)} steps)", flush=True)
+
     # --------------------------------------------------------------- UI window
     def build_window(self):
         import omni.ui as ui
@@ -583,7 +704,7 @@ class SkillTestController:
                 self._models["basket"] = ui.ComboBox(0, *[name for name, _ in _BASKET_TARGETS]).model
                 ui.Button("Place to Basket", clicked_fn=self._on_place_basket)
                 ui.Separator()
-                ui.Label("Drawer (pure-physical grasp + pull/push)")
+                ui.Label("Drawer (select one, then Open / Close). Incl. white Sektion cabinet.")
                 self._models["drawer"] = ui.ComboBox(0, *_DRAWER_TARGETS).model
                 with ui.HStack(spacing=8, height=28):
                     ui.Button("Open Drawer", clicked_fn=self._on_open_drawer)
@@ -662,6 +783,187 @@ class SkillTestController:
             self._rebuild_pose_combo()
         except Exception:
             pass
+
+    def attach_waypoints_panel(self, panel):
+        """绑定 SkillWaypointsPanel：起技能前用它【实时】编辑的途径点绕行(避开已打开的抽屉等)。"""
+        self._wp_panel = panel
+
+    def _default_waypoints_for(self, req):
+        """把抽屉技能内置的两个过渡点【预填】成可编辑途径点：
+          home 点 -> task(机器人基座正上方 carry 高度,自上而下,带绕行半径);
+          facing 点 -> joint(HOME_Q_VERTICAL_RAISED + 关节1=正对把手方位角,严格到达,复现底座回转)。
+        用户可在面板里删/改/存。返回 [home, facing] 或 None(把手解析不到)。"""
+        try:
+            import math
+            import isaaclab.utils.math as mu
+            drawer = req.destination_object or ""
+            pw = self._resolve_named_pose("handle_" + drawer)
+            if pw is None:
+                return None
+            robot = self.provider.scene["robot"]
+            eid = self.adapter.env_id
+            base_pos = robot.data.root_pos_w[eid]
+            base_quat = robot.data.root_quat_w[eid]
+            d = pw.pos_w - base_pos
+            d_base = mu.quat_apply(mu.quat_inv(base_quat).unsqueeze(0), d.unsqueeze(0))[0]
+            azimuth = math.atan2(float(d_base[1]), float(d_base[0]))
+            from runtime.drawer_ik_common import HOME_Q_VERTICAL_RAISED
+            faced = [float(v) for v in HOME_Q_VERTICAL_RAISED]
+            lo, hi = float(self.adapter._joint_lower[0]), float(self.adapter._joint_upper[0])
+            faced[0] = max(lo, min(hi, azimuth))
+            cz = float(self._carry_z())
+            home = {"kind": "task", "pos": [float(base_pos[0]), float(base_pos[1]), cz],
+                    "quat": [0.0, 1.0, 0.0, 0.0], "radius": 0.10}
+            facing = {"kind": "joint", "joint_pos": faced,
+                      "pos": [float(pw.pos_w[0]), float(pw.pos_w[1]), cz],   # 仅供画 marker
+                      "quat": [float(v) for v in pw.quat_w.tolist()], "radius": 0.0}
+            return [home, facing]
+        except Exception as exc:
+            print(f"[SkillTestController] default waypoints failed: {exc}", flush=True)
+            return None
+
+    def _skill_id_for(self, req) -> str | None:
+        """把技能请求映射成途径点表的 skill_id(与 SkillWaypointsPanel.SKILL_IDS 一致)。"""
+        try:
+            if req.skill_type == SkillType.OPEN_DRAWER:
+                return f"open_drawer:{req.destination_object}"
+            if req.skill_type == SkillType.CLOSE_DRAWER:
+                return f"close_drawer:{req.destination_object}"
+        except Exception:
+            pass
+        return None
+
+    def _load_skill_waypoints(self, skill_id: str | None) -> list:
+        """取某技能的途径点(world 系 pose+绕行半径)：优先面板【实时】值，无面板回退读 skill_waypoints.json。"""
+        if not skill_id:
+            return []
+        panel = self._wp_panel
+        if panel is not None:
+            try:
+                return [dict(w) for w in panel.waypoints.get(skill_id, [])]
+            except Exception:
+                pass
+        try:
+            from franka_v1_skill_lab.scene.scene_registry import V1_ACTIVE_DIR
+            p = Path(V1_ACTIVE_DIR) / "skill_waypoints.json"
+            if p.is_file():
+                d = json.loads(p.read_text(encoding="utf-8"))
+                return list((d.get("skills") or {}).get(skill_id, []))
+        except Exception as exc:
+            print(f"[SkillTestController] load skill_waypoints failed: {exc}", flush=True)
+        return []
+
+    # --------------------------------------------------------------- cuRobo 无碰撞过渡
+    def _ensure_transit(self):
+        """懒建 CuroboTransit(首次~12s warmup)。返回实例或 None(不可用)。"""
+        if self._transit is False:
+            return None
+        if self._transit is not None:
+            return self._transit
+        if not self._use_curobo:
+            self._transit = False
+            return None
+        try:
+            from runtime.curobo_transit import CuroboTransit
+            robot = self.provider.scene["robot"]
+            print("[SkillTestController] building cuRobo transit planner (warmup ~12s)...", flush=True)
+            # test_mode_ui 主循环在 torch.inference_mode() 里，而 cuRobo 优化需要梯度 -> 临时关掉 inference。
+            with torch.inference_mode(False), torch.enable_grad():
+                self._transit = CuroboTransit(self.env.unwrapped, robot)   # 需要 unwrapped(有 .scene)
+            print("[SkillTestController] cuRobo transit ready", flush=True)
+        except Exception as exc:
+            print(f"[SkillTestController] cuRobo transit unavailable ({exc}); straight-line fallback", flush=True)
+            self._transit = False
+            return None
+        return self._transit
+
+    def _open_drawer_boxes(self):
+        """把当前【已打开】的柜子抽屉(joint>0.03)的连杆世界 AABB 作为动态障碍盒返回给 cuRobo。"""
+        boxes = []
+        try:
+            from runtime.curobo_transit import _world_aabb
+            stage = self.env.unwrapped.scene.stage
+            for dj, link in (("joint_0", "link_0"), ("joint_1", "link_1"), ("joint_2", "link_2")):
+                jp = self._joint_angle("cabinet", dj)
+                if jp is not None and jp > 0.03:
+                    ab = _world_aabb(stage, f"/World/envs/env_0/Cabinet/{link}")
+                    if ab is not None:
+                        boxes.append((f"open_{link}", ab[0], ab[1]))
+            # 白柜(sektion)已打开的抽屉同理
+            if "sektion_cabinet" in self.provider.scene.keys():
+                for dj, link in (("drawer_top_joint", "drawer_top"), ("drawer_bottom_joint", "drawer_bottom")):
+                    jp = self._joint_angle("sektion_cabinet", dj)
+                    if jp is not None and jp > 0.03:
+                        ab = _world_aabb(stage, f"/World/envs/env_0/SektionCabinet/{link}")
+                        if ab is not None:
+                            boxes.append((f"open_sektion_{link}", ab[0], ab[1]))
+        except Exception as exc:
+            print(f"[SkillTestController] open-drawer boxes failed: {exc}", flush=True)
+        return boxes
+
+    def _skill_staging_pose(self, req):
+        """技能的【过渡落点】：把手正上方 carry 高度、抓取朝向。cuRobo 无碰撞飞到这里,技能再从上方下扎。"""
+        try:
+            if req.skill_type not in (SkillType.OPEN_DRAWER, SkillType.CLOSE_DRAWER):
+                return None
+            pw = self._resolve_named_pose("handle_" + (req.destination_object or ""))
+            if pw is None:
+                return None
+            pos = pw.pos_w.clone()
+            pos[2] = float(self._carry_z())
+            return pos, pw.quat_w.clone()
+        except Exception:
+            return None
+
+    def _skill_pregrasp_pose(self, req):
+        """技能的 pre-grasp(把手前站位)世界位姿：把手 - 抓取接近轴(+Z)方向 * clearance,朝向=抓取朝向。
+        cuRobo 无碰撞飞到这里,技能再从 APPROACH 短距滑上把手(不再大范围移动,避免蹭到已开抽屉)。"""
+        try:
+            if req.skill_type not in (SkillType.OPEN_DRAWER, SkillType.CLOSE_DRAWER):
+                return None
+            pw = self._resolve_named_pose("handle_" + (req.destination_object or ""))
+            if pw is None:
+                return None
+            import isaaclab.utils.math as mu
+            z = mu.quat_apply(pw.quat_w.reshape(1, 4),
+                              torch.tensor([[0.0, 0.0, 1.0]], device=pw.pos_w.device))[0]
+            z = z / (torch.linalg.norm(z) + 1e-9)
+            clearance = float(os.environ.get("SKILL_TEST_CUROBO_CLEARANCE", "0.12"))
+            pos = pw.pos_w - z * clearance         # 沿 -Z(朝外)退 clearance
+            return pos, pw.quat_w.clone()
+        except Exception:
+            return None
+
+    def _retract_waypoint(self, state):
+        """当前 TCP 正上方的安全高位途径点：先竖直抬到这里,离开刚操作的抽屉,cuRobo 才有非碰撞起点。"""
+        c = state.robot.tcp_pose.pos_w
+        z = float(self._carry_z()) + 0.10
+        return {"pos": [float(c[0]), float(c[1]), max(z, float(c[2]) + 0.05)], "radius": 0.05}
+
+    def _start_curobo_to_pregrasp(self, req, state) -> bool:
+        """从(已抬离的)当前位姿用 cuRobo 规划无碰撞轨迹到 pre-grasp;成功则挂上 _transit_runner。"""
+        transit = self._transit
+        pregrasp = self._curobo_pregrasp
+        if transit is None or transit is False or pregrasp is None:
+            return False
+        try:
+            from skills.move_to_pose_skill import MoveToPoseSkill
+            boxes = self._open_drawer_boxes()
+            with torch.inference_mode(False), torch.enable_grad():
+                transit.build_appliance_cuboids(extra=boxes)
+                transit.refresh_world()
+                runner = MoveToPoseSkill(transit, pregrasp[0], pregrasp[1], gripper=1.0,
+                                         label=f"transit->{self._skill_id_for(req)}")
+                runner.start(state)
+            if runner.status not in (ExecutionStatus.FAILED, ExecutionStatus.STOPPED):
+                self._transit_runner = runner
+                print(f"[SkillTestController] cuRobo plan OK ({len(boxes)} open-drawer obstacle(s)) "
+                      f"-> pre-grasp of {self._skill_id_for(req)}", flush=True)
+                return True
+            print(f"[SkillTestController] cuRobo plan FAILED for {self._skill_id_for(req)}", flush=True)
+        except Exception as exc:
+            print(f"[SkillTestController] cuRobo plan error: {exc}", flush=True)
+        return False
 
     def _rebuild_pose_combo(self):
         """重建抓取目标下拉框。有面板时列【所有可抓目标】(桌面物体/碗/把手，实时)；否则回退读 grasp_poses.json。"""
@@ -781,6 +1083,8 @@ class SkillTestController:
         # start anyway) -- env.reset does not restore actuator gains, and we never save them.
         self.executor.reset()
         self._pending = None
+        self._drawer_queue = []
+        self._drawer_gap = 0
         self._want_stop = False
 
     # --------------------------------------------------------------- callbacks
@@ -880,7 +1184,7 @@ class SkillTestController:
                     asset.write_joint_damping_to_sim(
                         torch.full((n, len(other)), 1.0e3, device=dev), joint_ids=other)
                     print(f"[SkillTestController] locked {len(other)} other coffee joints "
-                          f"(only joint_4 movable)", flush=True)
+                          f"(only {jname} movable)", flush=True)
             except Exception as exc:
                 print(f"[SkillTestController] lock other coffee joints failed: {exc}", flush=True)
             print(f"[SkillTestController] coffee {jname} init={angle:.2f}, limits=[{lower:.2f},{upper:.2f}] (held)",
@@ -986,12 +1290,12 @@ class SkillTestController:
             cal["th0"] = jpos_one(jn)
             cal["p0"] = asset.data.body_pos_w[0, ci].clone()
             cal["q0"] = asset.data.body_quat_w[0, ci].clone()
-            set_one(jn, cal["th0"] + 0.30)
+            set_one(jn, cal["th0"] + 0.10)   # 标定探测幅度调小(0.30->0.10 rad≈5.7°)：测得到轴又几乎看不出把手动
             cal["stage"] = "meas"; cal["t"] = 0.0
             return hold
         if cal["stage"] == "meas":
             jn = cal["jn"]; ci = cal["ci"]
-            if abs(jpos_one(jn) - (cal["th0"] + 0.30)) < 0.02 or cal["t"] > 3.5:
+            if abs(jpos_one(jn) - (cal["th0"] + 0.10)) < 0.02 or cal["t"] > 3.5:
                 th1 = jpos_one(jn); p1 = asset.data.body_pos_w[0, ci].clone()
                 q1 = asset.data.body_quat_w[0, ci].clone()
                 dq = mu.quat_mul(q1.reshape(1, 4), mu.quat_conjugate(cal["q0"].reshape(1, 4)))[0]
@@ -1037,6 +1341,19 @@ class SkillTestController:
                 c1 = mid + perp * d; c2 = mid - perp * d
                 anchor = c1 if float(torch.linalg.norm(_rot(p0, c1) - p1)) <= \
                     float(torch.linalg.norm(_rot(p0, c2) - p1)) else c2
+            # 【消除运行间随机性】优先用 USD 关节定义里的【确定性】锚点/轴(读 joint prim 的 localPos1)，
+            # 而不是靠驱动探测的圆拟合——探测位移很小(link_5 原点几乎在轴上)时，圆拟合对噪声极敏感，偶尔会
+            # 把锚点算到【夹持点附近】，此时 sweep 就表现成"绕夹持点原地转"(用户看到的现象)。读到就覆盖，
+            # 读不到才回退用探测拟合的 anchor。
+            try:
+                anchor_usd, axis_usd = self._revolute_joint_axis_world("coffee_machine", jn, bnames[ci])
+                if anchor_usd is not None and axis_usd is not None:
+                    anchor = anchor_usd
+                    axis = axis_usd if float(axis_usd[2]) >= 0 else -axis_usd
+                    print("[SkillTestController] coffee anchor/axis <- USD joint def (deterministic, "
+                          "avoids noisy probe circle-fit)", flush=True)
+            except Exception as _exc:
+                print(f"[SkillTestController] USD joint-anchor read failed ({_exc}); using probe fit", flush=True)
             self._coffee_axis = axis; self._coffee_anchor = anchor
             self._coffee_joint = jn; self._coffee_link = bnames[ci]
             print(f"[SkillTestController] PICKED lever joint={jn} link={bnames[ci]} "
@@ -1104,6 +1421,41 @@ class SkillTestController:
     def _on_close_drawer(self):
         """关闭所选抽屉：纯物理 ik_pull 从当前位姿抓把手推回。"""
         self._start_drawer(SkillType.CLOSE_DRAWER, "close drawer")
+
+    # 柜子的两个【可用】抽屉：top + middle(bottom 被锁)。复用打开/关闭抽屉技能依次执行。
+    _FUNCTIONAL_DRAWERS = ("top_drawer", "middle_drawer")
+
+    def _queue_drawers(self, skill_type, drawers, label: str):
+        """把若干抽屉排成队列依次跑同一个技能(open/close)。每个结束后自动发下一个(见 _step_impl)。"""
+        self._grasp_runner = None
+        self._place_runner = None
+        self._pre_mover = None
+        self.executor.reset()
+        self._pending = None
+        self._drawer_queue = [(skill_type, d) for d in drawers]
+        self._drawer_gap = 0
+        print(f"[SkillTestController] {label}: {list(drawers)}", flush=True)
+        self._set_status(f"{label}: {' -> '.join(drawers)}")
+
+    def _on_open_both_drawers(self):
+        """依次打开旧柜(Cabinet_44853)两个可用抽屉(top -> middle)：复用 OPEN_DRAWER 技能模块。"""
+        self._queue_drawers(SkillType.OPEN_DRAWER, self._FUNCTIONAL_DRAWERS, "open both drawers")
+
+    def _on_open_sektion_drawers(self):
+        """依次打开右下角白柜(Sektion)的两个抽屉(top -> bottom)：复用 OPEN_DRAWER 技能模块。
+        注意：白柜需先在 GUI 里移到机器人可达处、并标定 handle_sektion_*_drawer 抓取位姿。"""
+        self._queue_drawers(SkillType.OPEN_DRAWER, list(SEKTION_DRAWERS), "open sektion drawers")
+
+    def _all_drawers(self):
+        """所有可用抽屉：旧柜 top+middle + 白柜 top+bottom(若白柜接入)。"""
+        drawers = list(functional_drawers())
+        if "sektion_cabinet" in self.provider.scene.keys():
+            drawers += list(SEKTION_DRAWERS)
+        return drawers
+
+    def _on_close_all_drawers(self):
+        """依次关闭所有可用抽屉(旧柜 top+middle + 白柜 top+bottom)：复用 CLOSE_DRAWER 技能模块。"""
+        self._queue_drawers(SkillType.CLOSE_DRAWER, self._all_drawers(), "close all drawers")
 
     # --------------------------------------------------------------- per-frame
     def _sort_step(self, state):
@@ -1219,6 +1571,7 @@ class SkillTestController:
     def _step_impl(self, session):
         state = self.provider.get_state()
         self._monitor_collisions(state)
+        self._manage_drawer_damping()   # 抽屉阻尼随技能阶段切换(拉/推=低,其余=高)，见 _DRAWER_*_DAMPING
 
         if not getattr(self, "_coffee_inited", False):
             self._coffee_inited = True
@@ -1227,6 +1580,28 @@ class SkillTestController:
             # (默认 _DRAWER_FREE_DAMPING)，这样抽屉拉到哪停哪、不会自己弹回关闭(用户要求)。
             for _dj in ("joint_0", "joint_1", "joint_2"):
                 self._free_joint("cabinet", _dj, damping=_DRAWER_FREE_DAMPING)
+            # 白柜(sektion_cabinet)抽屉关节也释放成 stiffness0+阻尼(若该 articulation 接入了)：拉到哪停哪。
+            if "sektion_cabinet" in self.provider.scene.keys():
+                try:
+                    _sk = self.provider.scene["sektion_cabinet"]
+                    print(f"[SEKTION] joints={list(_sk.data.joint_names)} bodies={list(_sk.data.body_names)} "
+                          f"root={[round(float(v),3) for v in _sk.data.root_pos_w[0].tolist()]}", flush=True)
+                except Exception as _e:
+                    print(f"[SEKTION] probe failed: {_e}", flush=True)
+                for _dj in ("drawer_top_joint", "drawer_bottom_joint"):
+                    self._free_joint("sektion_cabinet", _dj, damping=_DRAWER_FREE_DAMPING)
+
+        if getattr(self, "_open_both_test", False) and not self._open_both_started:
+            self._open_both_started = True
+            self._on_open_both_drawers()
+
+        if getattr(self, "_close_all_test", False) and not self._close_all_started:
+            self._close_all_started = True
+            self._on_close_all_drawers()
+
+        if getattr(self, "_open_sektion_test", False) and not self._open_sektion_started:
+            self._open_sektion_started = True
+            self._on_open_sektion_drawers()
 
         if getattr(self, "_coffee_test", False) and not self._coffee_started:
             self._coffee_started = True
@@ -1253,9 +1628,16 @@ class SkillTestController:
             self._place_runner = None
             self._pre_mover = None
             self._pending_after_move = None
+            self._transited_req = None
+            self._transit_runner = None
+            self._transit_stage = None
+            self._curobo_pregrasp = None
             self._coffee_calib = None          # Stop 也要能中断咖啡标定/操作，别卡死
             self._pending = None
+            self._drawer_queue = []             # Stop 也清掉"打开两个抽屉"的队列
+            self._drawer_gap = 0
             self._want_stop = False
+            self._apply_speed_to_adapter()     # 恢复 IK 步长(若 Stop 时正处于 sweep 的压低状态)
             self._set_status("stopped")
             return None
 
@@ -1263,12 +1645,48 @@ class SkillTestController:
         if self._coffee_calib is not None:
             return self._step_coffee_calib(state)
 
+        # cuRobo 无碰撞过渡执行中：飞完(轨迹执行到位)再真正起技能
+        if self._transit_runner is not None:
+            with torch.inference_mode(False):
+                cmd = self._transit_runner.step(state, self._dt)
+            self._set_status("cuRobo transit")
+            if self._transit_runner.status in (ExecutionStatus.SUCCEEDED, ExecutionStatus.FAILED,
+                                               ExecutionStatus.STOPPED):
+                self._transit_runner = None
+                self._transit_stage = None
+                self._curobo_pregrasp = None
+                req = self._pending_after_move
+                self._pending_after_move = None
+                self._transited_req = req
+                # cuRobo 已把机器人送到 pre-grasp -> 技能从 APPROACH 起(短距滑上把手,不再大范围移动)。
+                if req is not None:
+                    try:
+                        req.parameters = {**(req.parameters or {}), "start_at_approach": True}
+                    except Exception:
+                        pass
+                self._pending = req
+                return self.provider.make_hold_joint_action(state, 1.0)
+            return self._command_to_action(cmd, state)
+
         # 技能前的待命移动(绕到基座圈外、目标侧)：移完再发技能请求
         if self._pre_mover is not None:
             q_des, grip = self._pre_mover.step(state, self._dt)
             self._set_status("pre-move")
             if self._pre_mover.done:
                 self._pre_mover = None
+                if self._transit_stage == "retract":
+                    # 已抬离刚操作的抽屉 -> 现在用 cuRobo 规划到 pre-grasp
+                    req = self._pending_after_move
+                    if self._start_curobo_to_pregrasp(req, state):
+                        self._transit_stage = "curobo"
+                        return self.provider.make_hold_joint_action(state, grip)
+                    # cuRobo 规划失败 -> 直接起技能(退回原行为)
+                    self._transit_stage = None
+                    self._transited_req = req
+                    self._pending = req
+                    self._pending_after_move = None
+                    return self.provider.make_hold_joint_action(state, grip)
+                self._transited_req = self._pending_after_move   # 手动途径点绕行完，别再重复绕行
                 self._pending = self._pending_after_move
                 self._pending_after_move = None
                 return self.provider.make_hold_joint_action(state, grip)
@@ -1298,9 +1716,69 @@ class SkillTestController:
                 return self.provider.make_hold_joint_action(state, grip)
             return self.provider.make_joint_action_from_q_des(q_des, grip)
 
+        # 抽屉队列(打开两个/关闭所有)：上一个技能结束(executor 空闲)后，隔 gap 帧自动发下一个。
+        if self._drawer_queue and self._pending is None and self.executor.active_skill is None \
+                and self._grasp_runner is None and self._place_runner is None and self._pre_mover is None:
+            if self._drawer_gap > 0:
+                self._drawer_gap -= 1
+                return self.provider.make_hold_joint_action(state, 1.0)
+            skill_t, nxt = self._drawer_queue.pop(0)
+            self.sel_drawer = nxt
+            self._pending = self._make_request(skill_t)
+            self._drawer_gap = _AUTORUN_SETTLE_STEPS   # 下一个抽屉前留稳定间隔
+            print(f"[SkillTestController] drawer-queue: start {skill_t.value} {nxt} "
+                  f"(remaining {[d for _, d in self._drawer_queue]})", flush=True)
+            self._set_status(f"{skill_t.value} / {nxt}")
+
         if self._pending is not None:
             req = self._pending
+            # 起接触技能前：若该技能配了途径点且【还没绕行过】，先按途径点绕行(避开已打开的抽屉等)，
+            # 绕完(_pre_mover.done)会把该 req 标记 _transited_req 再回到这里真正 start。
+            if req is not self._transited_req:
+                # (1) 途径点绕行。首次把内置 home+facing 预填成面板可编辑途径点;之后用面板/存盘的值。
+                skill_id = self._skill_id_for(req)
+                wps = self._load_skill_waypoints(skill_id)
+                if not wps and skill_id:   # 首次:内置 home+facing 预填为途径点(有面板就写进面板供编辑)
+                    defaults = self._default_waypoints_for(req)
+                    if defaults:
+                        wps = defaults
+                        if self._wp_panel is not None:
+                            self._wp_panel.waypoints[skill_id] = defaults
+                            try:
+                                if getattr(self._wp_panel, "sel_skill", None) == skill_id:
+                                    self._wp_panel._rebuild_wp_combo()
+                            except Exception:
+                                pass
+                        print(f"[SkillTestController] prefilled {len(defaults)} default waypoints (home+facing) "
+                              f"for {skill_id}", flush=True)
+                if wps:
+                    self._pending = None
+                    # 有途径点 -> 途径点【完全定义过渡】(抬升/转身/绕行全由你摆),技能跳过内置 PRELIFT/ARC,
+                    # 从 MOVE_TO_PRE_GRASP 起。转身角大的柜子途径点里要含 joint 点才真转底座(纯 task 会仰身)。
+                    try:
+                        req.parameters = {**(req.parameters or {}), "start_at_pregrasp": True}
+                    except Exception:
+                        pass
+                    self._pre_mover = _WaypointMover(self.adapter, wps, device=self.device)
+                    self._pending_after_move = req
+                    print(f"[SkillTestController] transit via {len(wps)} waypoint(s) before {skill_id}", flush=True)
+                    return self.provider.make_hold_joint_action(state, 1.0)
+                # (2) 否则 cuRobo 无碰撞过渡：先竖直抬离(retract)刚操作的抽屉(否则起点在"开抽屉障碍盒"里、
+                #     规划不出),再从安全位规划到 pre-grasp,技能随后从 APPROACH 短距滑上把手。
+                pregrasp = self._skill_pregrasp_pose(req)
+                transit = self._ensure_transit() if pregrasp is not None else None
+                if transit is not None and pregrasp is not None:
+                    self._pending = None
+                    self._curobo_pregrasp = pregrasp
+                    self._pre_mover = _WaypointMover(self.adapter, [self._retract_waypoint(state)],
+                                                     device=self.device)
+                    self._pending_after_move = req
+                    self._transit_stage = "retract"
+                    print(f"[SkillTestController] cuRobo transit: retract then plan -> {self._skill_id_for(req)}",
+                          flush=True)
+                    return self.provider.make_hold_joint_action(state, 1.0)
             self._pending = None
+            self._transited_req = None
             self._prepare_joint_for(req)  # free targeted drawer joint (door frees itself)
             self.executor.start(req, state)
 
@@ -1480,6 +1958,11 @@ class SkillTestController:
             )
         if skill_type in (SkillType.OPEN_DRAWER, SkillType.CLOSE_DRAWER):
             params = {"drawer_link": "link_1"}
+            # Bug1: 点技能后先竖直抬到 home 高度(UI 可调)再去把手前方，避免夹爪斜扫物体。
+            try:
+                params["prelift_z"] = self._carry_z()
+            except Exception:
+                pass
             # 把 Grasp Pose 面板里【实时编辑】的该抽屉把手抓取位姿(link 局部系)传给技能，
             # 让开/关抽屉技能在你定义的 pose 上抓把手(随抽屉滑动跟踪)，而不是用硬编码把手配置。
             panel = self._grasp_panel
@@ -1520,12 +2003,33 @@ class SkillTestController:
         """
         if req.skill_type not in (SkillType.OPEN_DRAWER, SkillType.CLOSE_DRAWER):
             return
+        target = req.destination_object or "middle_drawer"
         try:
-            joint_name = joint_name_for(req.destination_object or "middle_drawer")
+            joint_name = joint_name_for(target)
+            member = member_for(target)   # 旧 cabinet 或白柜 sektion_cabinet
         except Exception as exc:
             print(f"[SkillTestController] WARN: cannot resolve drawer joint: {exc}", flush=True)
             return
-        self._free_joint("cabinet", joint_name, damping=_DRAWER_FREE_DAMPING)
+        self._free_joint(member, joint_name, damping=_DRAWER_FREE_DAMPING)
+
+    def _manage_drawer_damping(self) -> None:
+        """抽屉关节阻尼随当前技能阶段切换：PULL/PUSH 用低阻尼(机器人能拉动)，其余用高阻尼(松爪/退回
+        时抵抗拖拽、抽屉停在开到的位置)。stiffness 始终 0(无弹簧)。只在阻尼值变化时写一次。"""
+        sk = getattr(self.executor, "active_skill", None)
+        st = getattr(getattr(sk, "runtime", None), "state", None) if sk is not None else None
+        want = _DRAWER_FREE_DAMPING if st in ("PULL", "PUSH") else _DRAWER_HOLD_DAMPING
+        if want == getattr(self, "_cur_drawer_damping", None):
+            return
+        try:
+            import torch
+            cab = self.provider.scene["cabinet"]
+            ids, _ = cab.find_joints("joint_[0-2]")
+            n = cab.num_instances
+            cab.write_joint_damping_to_sim(
+                torch.full((n, len(ids)), float(want), device=cab.device), joint_ids=ids)
+            self._cur_drawer_damping = want
+        except Exception as exc:  # pragma: no cover
+            print(f"[SkillTestController] manage drawer damping failed: {exc}", flush=True)
 
     def _free_joint(self, asset_name: str, joint_name: str, damping: float = 2.0) -> None:
         if (asset_name, joint_name) in self._freed:

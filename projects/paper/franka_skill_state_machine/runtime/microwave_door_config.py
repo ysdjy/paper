@@ -2,7 +2,7 @@
 
 Single source of truth lives in the task package so the env cfg (source/) and this runtime read the
 SAME geometry:
-    stackpkg.franka.microwave_door_config
+    isaaclab_tasks.manager_based.manipulation.stack.config.franka.microwave_door_config
 
 See that module for the calibration notes and the asset caveat (door physically opens only ~10deg
 on this asset). Calibrate with entries/debug_microwave_door_calib.py.

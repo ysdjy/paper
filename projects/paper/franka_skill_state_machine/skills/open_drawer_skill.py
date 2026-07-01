@@ -25,6 +25,7 @@ Stage-1 additions:
 from __future__ import annotations
 
 import math
+import os
 from dataclasses import dataclass, field
 
 import torch
@@ -69,6 +70,27 @@ class OpenDrawerIKConfig:
     release_duration: float = 0.4
     home_joint_threshold: float = 0.12
     home_timeout: float = 6.0
+    # 加权 DLS 让关节1优先旋转(reach 阶段把关节1代价调小)。实测对"把手在身后大角度"无效(局部 IK 不会
+    # 主动甩底座,只会仰身)，故默认 0=关闭。保留接口备用。
+    joint1_face_weight: float = 0.0
+    # 【关节1优先旋转的正解】用一段笛卡尔圆弧转身：PRELIFT 抬高后，让 TCP 沿【绕机器人底座的水平圆弧】
+    # 从当前方位角扫到把手方位角(home 高度、半径不变)。TCP 绕基座转 -> 普通 IK 被迫转关节1跟随，平滑、
+    # 不仰身、不插离散关节路径点。到位后再 MOVE_TO_PRE_GRASP 径向接近把手。
+    use_arc_to_face: bool = True
+    arc_rate: float = 1.4          # 圆弧扫掠角速度上限(rad/s)
+    arc_face_tol: float = 0.14     # 方位角对齐阈值(rad,~8deg) -> 进 reach
+    arc_timeout: float = 8.0
+    # 【任务空间 via-point blend(方案A)】：PRELIFT 后走一条二次贝塞尔 A(当前)->V(facing 途径点)->G(把手前)，
+    # 控制点=V(天然不经过 V=blend 语义);同时关节1由 solve(joint0_cmd) 关节空间硬性带动转身,其余6轴任务空间
+    # 跟踪贝塞尔轨迹(底座真转不仰身)。**实测**：对旧柜这种在机器人【斜后方~145°】的抽屉，转身后手腕落在
+    # 抓不到的构型/顶到限位(末端朝向差 ~48°)，抓取失败——任务空间控制管不了手臂构型(冗余),这种大角度回转
+    # 场景不可靠;关节空间 ARC_TO_FACE 落到已知好构型 faced_q、可靠。故默认【关闭】,仅作可切换实验项(对
+    # 正前方/侧向、转身角小的抽屉可用)。优先于 use_arc_to_face。
+    use_via_blend: bool = False
+    via_blend_rate: float = 0.55   # 贝塞尔参数 s 的推进速度(/s)，约 1/via_blend_rate 秒走完
+    via_standoff_radius: float = 0.52  # 途径点 V 到基座的水平半径(m,facing 方向的臂展待命点)
+    via_strict: bool = False       # False=不严格到达 V(贝塞尔绕过);True=把 V 当 fine 点插入(严格经过)
+    via_timeout: float = 9.0
     # --- task target + verification (stage-1) ---
     target_open_position: float = 0.20        # default == old success_threshold
     target_tolerance: float = 0.02
@@ -124,6 +146,16 @@ class OpenDrawerIKSkill:
         self._approach_start = None
         self._approach_end = None
         self._approach_quat = None
+        self._settle_target = None    # 开到位瞬间锁定的【实时 TCP 位姿】(SETTLE/RELEASE 都保持它不动)
+        self._release_target = None   # RELEASE 阶段锁定的固定位姿(开抽屉到位时捕获一次)
+        self._prelift_z = None        # Bug1: 点技能后先竖直抬到的 home 高度(由 request 参数 prelift_z 给)
+        self._prelift_target = None
+        self._arc_hold_q = None       # ARC_TO_FACE: 转身时锁定的其余关节姿态(只动关节1)
+        self._arc_j1 = 0.0
+        self._via_A = None            # VIA_BLEND 贝塞尔起点(TCP pos)
+        self._via_V = None            # facing 途径点(控制点)
+        self._via_G = None            # 终点=把手前 pre-grasp PoseState
+        self._via_s = 0.0             # 贝塞尔参数
         self.resolver = ParamResolver(request.parameters)
         self.last_telemetry: dict = {}
         self._eff: dict = {}
@@ -184,6 +216,10 @@ class OpenDrawerIKSkill:
         return self.obs_adapter.selected_handle_pos_w()[self.adapter.env_id]
 
     def _cabinet_quat(self) -> torch.Tensor:
+        # 用 obs_adapter 解析出的成员(旧 cabinet 或白柜 sektion_cabinet)，不写死 'cabinet'。
+        member = getattr(self.obs_adapter, "cabinet", None)
+        if member is not None:
+            return member.data.root_quat_w[self.adapter.env_id]
         return self.env.unwrapped.scene["cabinet"].data.root_quat_w[self.adapter.env_id]
 
     def _drawer_pos(self) -> float:
@@ -204,8 +240,141 @@ class OpenDrawerIKSkill:
               f"-> joint1 = {math.degrees(float(seed[0])):.1f}deg", flush=True)
         return seed
 
-    def _grasp_pose(self, lead: float) -> PoseState:
-        """Live grasp/pull target: (handle link-local point + grasp_offset_local) -> world, + lead*open_dir.
+    def _post_prelift_state(self) -> str:
+        if self.cfg.use_via_blend:
+            return "VIA_BLEND"
+        if self.cfg.use_arc_to_face:
+            return "ARC_TO_FACE"
+        if self.cfg.use_turn_to_face:
+            return "TURN_TO_FACE"
+        return "MOVE_TO_PRE_GRASP"
+
+    def _via_blend_command(self, state: SceneState, dt: float):
+        """任务空间 via-point blend：TCP 沿二次贝塞尔 A->V(控制点)->G 走(不经过 V)，关节1由 joint0_cmd
+        关节空间硬性带动转身、其余6轴任务空间跟踪。返回 (SkillCommand, done_bool)。"""
+        robot = self.env.unwrapped.scene["robot"]
+        eid = self.adapter.env_id
+        tcp = state.robot.tcp_pose
+        if self._via_A is None:
+            base = robot.data.root_pos_w[eid]
+            self._via_G = self._grasp_pose(self._eff["pre_grasp_clearance"])
+            self._via_A = tcp.pos_w.clone()
+            gxy = self._via_G.pos_w[:2]
+            dxy = gxy - base[:2]
+            dn = dxy / (torch.linalg.norm(dxy) + 1e-9)
+            R = min(float(self.cfg.via_standoff_radius), float(torch.linalg.norm(dxy)) * 0.75)
+            z = float(self._prelift_z) if self._prelift_z is not None else float(self._via_A[2])
+            V = base.clone()
+            V[0] = base[0] + dn[0] * R
+            V[1] = base[1] + dn[1] * R
+            V[2] = z
+            self._via_V = V
+            self._via_s = 0.0
+            # 关节1从当前角开始朝把手方位角(faced_q[0])带动
+            self._arc_j1 = float(state.robot.joint_pos[self.adapter._joint_ids][0])
+        a_tgt0 = float(self.faced_q[0])
+        j0_now = float(state.robot.joint_pos[self.adapter._joint_ids][0])
+        # 一旦 s 走完且关节1已正对：切到【普通 7 自由度 IK】settle 到 G(位置+朝向)，用冗余把手腕摆到能抓的
+        # 朝向(joint0-lead 时其余6轴被任务完全定死、手腕姿态不可控,末端朝向会差)。settle 收敛即进 APPROACH。
+        if getattr(self, "_via_settling", False) or (self._via_s >= 0.999 and abs(a_tgt0 - j0_now) <= self.cfg.arc_face_tol):
+            self._via_settling = True
+            target = self._via_G
+            cmd = step_pose(tcp, target, self._eff["max_pos_step"], self._eff["max_ori_step"])
+            # 零空间把【手腕关节(4,5,6)】拉向 faced_q 的手腕配置(其余关节偏好=当前,不动)，把因转身卡在
+            # 限位的手腕挪到能抓的构型，随后任务项才能把末端朝向修到抓取朝向。
+            q_pref = state.robot.joint_pos[self.adapter._joint_ids].clone()
+            q_pref[4:7] = self.faced_q[4:7]
+            ik = self.adapter.solve(cmd, null_gain=0.8, q_pref=q_pref)
+            err = pose_error(tcp, target)
+            self._last_phase_target = target
+            done = err.position < 0.03 and err.orientation < math.radians(18)
+            if not ik.success:
+                q = self.last_q if self.last_q is not None else state.robot.joint_pos[self.adapter._joint_ids].clone()
+                return SkillCommand(tcp, 1.0, self.status, control_mode="joint", joint_target=q,
+                                    drawer_joint_target=None), done
+            self.last_q = ik.q_des
+            return SkillCommand(cmd, 1.0, self.status, control_mode="joint", joint_target=ik.q_des,
+                                drawer_joint_target=None), done
+        self._via_s = min(1.0, self._via_s + self.cfg.via_blend_rate * max(dt, 1e-3))
+        s = self._via_s
+        A, V, G = self._via_A, self._via_V, self._via_G.pos_w
+        if self.cfg.via_strict:   # 严格经过 V：两段线性 A->V->G
+            if s < 0.5:
+                u = s / 0.5; P = A + (V - A) * u
+            else:
+                u = (s - 0.5) / 0.5; P = V + (G - V) * u
+        else:                     # 不严格：二次贝塞尔(控制点 V，不经过 V)
+            P = (1 - s) ** 2 * A + 2 * (1 - s) * s * V + s ** 2 * G
+        # 朝向【随底座转动一起转】(绕世界 Z 预旋 j0_now-faced)：转身过程中手腕相对底座保持中性、不用反向
+        # 拧 145°(那会把手腕顶到限位);当 j0_now->faced 时预旋量归零、朝向自然收敛到抓取朝向 G.quat。
+        j0 = float(state.robot.joint_pos[self.adapter._joint_ids][0])
+        rz = math_utils.quat_from_angle_axis(
+            torch.tensor([j0 - a_tgt0], device=self.adapter.device),
+            torch.tensor([[0.0, 0.0, 1.0]], device=self.adapter.device))[0]
+        quat_co = math_utils.quat_mul(rz.unsqueeze(0), self._via_G.quat_w.unsqueeze(0))[0]
+        target = PoseState(P, quat_co)
+        # 关节1关节空间带动(限速)
+        a_tgt = float(self.faced_q[0])
+        max_da = self.cfg.arc_rate * max(dt, 1e-3)
+        self._arc_j1 += max(-max_da, min(max_da, a_tgt - self._arc_j1))
+        cmd = step_pose(tcp, target, self._eff["max_pos_step"], self._eff["max_ori_step"])
+        ik = self.adapter.solve(cmd, joint0_cmd=self._arc_j1)
+        if os.environ.get("DRAWER_DBG"):
+            self._dbgc = getattr(self, "_dbgc", 0) + 1
+            if self._dbgc % 20 == 1:
+                j1 = math.degrees(float(state.robot.joint_pos[self.adapter._joint_ids][0]))
+                perr = float(torch.linalg.norm(tcp.pos_w - P))
+                print(f"[ViaBlendDBG] s={s:.2f} joint1={j1:.1f}deg tcp_vs_bezier={perr*100:.1f}cm", flush=True)
+        faced = abs(a_tgt - float(state.robot.joint_pos[self.adapter._joint_ids][0])) <= self.cfg.arc_face_tol
+        done = (s >= 0.999 and faced)
+        self._last_phase_target = target
+        if not ik.success:
+            q = self.last_q if self.last_q is not None else state.robot.joint_pos[self.adapter._joint_ids].clone()
+            return SkillCommand(tcp, 1.0, self.status, control_mode="joint", joint_target=q,
+                                drawer_joint_target=None), done
+        self.last_q = ik.q_des
+        return SkillCommand(cmd, 1.0, self.status, control_mode="joint", joint_target=ik.q_des,
+                            drawer_joint_target=None), done
+
+    def _straighten_grasp_quat(self, quat: torch.Tensor) -> torch.Tensor:
+        """把抓取朝向【摆平】：接近轴(+Z)投影到水平面(抽屉是水平接近/滑动的),+Y 保持朝上(手指跨在把手杆
+        上下),重建正交朝向。用户面板里若无意把把手 pose 设得上下倾,这里自动纠正成水平抓取,避免斜着抓/斜着
+        拉。z 本来就近竖直(投影退化)时保持原样不动。"""
+        z = math_utils.quat_apply(quat.reshape(1, 4),
+                                  torch.tensor([[0.0, 0.0, 1.0]], device=quat.device))[0].clone()
+        z[2] = 0.0
+        n = float(torch.linalg.norm(z))
+        if n < 1e-4:
+            return quat
+        z = z / n
+        up = torch.tensor([0.0, 0.0, 1.0], device=quat.device)
+        x = torch.linalg.cross(up, z); nx = float(torch.linalg.norm(x))
+        if nx < 1e-6:
+            return quat
+        x = x / nx
+        y = torch.linalg.cross(z, x)
+        R = torch.stack((x, y, z), dim=1)
+        return math_utils.quat_from_matrix(R.unsqueeze(0))[0]
+
+    def _lead_dir(self, quat: torch.Tensor, horizontal: bool = False) -> torch.Tensor:
+        """站位/后拉的偏移方向 = 抓取位姿的【接近轴 -Z】(TCP +Z 朝抽屉里 -> -Z 朝外)。跟随用户在面板里
+        最新设的 pose 朝向:改了 pose 的 z 轴,站位/后拉方向立刻跟着变。
+
+        ``horizontal=True``: 把该方向的【竖直分量清零并重新归一化】,得到纯水平方向。用于【后拉/推入】——
+        抽屉是水平滑出的,如果用户设的抓取 pose 的 z 轴有点上/下倾,-Z 就带竖直分量,后拉时 TCP 会沿 Z 抬升/
+        下沉,把抽屉拉歪、夹爪从水平把手上滑脱(用户报的 bug)。站位/接近仍按用户角度(非水平),只有拉/推走水平。"""
+        az = math_utils.quat_apply(
+            quat.reshape(1, 4), torch.tensor([[0.0, 0.0, 1.0]], device=quat.device))[0]
+        d = -az
+        if horizontal:
+            d = d.clone()
+            d[2] = 0.0
+        return d / (torch.linalg.norm(d) + 1e-9)
+
+    def _grasp_pose(self, lead: float, horizontal_lead: bool = False) -> PoseState:
+        """Live grasp/pull target: (handle link-local point + grasp_offset_local) -> world, offset by
+        ``lead`` along the GRASP pose approach axis (-Z), so the pre-grasp standoff / pull direction
+        track the user's latest handle pose (not the fixed cabinet open direction).
 
         ``grasp_offset_local_xyz`` is added in the drawer LINK local frame (combined with the base
         handle offset BEFORE the link transform), so it tracks the sliding drawer and yields a real
@@ -224,12 +393,13 @@ class OpenDrawerIKSkill:
             total_local = base_local + self._grasp_offset_local
             gpos, gquat = math_utils.combine_frame_transforms(
                 link_pos.unsqueeze(0), link_quat.unsqueeze(0), total_local.unsqueeze(0), lq.unsqueeze(0))
-            return PoseState(gpos[0] + open_dir * lead, gquat[0])
+            gq = self._straighten_grasp_quat(gquat[0])   # 摆平用户 pose 的上下倾 -> 水平抓取
+            return PoseState(gpos[0] + self._lead_dir(gq, horizontal_lead) * lead, gq)
         total_local = self.obs_adapter.handle_offset + self._grasp_offset_local
         gpos, _ = math_utils.combine_frame_transforms(
             link_pos.unsqueeze(0), link_quat.unsqueeze(0), total_local.unsqueeze(0))
-        quat = grasp_quat_from_open_dir(open_dir, link_pos.device)
-        return PoseState(gpos[0] + open_dir * lead, quat)
+        quat = self._straighten_grasp_quat(grasp_quat_from_open_dir(open_dir, link_pos.device))
+        return PoseState(gpos[0] + self._lead_dir(quat, horizontal_lead) * lead, quat)
 
     # ---- skill API --------------------------------------------------------
     def start(self, state: SceneState):
@@ -247,7 +417,26 @@ class OpenDrawerIKSkill:
         self.home_q = torch.tensor(HOME_Q_VERTICAL_RAISED, dtype=torch.float32,
                                    device=robot.data.default_joint_pos.device)
         self.faced_q = self._faced_seed_q()
-        if self.cfg.use_turn_to_face:
+        pz = (self.request.parameters or {}).get("prelift_z")
+        if pz is not None:
+            try:
+                self._prelift_z = float(pz)
+            except Exception:
+                self._prelift_z = None
+        # cuRobo 已把机器人无碰撞送到把手前(pre-grasp)时,请求带 start_at_approach -> 直接从 APPROACH 起,
+        # 跳过 PRELIFT/转身/MOVE_TO_PRE_GRASP(否则会再抬起/重定位、把 cuRobo 的落点破坏掉)。
+        if (self.request.parameters or {}).get("start_at_approach"):
+            initial_state = "APPROACH"
+        elif (self.request.parameters or {}).get("start_at_pregrasp"):
+            # 途径点(含 facing joint 点)已完成抬升+转身过渡 -> 跳过内置 PRELIFT/ARC,直接径向接近把手。
+            initial_state = "MOVE_TO_PRE_GRASP"
+        elif self._prelift_z is not None and self.cfg.start_from_current:
+            initial_state = "PRELIFT"
+        elif self.cfg.use_via_blend and self.cfg.start_from_current:
+            initial_state = "VIA_BLEND"
+        elif self.cfg.use_arc_to_face and self.cfg.start_from_current:
+            initial_state = "ARC_TO_FACE"
+        elif self.cfg.use_turn_to_face:
             initial_state = "TURN_TO_FACE"
         elif self.cfg.start_from_current:
             initial_state = "MOVE_TO_PRE_GRASP"
@@ -299,7 +488,45 @@ class OpenDrawerIKSkill:
                 state.robot.tcp_pose, 1.0, self.status, control_mode="joint",
                 joint_target=self.faced_q.clone(), drawer_joint_target=None,
             )
-        if self.runtime.state == "MOVE_TO_PRE_GRASP":
+        if self.runtime.state == "VIA_BLEND":
+            cmd_via, done = self._via_blend_command(state, dt)
+            if done or self._state_elapsed(state) > self.cfg.via_timeout:
+                self._transition(state, "APPROACH")
+            self._update_telemetry(state, self._last_phase_target, 1.0)
+            return cmd_via
+        if self.runtime.state == "ARC_TO_FACE":
+            # 关节空间平滑转身(丝滑版 turn-to-face，无离散停顿)：在【关节空间】朝 faced_q(关节1=把手方位角
+            # + 竖直抬起的 reach 起始姿态)逐帧限速插值。关节1的角度差最大 -> 它主导整段运动=关节1优先旋转；
+            # TCP 随之绕基座画出平滑圆弧。用关节命令才真能转底座(TCP 目标法会被局部 DLS 用仰身规避)；到 faced_q
+            # 的姿态已知可达，reach 不会再有大姿态误差。关节1接近到位(不必精确到达)即【提前融入】reach。
+            if self._arc_hold_q is None:
+                self._arc_hold_q = state.robot.joint_pos[self.adapter._joint_ids].clone()
+            max_step = self.cfg.arc_rate * max(dt, 1e-3)             # 每关节每帧角度上限(关节1差最大->最慢->主导)
+            delta = torch.clamp(self.faced_q - self._arc_hold_q, -max_step, max_step)
+            self._arc_hold_q = self._arc_hold_q + delta
+            q_cmd = self._arc_hold_q.clone()
+            self.last_q = q_cmd
+            dj1 = abs(float(self.faced_q[0]) - float(state.robot.joint_pos[self.adapter._joint_ids][0]))
+            if dj1 <= self.cfg.arc_face_tol or self._state_elapsed(state) > self.cfg.arc_timeout:
+                self._transition(state, "MOVE_TO_PRE_GRASP")
+            self._update_telemetry(state, state.robot.tcp_pose, 1.0)
+            return SkillCommand(
+                state.robot.tcp_pose, 1.0, self.status, control_mode="joint",
+                joint_target=q_cmd, drawer_joint_target=None,
+            )
+        if self.runtime.state == "PRELIFT":
+            # Bug1: 在当前 XY 竖直抬到 home 高度(prelift_z)，张爪，再去把手前方，避免夹爪斜扫物体。
+            if self._prelift_target is None:
+                cur = state.robot.tcp_pose
+                p = cur.pos_w.clone()
+                p[2] = max(float(p[2]), float(self._prelift_z))
+                self._prelift_target = PoseState(p, cur.quat_w.clone())
+            target = self._prelift_target
+            gripper = 1.0
+            if abs(float(state.robot.tcp_pose.pos_w[2] - self._prelift_target.pos_w[2])) < 0.03 \
+                    or self._state_elapsed(state) > 4.0:
+                self._transition(state, self._post_prelift_state())
+        elif self.runtime.state == "MOVE_TO_PRE_GRASP":
             target = self._grasp_pose(self._eff["pre_grasp_clearance"])
             gripper = 1.0
             self._advance_when_reached(state, target, "APPROACH", self._eff["reach_timeout"])
@@ -322,12 +549,17 @@ class OpenDrawerIKSkill:
                 self._progress_ref = self.runtime.current_joint_pos
                 self._transition(state, "PULL")
         elif self.runtime.state == "PULL":
-            target = self._grasp_pose(self._eff["pull_lead"])
+            target = self._grasp_pose(self._eff["pull_lead"], horizontal_lead=True)  # 水平后拉,不沿 Z 抬升
             gripper = -1.0
             self._track_pull(state)
             if self.runtime.current_joint_pos >= self.target_open_position - self.cfg.target_tolerance:
                 if self.runtime.target_reached_time is None:
                     self.runtime.target_reached_time = max(0.0, state.sim_time - self.runtime.start_time)
+                # 开到位的瞬间锁定【当前真实 TCP 位姿】，SETTLE/RELEASE 全程保持它不动。
+                # 不要用 _grasp_pose(0.0)(那是把手当前位置，比 TCP 当前位置往把手方向缩了 pull_lead，
+                # 会让机器人主动往回拖一小段、把抽屉带回去)。用户要求：开到位后【原地停 0.5s 再松爪】。
+                self._settle_target = PoseState(
+                    state.robot.tcp_pose.pos_w.clone(), state.robot.tcp_pose.quat_w.clone())
                 self._transition(state, "SETTLE")
             elif self.runtime.handle_detached:
                 self._fail(state, FailureReason.HANDLE_DETACHED,
@@ -338,12 +570,19 @@ class OpenDrawerIKSkill:
                            f"pull did not reach target {self.target_open_position:.3f}: "
                            f"pos={self.runtime.current_joint_pos:.4f}")
         elif self.runtime.state == "SETTLE":
-            target = self._grasp_pose(0.0)
+            # 开到位后【原地保持】锁定的 TCP 位姿(夹爪仍闭合)，停 settle_duration(0.5s)，不回拖。
+            target = self._settle_target if self._settle_target is not None else self._grasp_pose(0.0)
             gripper = -1.0
             if self._state_elapsed(state) >= self._eff["settle_duration"]:
                 self._transition(state, "RELEASE")
         elif self.runtime.state == "RELEASE":
-            target = self._grasp_pose(0.0)
+            # 松爪时仍【保持 SETTLE 锁定的固定位姿】：否则张爪瞬间把抽屉带回一点，TCP 跟着把手往里走，
+            # 形成"机器人拖着抽屉一起退回去"的反馈环。锁定位姿不动，张开夹爪后抽屉无外力(stiffness0+
+            # 阻尼)留在原位，不会被拖回。
+            if self._release_target is None:
+                base = self._settle_target if self._settle_target is not None else self._grasp_pose(0.0)
+                self._release_target = PoseState(base.pos_w.clone(), base.quat_w.clone())
+            target = self._release_target
             gripper = 1.0
             if self._state_elapsed(state) >= self._eff["release_duration"]:
                 self._succeed(state)
@@ -464,11 +703,31 @@ class OpenDrawerIKSkill:
             joint_target=self.home_q.clone(), drawer_joint_target=None,
         )
 
+    # reach 阶段(抬升+接近把手)启用关节1优先旋转的加权 IK；抓住后(CLOSE/PULL/SETTLE/RELEASE)用普通 IK，
+    # 避免拉抽屉时关节1还在漂、扭动抓持。
+    _FACE_REACH_PHASES = ("PRELIFT", "MOVE_TO_PRE_GRASP", "APPROACH")
+
+    def _reach_joint_weights(self):
+        w = float(getattr(self.cfg, "joint1_face_weight", 0.0) or 0.0)
+        if w <= 0.0 or self.runtime.state not in self._FACE_REACH_PHASES:
+            return None
+        if getattr(self, "_jw_cache", None) is None:
+            jw = torch.ones(len(self.adapter._joint_ids), device=self.adapter.device)
+            jw[0] = w
+            self._jw_cache = jw
+        return self._jw_cache
+
     def _command(self, state: SceneState, target: PoseState | None, gripper: float) -> SkillCommand:
         if target is None:
             return self._hold(state, gripper)
         cmd = step_pose(state.robot.tcp_pose, target, self._eff["max_pos_step"], self._eff["max_ori_step"])
-        ik = self.adapter.solve(cmd)
+        ik = self.adapter.solve(cmd, joint_weights=self._reach_joint_weights())
+        if os.environ.get("DRAWER_DBG"):
+            self._dbgc = getattr(self, "_dbgc", 0) + 1
+            if self._dbgc % 25 == 1:
+                j1 = float(state.robot.joint_pos[self.adapter._joint_ids][0])
+                print(f"[OpenDrawerDBG] {self.runtime.state} joint1={math.degrees(j1):.1f}deg "
+                      f"weighted={self._reach_joint_weights() is not None}", flush=True)
         err = pose_error(state.robot.tcp_pose, target)
         self.runtime.final_error_pos = err.position
         self.runtime.final_error_ori = err.orientation

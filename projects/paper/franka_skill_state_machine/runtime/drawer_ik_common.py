@@ -16,7 +16,29 @@ _UP = (0.0, 0.0, 1.0)
 # 抽屉技能 turn-to-face 用的 home 臂姿（7 关节）：末端【垂直朝下】且比原 home 抬高 ~15cm。
 # 由 IK 离线解出(目标=原 home TCP +Z15cm、朝向竖直)。抬高 + 竖直是为了机器人转身去拉抽屉时
 # 不会用手肘/腕把桌面上的物品扫掉。drawer 技能 seed 用它，只把 joint1 转到朝向把手方位。
-HOME_Q_VERTICAL_RAISED = (0.028, -0.330, -0.092, -2.223, -0.030, 1.912, 0.734)
+_HOME_Q_DEFAULT = (0.028, -0.330, -0.092, -2.223, -0.030, 1.912, 0.734)
+
+
+def _load_home_q(default):
+    """读 Franka 控制面板「Set Home」存的 home 关节配置(robot_home.json)，缺失则用 default。
+    与面板共用同一文件，做到 home 设一次、面板 Home 按钮和抽屉/门技能都一致。"""
+    try:
+        import json
+        from pathlib import Path
+        # runtime/ -> franka_skill_state_machine -> projects -> franka_v1_skill_lab/scene/saved_scenes/v1_active
+        f = (Path(__file__).resolve().parents[2]
+             / "franka_v1_skill_lab/scene/saved_scenes/v1_active/robot_home.json")
+        if f.is_file():
+            q = json.loads(f.read_text(encoding="utf-8")).get("home_q")
+            if isinstance(q, (list, tuple)) and len(q) == 7:
+                return tuple(float(v) for v in q)
+    except Exception as exc:  # pragma: no cover
+        print(f"[drawer_ik_common] load home_q failed, using default: {exc}", flush=True)
+    return tuple(float(v) for v in default)
+
+
+# 抬高+竖直的 home：优先读保存的(面板 Set Home)，没有才用默认。import 时读一次(改后重启生效)。
+HOME_Q_VERTICAL_RAISED = _load_home_q(_HOME_Q_DEFAULT)
 
 # Cabinet-local axis the drawers slide out along (this asset opens along local -X). Transformed by
 # the cabinet's world orientation it gives the world opening direction — the SAME for every drawer,
