@@ -885,7 +885,9 @@ def _install_grasp_block(stage, link_path: str, local_pos, half=(0.018, 0.018, 0
     xf.AddTranslateOp().Set(Gf.Vec3d(local_pos[0] / sx, local_pos[1] / sy, local_pos[2] / sz))
     xf.AddScaleOp().Set(Gf.Vec3f(half[0] / sx, half[1] / sy, half[2] / sz))
     UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
-    cube.GetDisplayColorAttr().Set([Gf.Vec3f(0.9, 0.2, 0.2)])    # 可见红块，便于目视
+    cube.GetDisplayColorAttr().Set([Gf.Vec3f(0.9, 0.2, 0.2)])    # 红块，便于目视
+    # paper: 默认隐藏把手抓取方块(只关渲染，碰撞保留 -> 夹爪照常抓)。可视化面板可 toggle 回来。
+    UsdGeom.Imageable(cube.GetPrim()).MakeInvisible()
     # 高摩擦物理材质，绑到块上(physics purpose)
     try:
         mat = UsdShade.Material.Define(stage, f"{link_path}/{name}_mat")
@@ -908,6 +910,19 @@ def _install_grasp_block(stage, link_path: str, local_pos, half=(0.018, 0.018, 0
     except Exception:
         pass
     return True
+
+
+def set_grasp_blocks_visible(stage, visible: bool) -> int:
+    """Toggle render visibility of all handle GraspBlock prims (collision is NOT affected, so the
+    gripper still grabs them). paper: hidden by default; the viz panel exposes a toggle. Returns count."""
+    from pxr import UsdGeom
+    n = 0
+    for prim in stage.Traverse():
+        if prim.GetName() == "GraspBlock":
+            img = UsdGeom.Imageable(prim)
+            (img.MakeVisible if visible else img.MakeInvisible)()
+            n += 1
+    return n
 
 
 # ---------------------------------------------------------------------------

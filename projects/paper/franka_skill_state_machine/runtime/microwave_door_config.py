@@ -10,7 +10,7 @@ on this asset). Calibrate with entries/debug_microwave_door_calib.py.
 
 from __future__ import annotations
 
-from stackpkg.franka.microwave_door_config import (  # noqa: F401
+from isaaclab_tasks.manager_based.manipulation.stack.config.franka.microwave_door_config import (  # noqa: F401
     CLOSE_SUCCESS_ANGLE,
     COFFEE_LEVER_JOINT,
     COFFEE_LEVER_LINK,

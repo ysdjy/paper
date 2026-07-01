@@ -231,7 +231,7 @@ class _VizPanel:
         self.show_arrows = show_arrows
         session.set_collision_visible(show_colliders)
         session.set_markers_visible(show_markers)
-        self.window = ui.Window("Visualization", width=280, height=120)
+        self.window = ui.Window("Visualization", width=280, height=150)
         with self.window.frame:
             with ui.VStack(spacing=6, height=0):
                 self._cb_coll = self._row(ui, "Show colliders", show_colliders,
@@ -240,6 +240,18 @@ class _VizPanel:
                                            lambda v: setattr(self, "show_arrows", v))
                 self._cb_mark = self._row(ui, "Show region markers", show_markers,
                                           lambda v: self.session.set_markers_visible(v))
+                # paper: 把手抓取方块默认隐藏(spawn 时 MakeInvisible)；这里可 toggle 显示/隐藏。
+                self._cb_blocks = self._row(ui, "Show grasp blocks", False,
+                                            lambda v: self._set_blocks(v))
+
+    def _set_blocks(self, visible: bool):
+        try:
+            from franka_v1_skill_lab.scene_interface.scene_props import set_grasp_blocks_visible
+            stage = self.session.env.unwrapped.sim.stage
+            n = set_grasp_blocks_visible(stage, bool(visible))
+            print(f"[viz] grasp blocks {'shown' if visible else 'hidden'} ({n})", flush=True)
+        except Exception as exc:  # pragma: no cover
+            print(f"[viz] toggle grasp blocks failed: {exc}", flush=True)
 
     def _row(self, ui, label, default, on_change):
         with ui.HStack(spacing=8, height=22):
