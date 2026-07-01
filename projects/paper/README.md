@@ -3,19 +3,26 @@
 本文件夹是**论文专用**工作区。设计目标：论文项目与"感知模块/记忆模块"等其它项目**互不感染**，但
 **共用同一个会持续更新的测试场景**。
 
-## 隔离策略
-- **代码隔离**：论文需要的执行后端已**冻结复制**到 `paper/skill_backend/`（来自
-  `franka_skill_state_machine` 的 runtime/skills/state_machine/learned_drawer）。论文代码只 import 这份
-  自有副本，**不** import 共享的 `franka_skill_state_machine`。因此平台或感知项目改动那边的代码，
-  **不会影响论文实验**；反之亦然。
-- **场景共享（有意）**：测试场景 = 注册的 gym 任务 `Isaac-Stack-Cube-Franka-JointPolicy-v0` + 资产
-  (`simv2/`, `SapienAssetPipeline/`) + env cfg (`source/isaaclab_tasks/.../franka/`)。这部分**共享**，
-  会持续更新。论文通过 task id 使用它；`skill_backend/runtime/drawer_target_config` 仍引用 source 下的
-  `custom_drawer_config`（场景定义）。**这是唯一有意的共享耦合点**。
-- **数据隔离**：论文数据写在 `paper/deployment_calibration/data/`（大文件 .gitignore）。
+## 隔离策略（两项目完全独立运行）
+- **执行后端隔离**：`paper/skill_backend/` = `franka_skill_state_machine` 的 runtime/skills/
+  state_machine/learned_drawer **冻结副本**。论文只 import 这份副本。
+- **场景隔离（已私有化）**：`paper/scene/stackpkg/` = 上游 `manipulation/stack` + franka env cfg 的
+  **冻结私有副本**；`paper/scene/paper_tasks.py` 注册**论文自有任务 `Isaac-Paper-OpenDrawer-Franka-v0`**。
+  论文**不再** import 共享的 `isaaclab_tasks` franka 配置（其包自动导入会把另一项目对共享 cfg 的编辑
+  牵连进来）。数据生成入口直接实例化 paper cfg，不调用 `parse_env_cfg`/`import isaaclab_tasks`。
+  `skill_backend` 的 `drawer_target_config`/`microwave_door_config`/`target_registry` 均改指
+  `stackpkg` 私有副本。
+- **资产隔离**：`paper/assets/` 存 Cabinet_44853 / Knife / CoffeeMachine / Microwave / Dishwasher /
+  panda_instanceable，paper cfg 的 `_repo_path` 优先解析这里。**Sektion 橱柜（310M，另一项目频繁改动）
+  默认禁用**（open_drawer 不需要；`PAPER_ENABLE_SEKTION=1` 可开）。cube 为程序化立方体无需资产。
+- **数据隔离**：`paper/deployment_calibration/data/`（大文件 .gitignore）。
+- **仅共享框架**：`isaaclab`/`isaaclab_assets`（Isaac Lab 框架本身）+ Isaac Sim。这是运行时基础，不是
+  会被编辑的"项目"。
 
-> 若将来希望连场景也固定（防止共享场景更新破坏论文），可把 env cfg + 资产也快照进 paper/；当前按你的
-> 要求保持场景共享。
+> 已验证：`Isaac-Paper-OpenDrawer-Franka-v0` 独立加载并跑 open_drawer 产出数据；把手位姿在 paper 内
+> 回退到 config 偏移（不再依赖另一项目的 grasp_poses.json）——隔离生效。
+> USD 内部为二进制绝对引用，若删除共享 `simv2/` 可能触发子引用告警（非致命）；如需彻底冻结资产可后续
+> 重导出 USD。
 
 ## 结构
 ```

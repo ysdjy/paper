@@ -26,6 +26,7 @@ _HERE = _os.path.dirname(_os.path.abspath(__file__))
 _PAPER = _os.path.dirname(_os.path.dirname(_HERE))                             # projects/paper
 _sys.path.insert(0, _os.path.dirname(_HERE))                                   # projects/paper/deployment_calibration
 _sys.path.insert(0, _os.path.join(_PAPER, "skill_backend"))                    # projects/paper/skill_backend
+_sys.path.insert(0, _os.path.join(_PAPER, "scene"))                            # projects/paper/scene (stackpkg + paper_tasks)
 
 from isaaclab.app import AppLauncher
 
@@ -37,7 +38,7 @@ parser.add_argument("--drawers", type=str, default="top_drawer", help="comma lis
 parser.add_argument("--initial_drawer_open", type=float, default=0.0)
 parser.add_argument("--reset_index_base", type=int, default=0)
 parser.add_argument("--run_id", type=str, default=None)
-parser.add_argument("--output_dir", type=str, default="projects/deployment_calibration/data")
+parser.add_argument("--output_dir", type=str, default="projects/paper/deployment_calibration/data")
 parser.add_argument("--max_steps", type=int, default=1800)
 parser.add_argument("--disable_fabric", action="store_true", default=False)
 AppLauncher.add_app_launcher_args(parser)
@@ -53,8 +54,10 @@ from pathlib import Path
 import gymnasium as gym
 import torch
 
-import isaaclab_tasks  # noqa: F401
-from isaaclab_tasks.utils.parse_cfg import parse_env_cfg
+# paper isolation: register + build the PAPER-owned scene task (NOT the shared isaaclab_tasks franka
+# config, whose package auto-import would couple us to the other project's edits).
+import paper_tasks  # noqa: F401  (registers Isaac-Paper-OpenDrawer-Franka-v0)
+from stackpkg.franka.stack_joint_policy_env_cfg import FrankaCubeStackJointPolicyEnvCfg
 
 from runtime.base_skill import set_speed_scale
 from runtime.ik_joint_adapter import IKJointAdapter
@@ -69,7 +72,7 @@ from data_generation.sampler import build_plan
 from adapters.isaac_open_drawer import reset_full, run_open_drawer_episode
 from runtime.drawer_target_config import DRAWER_TARGETS
 
-TASK_ID = "Isaac-Stack-Cube-Franka-JointPolicy-v0"
+TASK_ID = paper_tasks.PAPER_OPEN_DRAWER_TASK  # "Isaac-Paper-OpenDrawer-Franka-v0"
 
 
 def _find_repo_root(start: Path) -> Path:
@@ -85,7 +88,11 @@ REPO_ROOT = _find_repo_root(Path(__file__).resolve())
 def main():
     torch.manual_seed(args_cli.seed)
     set_speed_scale(1.0)
-    env_cfg = parse_env_cfg(TASK_ID, device=args_cli.device, num_envs=1, use_fabric=not args_cli.disable_fabric)
+    # build the paper-owned env cfg directly (no parse_env_cfg -> no isaaclab_tasks coupling)
+    env_cfg = FrankaCubeStackJointPolicyEnvCfg()
+    env_cfg.scene.num_envs = 1
+    env_cfg.sim.device = args_cli.device
+    env_cfg.sim.use_fabric = not args_cli.disable_fabric
     env_cfg.seed = args_cli.seed
     if getattr(env_cfg, "events", None) is not None and hasattr(env_cfg.events, "randomize_cube_positions"):
         env_cfg.events.randomize_cube_positions = None

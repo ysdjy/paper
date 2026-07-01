@@ -9,7 +9,7 @@ import torch
 
 from isaaclab.utils import math as math_utils
 
-from isaaclab_tasks.manager_based.manipulation.stack.config.franka import stack_joint_pos_env_cfg
+from stackpkg.franka import stack_joint_pos_env_cfg
 
 from runtime.scene_state_provider import PoseState, SceneState
 from runtime.skill_types import FailureReason

@@ -10,7 +10,9 @@ bottom=joint_1/link_1 (LOCKED). All prismatic, closed=0, open_direction=+1. Grip
 
 from __future__ import annotations
 
-from isaaclab_tasks.manager_based.manipulation.stack.config.franka.custom_drawer_config import (  # noqa: F401
+# paper isolation: read the drawer config from the paper-owned frozen scene copy (stackpkg),
+# NOT the shared isaaclab_tasks franka config. Requires projects/paper/scene on sys.path.
+from stackpkg.franka.custom_drawer_config import (  # noqa: F401
     CABINET_USD_SCALE,
     DEFAULT_TARGET,
     DRAWER_TARGETS,
