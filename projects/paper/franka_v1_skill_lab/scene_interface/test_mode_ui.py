@@ -76,12 +76,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
                     help="don't place the robot on the Isaac stand (stand top aligned to robot base).")
     ap.add_argument("--no_isaac_props", action="store_true",
                     help="don't load the downloaded Isaac props (YCB/mugs/cabinet...) into the +Y parking grid.")
-    ap.add_argument("--ui", default="all",
+    # paper: UIs OFF by default (default="none"). Open panels explicitly with --ui grasp,scene,...
+    # or the individual flags (--grasp/--asset/...). Use --ui all to restore the original all-on.
+    ap.add_argument("--ui", default="none",
                     help="选择加载哪些内置 UI 面板(逗号分隔)，按需精简界面。可用键: "
                          "franka(机器人关节/任务空间控制) / asset(资产位姿编辑,移动场景物体) / "
                          "grasp(抓取位姿编辑,物体+把手) / joint(家电关节驱动:抽屉/门/咖啡机) / "
                          "camera(相机视角调整,需相机) / scene(场景重置+保存) / viz(可视化开关:碰撞/箭头)。 "
-                         "'all'=全部(默认)，'none'=都不加。技能测试UI另用 --controller，VLM描述UI另用 --describe。")
+                         "paper 默认 'none'=都不加(UI 默认关闭)；'all'=全部；技能测试UI用 --controller。")
     # 单独的开关写法(和 --ui 等价，二选一)：写了任意一个就【只加】这些面板，方便多行命令里逐行注释取舍。
     ui_grp = ap.add_argument_group("UI 面板单独开关 (等价于 --ui，写了任意一个就只加这些)")
     ui_grp.add_argument("--franka", action="store_true", help="机器人控制面板(关节/任务空间读写+执行)")
