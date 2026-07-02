@@ -71,7 +71,7 @@ def main() -> int:
         fails.append(f"synthetic: train/test not disjoint {inter}")
 
     # 2) real run if present
-    runs = sorted(list(DATA.glob("damping_pilot_v1_*")) + list(DATA.glob("*sessions*_v2_*"))
+    runs = sorted(list(DATA.glob("damping_pilot_v*_*")) + list(DATA.glob("*sessions*_v2_*"))
                   + list(DATA.glob("formal_sessions_v2_*")))
     if runs:
         run = runs[-1]
