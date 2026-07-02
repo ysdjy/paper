@@ -1,0 +1,18 @@
+drawers:
+- middle_drawer
+theta_ranges:
+  grasp_offset_local_y:
+  - -0.06
+  - 0.06
+  max_pos_step:
+  - 0.008
+  - 0.035
+  pull_lead:
+  - 0.03
+  - 0.14
+targets:
+- 0.12
+- 0.2
+- 0.28
+source_run: capability_map_v2_20260702_231522
+note: frozen formal candidate theta space (20-80% band, orderable)

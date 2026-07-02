@@ -12,10 +12,10 @@ damping_levels:                       # PLACEHOLDER -- update from micro-sweep b
   - {id: L2_mid,  value: 60.0}
   - {id: L3_high, value: 150.0}
 
-theta_ranges:                         # PLACEHOLDER -- replace with drawer_theta_frozen_v2.yaml band
-  grasp_offset_local_y: [-0.04, 0.04]
-  max_pos_step: [0.012, 0.030]
-  pull_lead: [0.05, 0.12]
+theta_ranges:                         # FROZEN from capability_map_v2_20260702_231522 (middle 0.58 mix).
+  grasp_offset_local_y: [-0.06, 0.06]  # dominant driver: center=success, |y| large=edge-miss failure
+  max_pos_step: [0.008, 0.035]
+  pull_lead: [0.03, 0.14]
 
 targets: [0.20]                       # single target for the pilot (add levels in formal stage)
 
