@@ -1,0 +1,18 @@
+# Stage-1 capability map config (v2).
+# Goal: find a formal theta candidate space with a 20-80% success band, continuous terminal error,
+# and orderable candidate differences. Baseline damping only (hidden axis introduced later in pilot).
+
+drawers: [middle_drawer, sektion_top_drawer]   # cleanest from Stage-0 (one per cabinet)
+
+theta_ranges:            # 3 sampled dims (episode_schema_v2.THETA_RANGES)
+  grasp_offset_local_y: [-0.06, 0.06]          # drawer LINK local +Y (edge-grasp axis)
+  max_pos_step: [0.008, 0.035]                 # DLS IK per-step cap
+  pull_lead: [0.03, 0.14]                      # pull carrot distance
+
+targets: [0.12, 0.20, 0.28]                    # representative g (cycled across sampled points)
+
+n_params_per_drawer: 50                        # Sobol points per drawer (3D)
+reps: 1                                        # bump to 2 for boundary points if needed
+sampler: sobol                                 # sobol | uniform
+seed: 7
+max_steps: 1800
