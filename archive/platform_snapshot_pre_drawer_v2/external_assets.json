@@ -1,0 +1,76 @@
+{
+ "note": "External USD assets (shared IsaacLab tree, not in git). Resolved vs IsaacLab root.",
+ "isaaclab_root": "/home1/banghai/Documents/IsaacLab",
+ "assets": {
+  "simv2/USD/Cabinet_44853/configuration/cabinet_base.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/simv2/USD/Cabinet_44853/configuration/cabinet_base.usd",
+   "bytes": 579864,
+   "mtime": "2026-06-09 21:06:09",
+   "sha256": "f328f79844ef2f8e5550b5816a2f746ed57d0dd296dc8482a251fc34596e0f85"
+  },
+  "simv2/USD/Cabinet_44853/configuration/cabinet_physics.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/simv2/USD/Cabinet_44853/configuration/cabinet_physics.usd",
+   "bytes": 4422,
+   "mtime": "2026-06-09 21:06:09",
+   "sha256": "22e03d438786ade47f14b2e9a4b79f817fe9a7e3d6cd8d01606ed4c5b0de5db7"
+  },
+  "Connection/assets/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/Connection/assets/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd",
+   "bytes": 8038,
+   "mtime": "2026-06-08 10:42:49",
+   "sha256": "7f5a0c0aa6760cfbd348e08bc464d4b94341f027f51c2d9e42406ceefcc7787f"
+  },
+  "SapienAssetPipeline/usd_assets/CoffeeMachine_103046/coffeemachine.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/CoffeeMachine_103046/coffeemachine.usd",
+   "bytes": 1900,
+   "mtime": "2026-06-30 19:02:43",
+   "sha256": "f9c2b1a9d6b54a5b313c8bdf89f8122a918e6e7e0e038c152a6132787bbda8d1"
+  },
+  "SapienAssetPipeline/usd_assets/Microwave_7320/microwave_flattened.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/Microwave_7320/microwave_flattened.usd",
+   "bytes": 344792,
+   "mtime": "2026-06-14 15:53:41",
+   "sha256": "987044baea6f2d39424f0643fde65c386e8d1368ff3a89443b54cbd9cc6b9e21"
+  },
+  "SapienAssetPipeline/usd_assets/Fridge_10797/fridge.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/Fridge_10797/fridge.usd",
+   "bytes": 1492,
+   "mtime": "2026-06-14 20:16:43",
+   "sha256": "c2ba5b33123e9662ab8e0c1f80f9206408ccbc8344c0748f3f062799a47e8ba6"
+  },
+  "SapienAssetPipeline/usd_assets/Dishwasher_12085/dishwasher.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/Dishwasher_12085/dishwasher.usd",
+   "bytes": 1496,
+   "mtime": "2026-06-21 17:13:00",
+   "sha256": "254dd164e04ef82ace5c89e91528585f4cd0b5fb6cd69161a678b0d1a9614738"
+  },
+  "SapienAssetPipeline/usd_assets/CloudProps/L_Desk/L_Desk.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/CloudProps/L_Desk/L_Desk.usd",
+   "bytes": 445960,
+   "mtime": "2026-06-22 17:31:10",
+   "sha256": "1104fad6586d3e16050fd7348b532a044446eedc7f68d5ecbed304010994bc4a"
+  },
+  "SapienAssetPipeline/usd_assets/IsaacProps/Props/Mounts/Stand/stand_instanceable.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Mounts/Stand/stand_instanceable.usd",
+   "bytes": 4032,
+   "mtime": "2026-06-21 16:35:58",
+   "sha256": "acc9020d8a8e7a88084a43e53517df95fa4c82c0a50dfe9df4cfc1c2a4185c56"
+  },
+  "SapienAssetPipeline/usd_assets/IsaacProps/Props/Sektion_Cabinet/sektion_cabinet_instanceable.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Sektion_Cabinet/sektion_cabinet_instanceable.usd",
+   "bytes": 15836,
+   "mtime": "2026-06-21 16:36:08",
+   "sha256": "991c866c3f90dce45a62aa980317f18eba360d4addc1e6919b242712a58d1284"
+  }
+ }
+}
