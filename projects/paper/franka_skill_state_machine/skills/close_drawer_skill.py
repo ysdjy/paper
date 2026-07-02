@@ -302,16 +302,15 @@ class CloseDrawerIKSkill:
             gripper = 1.0
             self._advance_when_reached(state, target, "APPROACH", self.cfg.reach_timeout)
         elif self.runtime.state == "APPROACH":
-            gp = self._grasp_pose(0.0)
-            if self._approach_end is None:
-                self._approach_start = state.robot.tcp_pose.pos_w.clone()
-                self._approach_end = gp.pos_w.clone()
-                self._approach_quat = gp.quat_w.clone()
-            carrot = self._line_setpoint(state.robot.tcp_pose.pos_w, self._approach_start, self._approach_end)
-            target = PoseState(carrot, self._approach_quat)   # straight-line glide onto the handle
+            gp = self._grasp_pose(0.0)                         # LIVE handle every step (no fixed target)
+            if self._approach_start is None:
+                self._approach_start = state.robot.tcp_pose.pos_w.clone()   # freeze ONLY the line origin
+            self._approach_end = gp.pos_w                      # live endpoint tracks the handle
+            self._approach_quat = gp.quat_w
+            carrot = self._line_setpoint(state.robot.tcp_pose.pos_w, self._approach_start, gp.pos_w)
+            target = PoseState(carrot, gp.quat_w)              # straight glide, but toward the LIVE handle
             gripper = 1.0
-            self._advance_when_reached(
-                state, PoseState(self._approach_end, self._approach_quat), "CLOSE_GRIPPER", self.cfg.reach_timeout)
+            self._advance_when_reached(state, gp, "CLOSE_GRIPPER", self.cfg.reach_timeout)
         elif self.runtime.state == "CLOSE_GRIPPER":
             target = self._grasp_pose(0.0)
             gripper = -1.0
