@@ -1,0 +1,28 @@
+# Stage-3 damping pilot config (v1).
+# Single hidden axis: drawer joint DAMPING, fixed per session, never in ordinary model input.
+# damping_levels values are FINALIZED from damping_micro_sweep_v2 (low/mid/high, non-degenerate).
+# theta_ranges are the FROZEN capability-map band (drawer_theta_frozen_v2.yaml); placeholder = schema ranges.
+
+run_prefix: damping_pilot
+
+drawers: [middle_drawer]              # single-drawer core validation first (cleanest from Stage-0)
+
+damping_levels:                       # PLACEHOLDER -- update from micro-sweep before the real pilot run
+  - {id: L1_low,  value: 3.0}
+  - {id: L2_mid,  value: 60.0}
+  - {id: L3_high, value: 150.0}
+
+theta_ranges:                         # PLACEHOLDER -- replace with drawer_theta_frozen_v2.yaml band
+  grasp_offset_local_y: [-0.04, 0.04]
+  max_pos_step: [0.012, 0.030]
+  pull_lead: [0.05, 0.12]
+
+targets: [0.20]                       # single target for the pilot (add levels in formal stage)
+
+sessions_per_condition: 3             # 3 damping x 3 sessions = 9 sessions
+n_probes: 3
+candidate_groups_per_session: 1
+candidates_per_group: 5
+# per session: 3 probes + 5 candidates = 8 eps; 9 sessions = 72 eps (in 60-120 pilot range)
+seed: 11
+max_steps: 1800
