@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Virtual envs / clones
+.venv*/
+*venv*/
+node_modules/
+
+# Logs / runtime
+logs/
+*.log
+
+# Debug / scratch sensor dumps (regenerable, heavy)
+franka_v1_skill_lab/sensors/**/debug_outputs/
+**/debug_outputs/
+
+# OS junk
+.DS_Store

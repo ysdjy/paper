@@ -1,0 +1,1 @@
+projects/deployment_calibration/data_generation/generate_open_drawer.py --n_conditions 12 --candidates 3 --seed 7 --drawers top_drawer --run_id kill_test --output_dir projects/deployment_calibration/data --headless

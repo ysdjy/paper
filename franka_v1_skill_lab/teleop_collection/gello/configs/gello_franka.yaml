@@ -1,0 +1,42 @@
+# GELLO-Franka 遥操作配置文件 (第一阶段：只读取关节数据)
+#
+# 注意：下面的数值只是 Franka-GELLO 的初始猜测值，
+# 真实设备必须先用 scripts/calibrate_gello_offset.sh 校准 joint_offsets，
+# 否则读到的关节角是错的（只是没有崩溃而已）。
+
+# 串口端口。先运行 scripts/detect_gello_port.sh 检测，然后把结果填到这里。
+# 推荐填 /dev/serial/by-id/usb-FTDI_...-if00-port0 这种稳定名字，而不是 /dev/ttyUSB0。
+port: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FTBGPXIY-if00-port0
+
+# Dynamixel 串口波特率，gello_software 默认 57600。
+baudrate: 57600
+
+# GELLO 7 个关节对应的 Dynamixel 舵机 ID（不含夹爪）。
+joint_ids: [1, 2, 3, 4, 5, 6, 7]
+
+# 关节偏置（弧度），必须是 pi/2 的整数倍。
+# 校准前先全部填 0，校准后用 calibrate 输出的结果替换。
+joint_offsets: [6.283185, 3.141593, 0.0, 3.141593, 3.141593, 4.712389, 3.141593]
+
+# 关节方向，每个关节是 +1 或 -1。会随 GELLO 机械结构不同而变化。
+joint_signs: [1, 1, 1, 1, 1, -1, 1]
+
+# 校准时把 GELLO 摆成的标准姿态（弧度），用于消除 2*pi 的歧义。
+# 这是常见的 Franka "home" 附近姿态。
+start_joints: [0, 0, 0, -1.57, 0, 1.57, 0]
+
+# 夹爪配置
+gripper:
+  enabled: true
+  id: 8            # 夹爪舵机 ID
+  open_value: 195  # 张开角度（度）
+  close_value: 152 # 闭合角度（度）
+
+# 终端打印频率（Hz）
+print_hz: 30
+
+# 是否把读数保存到 CSV
+log_to_file: true
+
+# 日志目录（相对项目根目录）
+log_dir: logs

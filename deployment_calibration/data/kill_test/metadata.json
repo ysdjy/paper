@@ -1,0 +1,12 @@
+{
+  "candidates": 3,
+  "contract": "open_drawer_v1",
+  "drawers": [
+    "top_drawer"
+  ],
+  "episodes_planned": 36,
+  "n_conditions": 12,
+  "run_id": "kill_test",
+  "seed": 7,
+  "skill": "open_drawer"
+}

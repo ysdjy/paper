@@ -1,0 +1,34 @@
+# Franka V1 Skill Lab — pi0.5 dataset / pipeline config (V1).
+# V1 mainline is JOINT ACTION. This overrides the legacy IK-Rel default of
+# pi05_isaacsim_baseline.
+
+task_id: "Isaac-Stack-Cube-Franka-JointPolicy-v0"
+control_mode: joint
+action_space: joint          # 7 arm joints + gripper (NOT 7-D EE delta)
+
+# OpenPI stays in its own venv; IsaacLab talks to it over HTTP only.
+policy_server:
+  host: "127.0.0.1"
+  port: 8008
+  backend: mock              # mock | openpi  (default mock for smoke tests)
+  health_path: "/health"
+  infer_path: "/infer"
+
+dataset:
+  repo_id: "franka_v1_joint_demos"
+  source: "teleop_collection"   # demos produced by teleop_collection/entries/collect_teleop_demos_joint_v1.py
+  lerobot_root: "data/lerobot"
+
+# Observation contract the V1 obs adapter must emit.
+observation:
+  joint_pos: 7
+  joint_vel: 7
+  gripper_width: 1
+  ee_pose: 7                 # [x,y,z, qx,qy,qz,qw] for logging/aux
+  images: [wrist, scene]     # optional; depends on cameras present
+  object_poses_from: "perception_foundationpose"   # sim GT or FoundationPose
+
+# Action contract the V1 action adapter must consume.
+action:
+  joint_target: 7
+  gripper_command: 1

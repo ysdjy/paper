@@ -1,0 +1,18 @@
+{
+  "contract_version": "open_drawer_v1",
+  "skill": "open_drawer",
+  "drawers": ["top_drawer"],
+  "target_open_levels": [0.10, 0.18, 0.26, 0.34],
+  "target_tolerance": 0.02,
+  "theta_ranges": {
+    "max_pos_step": [0.008, 0.035],
+    "pull_lead": [0.03, 0.14],
+    "pre_grasp_clearance": [0.06, 0.18],
+    "approach_line_lead": [0.01, 0.06],
+    "grasp_offset_local_xyz_y": [-0.06, 0.06]
+  },
+  "full_reset_per_episode": true,
+  "split": "by_reset_index",
+  "history_K": [1, 4, 8],
+  "notes": "round-1 H1/H2 only; vision/VLM (B3-B6), place, cameras, FoundationPose, pi0.5, real robot deferred."
+}

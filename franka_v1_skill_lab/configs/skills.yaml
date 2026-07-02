@@ -1,0 +1,38 @@
+# Franka V1 Skill Lab — skill backend defaults.
+# These mirror the default CLI flags of skill_runtime/entries/skill_test_ui_joint_v1.py.
+
+control_mode: joint
+
+skills:
+  grasp:
+    backend: joint_ik        # internal DLS IK -> q_des -> joint-position action
+    targets: [cube_1, cube_2, cube_3, knife]
+    status: ready
+  place:
+    backend: joint_ik
+    status: ready
+  open_drawer:
+    backend: ik_pull         # physical grasp+pull via IK (no policy)
+    targets: [top_drawer, middle_drawer]   # bottom_drawer locked in asset
+    status: ready
+  close_drawer:
+    backend: ik_pull
+    targets: [top_drawer, middle_drawer]
+    status: ready
+  open_door:
+    backend: ik              # OpenDoorIKSkill (microwave); not fully stable
+    targets: [microwave]
+    status: wip
+  close_door:
+    backend: ik              # CloseDoorIKSkill (microwave); not fully stable
+    targets: [microwave]
+    status: wip
+
+# Default launch flags for the V1 skill UI entry.
+default_flags:
+  grasp_backend: joint_ik
+  place_backend: joint_ik
+  drawer_backend: ik_pull
+  free_microwave_door: true
+  speed: 2.0
+  seed: 1

@@ -1,0 +1,1794 @@
+{
+  "contract_objects": [
+    "cube_1",
+    "cube_2",
+    "cube_3",
+    "knife",
+    "cabinet",
+    "microwave",
+    "coffee_machine"
+  ],
+  "control_mode": "joint",
+  "env_root": "/World/envs/env_0",
+  "meters_per_unit": 1.0,
+  "objects": [
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/Connection/assets/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd",
+        "./Props/panda_link0.usd",
+        "./Props/instanceable_collision_meshes.usd",
+        "./Props/panda_link1.usd",
+        "./Props/panda_link2.usd",
+        "./Props/panda_link3.usd",
+        "./Props/panda_link4.usd",
+        "./Props/panda_link5.usd",
+        "./Props/panda_link6.usd",
+        "./Props/panda_link7.usd",
+        "./Props/panda_hand.usd",
+        "./Props/panda_leftfinger.usd",
+        "./Props/panda_rightfinger.usd"
+      ],
+      "name": "Robot",
+      "path": "/World/envs/env_0/Robot",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -1.489094958451176e-10,
+          -8.78133399329073e-10,
+          -8.47253794900027e-11
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Cube_1",
+      "path": "/World/envs/env_0/Cube_1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9999330043792725,
+          6.735672523305437e-05,
+          -3.590790996043694e-06,
+          -0.01157506817343498
+        ],
+        "translation": [
+          2.299395799636841,
+          1.8539925813674927,
+          0.7822995185852051
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9999330043792725,
+          6.733644113410264e-05,
+          -3.5897096495318692e-06,
+          -0.011571582406759262
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.299395799636841,
+          1.8539925813674927,
+          0.7822995185852051
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Cube_2",
+      "path": "/World/envs/env_0/Cube_2",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.453583002090454,
+          1.6435683965682983,
+          0.7822999358177185
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -4.8781871555547696e-06,
+          -5.762240107287653e-06,
+          -2.149831885844833e-07
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.453583002090454,
+          1.6435683965682983,
+          0.7822999358177185
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Cube_3",
+      "path": "/World/envs/env_0/Cube_3",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9988504648208618,
+          -4.0024977996486345e-06,
+          -5.106527304566296e-07,
+          0.047934840261208096
+        ],
+        "translation": [
+          2.4778389930725098,
+          1.9861253499984741,
+          0.782299816608429
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9988504648208618,
+          -4.002319656137843e-06,
+          -5.106300022816868e-07,
+          0.0479327067732811
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.4778389930725098,
+          1.9861253499984741,
+          0.782299816608429
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/simv2/USD/Cabinet_44853/cabinet.usd",
+        "configuration/cabinet_physics.usd",
+        "configuration/cabinet_sensor.usd",
+        "configuration/cabinet_robot.usd"
+      ],
+      "name": "Cabinet",
+      "path": "/World/envs/env_0/Cabinet",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.012278857519195564,
+          0.0,
+          0.0,
+          0.7929880455770105
+        ],
+        "translation": [
+          1.2590051889419556,
+          2.367975950241089,
+          1.0729999542236328
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.017452456057071686,
+          0.0,
+          0.0,
+          0.9998477101325989
+        ],
+        "scale": [
+          0.6200000047683716,
+          0.4959999918937683,
+          0.4000000059604645
+        ],
+        "translate": [
+          1.2590051889419556,
+          2.367975950241089,
+          1.0729999542236328
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Sektion_Cabinet/sektion_cabinet_instanceable.usd",
+        "configurations/cabinet_lab.usd",
+        "./sektion_cabinet_visuals.usd",
+        "./sektion_cabinet_collisions.usd"
+      ],
+      "name": "SektionCabinet",
+      "path": "/World/envs/env_0/SektionCabinet",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          0.9842661619186401,
+          1.640000581741333,
+          0.39410272240638733
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.9842661619186401,
+          1.640000581741333,
+          0.39410272240638733
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/simv2/USD/Knife_101054/knife.usd",
+        "configuration/knife_physics.usd",
+        "configuration/knife_sensor.usd",
+        "configuration/knife_robot.usd"
+      ],
+      "name": "Knife",
+      "path": "/World/envs/env_0/Knife",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.1040504954573004,
+          -0.010648427365485708,
+          0.01509139497330929,
+          0.5448590914873094
+        ],
+        "translation": [
+          2.3366239070892334,
+          1.9533265829086304,
+          0.7795015573501587
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.5902761816978455,
+          0.06040829047560692,
+          -0.08561314642429352,
+          -0.8003718852996826
+        ],
+        "scale": [
+          0.11999999731779099,
+          0.11999999731779099,
+          0.11999999731779099
+        ],
+        "translate": [
+          2.3366239070892334,
+          1.9533265829086304,
+          0.7795015573501587
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/CoffeeMachine_103046/coffeemachine.usd",
+        "configuration/coffeemachine_physics.usd",
+        "configuration/coffeemachine_sensor.usd",
+        "configuration/coffeemachine_robot.usd"
+      ],
+      "name": "CoffeeMachine",
+      "path": "/World/envs/env_0/CoffeeMachine",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6324555338007362,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.6728150844573975,
+          1.5792450904846191,
+          0.8995630741119385
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.20000000298023224,
+          0.20000000298023224,
+          0.20000000298023224
+        ],
+        "translate": [
+          2.6728150844573975,
+          1.5792450904846191,
+          0.8995630741119385
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "vla_front_static",
+      "path": "/World/envs/env_0/vla_front_static",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6106319713943115,
+          0.35700022444028756,
+          0.351730030946574,
+          0.6131601916228772
+        ],
+        "translation": [
+          4.15,
+          1.95,
+          2.33
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.6106319713943114,
+          0.3570002244402875,
+          0.35173003094657396,
+          0.6131601916228772
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          4.15,
+          1.95,
+          2.33
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "vla_left_static",
+      "path": "/World/envs/env_0/vla_left_static",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.0017879995284601415,
+          0.0037269990380635657,
+          0.5011478656450546,
+          0.8653517951072054
+        ],
+        "translation": [
+          2.180000066757202,
+          4.039999961853027,
+          2.3299999237060547
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          -0.0017879995284602046,
+          0.00372699904255569,
+          0.5011478662490845,
+          0.8653517961502075
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.180000066757202,
+          4.039999961853027,
+          2.3299999237060547
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "vla_right_static",
+      "path": "/World/envs/env_0/vla_right_static",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.8653517961502075,
+          0.501147863844192,
+          -0.0037269990246706847,
+          0.0017879995198800086
+        ],
+        "translation": [
+          1.8799999427795409,
+          -0.44999999955296527,
+          2.3299999237060547
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.8653517961502075,
+          0.5011478662490845,
+          -0.00372699904255569,
+          0.0017879995284602046
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          1.8799999427795409,
+          -0.44999999955296527,
+          2.3299999237060547
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "vla_top_static",
+      "path": "/World/envs/env_0/vla_top_static",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.7071067811865478,
+          0.0,
+          0.0,
+          -0.7071067811865472
+        ],
+        "translation": [
+          2.0199998855590824,
+          1.9099999904632567,
+          3.6999999999999975
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7071067811865478,
+          0.0,
+          0.0,
+          -0.7071067811865475
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.0199998855590824,
+          1.9099999904632567,
+          3.6999999999999975
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/SimReadyProps/lemon_01/lemon_01_base.usd",
+        "lemon_01_inst.usd"
+      ],
+      "name": "Prop_lemon_01",
+      "path": "/World/envs/env_0/Prop_lemon_01",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9824203848838806,
+          -0.16727885782290136,
+          -0.04119405255649859,
+          0.07190981243228124
+        ],
+        "translation": [
+          2.4299209117889404,
+          1.7022417783737183,
+          0.7602260708808899
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9824203848838806,
+          -0.16727901995182037,
+          -0.041194092482328415,
+          0.07190988212823868
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.4299209117889404,
+          1.7022417783737183,
+          0.7602260708808899
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/SimReadyProps/orange_01/orange_01_base.usd",
+        "orange_01_inst.usd"
+      ],
+      "name": "Prop_orange_01",
+      "path": "/World/envs/env_0/Prop_orange_01",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.8724863529205321,
+          -0.14452948682618527,
+          -0.198357996488186,
+          -0.4225315333018128
+        ],
+        "translation": [
+          2.247394561767578,
+          2.374422550201416,
+          0.7603529691696167
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.8724863529205322,
+          -0.1445295214653015,
+          -0.19835804402828217,
+          -0.4225316345691681
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.247394561767578,
+          2.374422550201416,
+          0.7603529691696167
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/SimReadyProps/orange_02/orange_02_base.usd",
+        "orange_02_inst.usd"
+      ],
+      "name": "Prop_orange_02",
+      "path": "/World/envs/env_0/Prop_orange_02",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.25512543320655817,
+          0.8750874290570405,
+          -0.18954588434581715,
+          -0.3649730984128379
+        ],
+        "translation": [
+          2.5096724033355713,
+          2.170870780944824,
+          0.8151077032089233
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.2551254332065582,
+          -0.8750874996185303,
+          0.1895458996295929,
+          0.36497312784194946
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.5096724033355713,
+          2.170870780944824,
+          0.8151077032089233
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/SimReadyProps/pomegranate01/pomegranate01_base.usd",
+        "pomegranate01_inst.usd"
+      ],
+      "name": "Prop_pomegranate01",
+      "path": "/World/envs/env_0/Prop_pomegranate01",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9938111901283264,
+          0.09749011288000257,
+          -0.05260536359837544,
+          0.008226298502152611
+        ],
+        "translation": [
+          2.252140522003174,
+          2.2847213745117188,
+          0.7604246139526367
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9938111901283264,
+          0.09748970717191696,
+          -0.052605144679546356,
+          0.008226264268159866
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.252140522003174,
+          2.2847213745117188,
+          0.7604246139526367
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned_Physics/005_tomato_soup_can.usd",
+        "../Axis_Aligned/005_tomato_soup_can.usd"
+      ],
+      "name": "Prop_005_tomato_soup_can",
+      "path": "/World/envs/env_0/Prop_005_tomato_soup_can",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.998717188835144,
+          -0.01378714996991983,
+          -0.04870199435617535,
+          -0.0014166745092783536
+        ],
+        "translation": [
+          2.0776944160461426,
+          2.3007760047912598,
+          0.7942203879356384
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.998717188835144,
+          -0.013787169940769672,
+          -0.04870206490159035,
+          -0.0014166765613481402
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.0776944160461426,
+          2.3007760047912598,
+          0.7942203879356384
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned_Physics/003_cracker_box.usd",
+        "../Axis_Aligned/003_cracker_box.usd"
+      ],
+      "name": "Prop_003_cracker_box",
+      "path": "/World/envs/env_0/Prop_003_cracker_box",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.7225261330604552,
+          0.00027724150304564237,
+          0.6913433910991728,
+          0.000475147714581944
+        ],
+        "translation": [
+          2.1790547370910645,
+          2.5195250511169434,
+          0.8428924679756165
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7225261330604553,
+          0.0002772415173240006,
+          0.6913434267044067,
+          0.0004751477390527725
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.1790547370910645,
+          2.5195250511169434,
+          0.8428924679756165
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/011_banana.usd"
+      ],
+      "name": "Prop_011_banana",
+      "path": "/World/envs/env_0/Prop_011_banana",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.5804559588432313,
+          0.6856965334117002,
+          -0.3227469283403746,
+          0.29786836716478543
+        ],
+        "translation": [
+          2.0760326385498047,
+          2.4505984783172607,
+          0.7827873826026917
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.5804559588432312,
+          -0.685696542263031,
+          0.3227469325065613,
+          -0.29786837100982666
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.0760326385498047,
+          2.4505984783172607,
+          0.7827873826026917
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/051_large_clamp.usd"
+      ],
+      "name": "Prop_051_large_clamp",
+      "path": "/World/envs/env_0/Prop_051_large_clamp",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9979771971702576,
+          1.1024841103792221e-06,
+          -7.024030893892011e-06,
+          -0.06357290207033471
+        ],
+        "translation": [
+          2.5567142963409424,
+          1.8754093647003174,
+          0.7802069187164307
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9979771971702576,
+          1.1024686727978406e-06,
+          -7.0239325395959895e-06,
+          -0.06357201188802719
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.5567142963409424,
+          1.8754093647003174,
+          0.7802069187164307
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/037_scissors.usd"
+      ],
+      "name": "Prop_037_scissors",
+      "path": "/World/envs/env_0/Prop_037_scissors",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.997770369052887,
+          -3.074837482953449e-05,
+          1.2793262005321057e-05,
+          0.06674046397003576
+        ],
+        "translation": [
+          2.418491840362549,
+          2.0481035709381104,
+          0.7712603211402893
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.997770369052887,
+          -3.074858614127152e-05,
+          1.2793349924322683e-05,
+          0.06674092262983322
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.418491840362549,
+          2.0481035709381104,
+          0.7712603211402893
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/025_mug.usd"
+      ],
+      "name": "Prop_025_mug",
+      "path": "/World/envs/env_0/Prop_025_mug",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.6867017149925231,
+          0.6867021157485934,
+          -0.16864320231160151,
+          0.16864290428838474
+        ],
+        "translation": [
+          2.2589962482452393,
+          2.1269185543060303,
+          0.8046588897705078
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.6867017149925232,
+          -0.6867021322250366,
+          0.16864320635795593,
+          -0.16864290833473206
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.2589962482452393,
+          2.1269185543060303,
+          0.8046588897705078
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/007_tuna_fish_can.usd"
+      ],
+      "name": "Prop_007_tuna_fish_can",
+      "path": "/World/envs/env_0/Prop_007_tuna_fish_can",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.43896612524986267,
+          -0.05560288883912182,
+          0.01184334298504196,
+          0.8967032925459821
+        ],
+        "translation": [
+          2.3973305225372314,
+          2.219344139099121,
+          0.8047434091567993
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.43896612524986267,
+          -0.05560288578271866,
+          0.011843342334032059,
+          0.8967032432556152
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.3973305225372314,
+          2.219344139099121,
+          0.8047434091567993
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/024_bowl.usd"
+      ],
+      "name": "Prop_024_bowl",
+      "path": "/World/envs/env_0/Prop_024_bowl",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.48763063549995417,
+          0.48762866262486504,
+          -0.5120712739590236,
+          0.5120719296100684
+        ],
+        "translation": [
+          2.3034143447875977,
+          1.7239246368408203,
+          0.7907633185386658
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.4876306354999542,
+          -0.487628698348999,
+          0.5120713114738464,
+          -0.512071967124939
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.3034143447875977,
+          1.7239246368408203,
+          0.7907633185386658
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/YCB/Axis_Aligned/010_potted_meat_can.usd"
+      ],
+      "name": "Prop_010_potted_meat_can",
+      "path": "/World/envs/env_0/Prop_010_potted_meat_can",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.09035096317529671,
+          0.8125734311016686,
+          0.575128697988587,
+          0.028073177071907277
+        ],
+        "translation": [
+          45.43528366088867,
+          68.29107666015625,
+          -1788667.25
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          -0.09035096317529678,
+          0.8125733137130737,
+          0.5751286149024963,
+          0.028073173016309738
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          45.43528366088867,
+          68.29107666015625,
+          -1788667.25
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Food/mac_n_cheese_centered.usd"
+      ],
+      "name": "Prop_mac_n_cheese_centered",
+      "path": "/World/envs/env_0/Prop_mac_n_cheese_centered",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6970289349555971,
+          0.005990934960666326,
+          0.7169922514609036,
+          0.00607320985868496
+        ],
+        "translation": [
+          2.573098659515381,
+          2.235543966293335,
+          0.8103539943695068
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.6970289349555969,
+          0.005990935023874044,
+          0.7169922590255737,
+          0.006073209922760725
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.573098659515381,
+          2.235543966293335,
+          0.8103539943695068
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Mugs/SM_Mug_B1.usd"
+      ],
+      "name": "Prop_SM_Mug_B1",
+      "path": "/World/envs/env_0/Prop_SM_Mug_B1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9957841038703918,
+          -2.15859501111094e-05,
+          -2.2968355484128005e-05,
+          -0.09172795367575834
+        ],
+        "translation": [
+          2.5435211658477783,
+          2.0460243225097656,
+          0.7619999051094055
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9957841038703918,
+          -2.158619463443756e-05,
+          -2.296861566719599e-05,
+          -0.09172899276018143
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.5435211658477783,
+          2.0460243225097656,
+          0.7619999051094055
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Mugs/SM_Mug_C1.usd"
+      ],
+      "name": "Prop_SM_Mug_C1",
+      "path": "/World/envs/env_0/Prop_SM_Mug_C1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9996402263641357,
+          0.015726583805264833,
+          0.000215896495418916,
+          0.021726614673683073
+        ],
+        "translation": [
+          2.498304605484009,
+          1.799082636833191,
+          0.762913703918457
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9996402263641357,
+          0.015724899247288704,
+          0.00021587336959782988,
+          0.021724287420511246
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.498304605484009,
+          1.799082636833191,
+          0.762913703918457
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Mugs/SM_Mug_D1.usd"
+      ],
+      "name": "Prop_SM_Mug_D1",
+      "path": "/World/envs/env_0/Prop_SM_Mug_D1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.6678810119628906,
+          1.9727835655212402,
+          0.7620009779930115
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -2.1023830413469113e-05,
+          1.6479007172165439e-06,
+          -1.1978528391409782e-06
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.6678810119628906,
+          1.9727835655212402,
+          0.7620009779930115
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/CloudProps/L_Desk/L_Desk.usd"
+      ],
+      "name": "Prop_L_Desk",
+      "path": "/World/envs/env_0/Prop_L_Desk",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.5074445780894323,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          1.7999999523162842,
+          1.7999999523162842,
+          -1.8997192455572076e-05
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.009999999776482582,
+          0.009999999776482582,
+          0.009999999776482582
+        ],
+        "translate": [
+          1.7999999523162842,
+          1.7999999523162842,
+          -1.8997192455572076e-05
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/KLT_Bin/small_KLT_visual_collision.usd",
+        "small_KLT_visual.usd"
+      ],
+      "name": "Prop_KLT_1",
+      "path": "/World/envs/env_0/Prop_KLT_1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6213151793729254,
+          -2.7725649946158675e-10,
+          6.851597456398611e-07,
+          -1.0057739443594094
+        ],
+        "translation": [
+          2.377812623977661,
+          1.4553682804107666,
+          0.7985900044441223
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7133204340934753,
+          1.6808375846721901e-07,
+          5.142155146131699e-07,
+          -0.7008380889892578
+        ],
+        "scale": [
+          1.5,
+          1.0,
+          0.5
+        ],
+        "translate": [
+          2.377812623977661,
+          1.4553682804107666,
+          0.7985900044441223
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/KLT_Bin/small_KLT_visual_collision.usd",
+        "small_KLT_visual.usd"
+      ],
+      "name": "Prop_KLT_2",
+      "path": "/World/envs/env_0/Prop_KLT_2",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.484710216522217,
+          2.494433641433716,
+          0.7985898852348328
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -1.0768697933372096e-07,
+          7.472662133523045e-08,
+          3.617035417846637e-07
+        ],
+        "scale": [
+          1.5,
+          1.0,
+          0.5
+        ],
+        "translate": [
+          2.484710216522217,
+          2.494433641433716,
+          0.7985898852348328
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/KLT_Bin/small_KLT_visual_collision.usd",
+        "small_KLT_visual.usd"
+      ],
+      "name": "Prop_KLT_3",
+      "path": "/World/envs/env_0/Prop_KLT_3",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6123968510919585,
+          3.298129678377233e-07,
+          3.098443537600944e-07,
+          1.0205800342867464
+        ],
+        "translation": [
+          1.820662260055542,
+          2.3297672271728516,
+          0.7985899448394775
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7071236968040466,
+          2.49774643634737e-07,
+          3.932186984911823e-07,
+          0.7070898413658142
+        ],
+        "scale": [
+          1.5,
+          1.0,
+          0.5
+        ],
+        "translate": [
+          1.820662260055542,
+          2.3297672271728516,
+          0.7985899448394775
+        ]
+      }
+    },
+    {
+      "asset_refs": [
+        "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Mounts/Stand/stand_instanceable.usd",
+        "stand.usd"
+      ],
+      "name": "RobotStand",
+      "path": "/World/envs/env_0/RobotStand",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -1.489094958451176e-10,
+          -8.78133399329073e-10,
+          -8.47253794900027e-11
+        ],
+        "scale": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "translate": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_0",
+      "path": "/World/envs/env_0/InitCorner_0",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.2161617279052734,
+          0.877628743648529,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.2161617279052734,
+          0.877628743648529,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_1",
+      "path": "/World/envs/env_0/InitCorner_1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.7798612117767334,
+          0.8864921927452087,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.7798612117767334,
+          0.8864921927452087,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_2",
+      "path": "/World/envs/env_0/InitCorner_2",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.7772045135498047,
+          2.5896928310394287,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.7772045135498047,
+          2.5896928310394287,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_3",
+      "path": "/World/envs/env_0/InitCorner_3",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.097048759460449,
+          2.548536777496338,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.097048759460449,
+          2.548536777496338,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "GroundPlane",
+      "path": "/World/GroundPlane",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          -0.02500000037252903
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.0,
+          0.0,
+          -0.02500000037252903
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "light",
+      "path": "/World/light",
+      "type": "DomeLight",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "restore_contract": {
+    "preferred_restore": "Load scene_v1_latest.usd directly.",
+    "programmatic_restore": "Recreate each object at path; apply xform translate/orient_wxyz/scale."
+  },
+  "schema_version": "franka-scene-v1",
+  "sensors": {
+    "foundationpose_d435_rgbd": {
+      "consumer": "foundationpose",
+      "consumer_modules": [
+        "skill_runtime",
+        "teleop_collection",
+        "pi05_training",
+        "perception_foundationpose"
+      ],
+      "depth": true,
+      "enabled": false,
+      "frame_id": "foundationpose_d435_rgbd",
+      "image_keys": [
+        "images.wrist_depth"
+      ],
+      "intrinsics": {
+        "cx": 320.0,
+        "cy": 240.0,
+        "fx": 610.8327368169888,
+        "fy": 610.8327368169888,
+        "height": 480,
+        "width": 640
+      },
+      "libero_compatible": false,
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          0.04414,
+          -0.01518,
+          0.00429
+        ],
+        "rot_wxyz": [
+          0.06663008636930542,
+          0.7085909185115734,
+          0.7012009089322673,
+          0.04215005463704373
+        ]
+      },
+      "parent": "panda_hand",
+      "pose_is_approximate": false,
+      "prim_path": "{ENV_REGEX_NS}/Robot/panda_hand/foundationpose_d435_rgbd",
+      "resolution": [
+        640,
+        480
+      ],
+      "rgb": true,
+      "role": "depth",
+      "static": false,
+      "type": "rgbd",
+      "visible_body": false
+    },
+    "vla_front_static": {
+      "consumer": "vla_pi05",
+      "consumer_modules": [
+        "skill_runtime",
+        "teleop_collection",
+        "pi05_training",
+        "perception_foundationpose"
+      ],
+      "depth": false,
+      "enabled": false,
+      "frame_id": "vla_front_static",
+      "image_keys": [
+        "images.front_rgb",
+        "images.image"
+      ],
+      "intrinsics": {
+        "cx": 128.0,
+        "cy": 128.0,
+        "fx": 293.19971367215464,
+        "fy": 293.19971367215464,
+        "height": 256,
+        "width": 256
+      },
+      "libero_compatible": false,
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          4.15,
+          1.95,
+          2.33
+        ],
+        "rot_wxyz": [
+          0.6106319713943114,
+          0.3570002244402875,
+          0.35173003094657396,
+          0.6131601916228772
+        ]
+      },
+      "parent": "env_root",
+      "pose_is_approximate": false,
+      "prim_path": "{ENV_REGEX_NS}/vla_front_static",
+      "resolution": [
+        256,
+        256
+      ],
+      "rgb": true,
+      "role": "image",
+      "static": true,
+      "type": "rgb",
+      "visible_body": false
+    },
+    "vla_left_static": {
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          2.180000066757202,
+          4.039999961853027,
+          2.3299999237060547
+        ],
+        "rot_wxyz": [
+          -0.0017879995284602046,
+          0.00372699904255569,
+          0.5011478662490845,
+          0.8653517961502075
+        ]
+      }
+    },
+    "vla_libero_eye_in_hand": {
+      "consumer": "vla_pi05",
+      "consumer_modules": [
+        "skill_runtime",
+        "teleop_collection",
+        "pi05_training",
+        "perception_foundationpose"
+      ],
+      "depth": false,
+      "enabled": false,
+      "frame_id": "vla_libero_eye_in_hand",
+      "image_keys": [
+        "images.wrist_rgb",
+        "images.eye_in_hand_rgb",
+        "images.robot0_eye_in_hand_rgb"
+      ],
+      "intrinsics": {
+        "cx": 64.0,
+        "cy": 64.0,
+        "fx": 83.40310188499166,
+        "fy": 83.40310188499166,
+        "height": 128,
+        "width": 128
+      },
+      "libero_compatible": true,
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          0.04414,
+          -0.01518,
+          0.00429
+        ],
+        "rot_wxyz": [
+          0.06663008636930542,
+          0.7085909185115734,
+          0.7012009089322673,
+          0.04215005463704373
+        ]
+      },
+      "parent": "panda_hand",
+      "pose_is_approximate": false,
+      "prim_path": "{ENV_REGEX_NS}/Robot/panda_hand/vla_libero_eye_in_hand",
+      "resolution": [
+        128,
+        128
+      ],
+      "rgb": true,
+      "role": "wrist_image",
+      "static": false,
+      "type": "rgb",
+      "visible_body": false
+    },
+    "vla_right_static": {
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          1.8799999427795409,
+          -0.44999999955296527,
+          2.3299999237060547
+        ],
+        "rot_wxyz": [
+          0.8653517961502075,
+          0.5011478662490845,
+          -0.00372699904255569,
+          0.0017879995284602046
+        ]
+      }
+    },
+    "vla_top_static": {
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          2.0199998855590824,
+          1.9099999904632567,
+          3.6999999999999975
+        ],
+        "rot_wxyz": [
+          0.7071067811865478,
+          0.0,
+          0.0,
+          -0.7071067811865475
+        ]
+      }
+    }
+  },
+  "task": "Isaac-Stack-Cube-Franka-JointPolicy-v0",
+  "up_axis": "Z"
+}

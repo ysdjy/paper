@@ -1,0 +1,1 @@
+projects/paper/deployment_calibration/data_generation/generate_open_drawer.py --n_conditions 2 --candidates 3 --seed 7 --drawers top_drawer --run_id iso_captured --output_dir projects/paper/deployment_calibration/data --headless

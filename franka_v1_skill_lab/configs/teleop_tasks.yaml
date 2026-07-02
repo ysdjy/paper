@@ -1,0 +1,93 @@
+# Franka V1 Skill Lab — teleop task catalogue.
+# Each entry is one task the human can teleoperate + record. The collection
+# entry (teleop_collection/entries/collect_teleop_demos_joint_v1.py) reads this
+# to (a) validate --task, (b) stamp task_instruction / skill_type / target_name
+# into every recorded episode, and (c) drive the pi0.5 dataset task strings.
+#
+# Keep skill_type in scene_contract.V1_SKILLS and target_name in the V1 object /
+# drawer / door target lists (scene/scene_contract.py is the source of truth).
+
+control_mode: joint
+target_task: "Isaac-Stack-Cube-Franka-JointPolicy-v0"
+
+tasks:
+  # --- grasp ----------------------------------------------------------------
+  - task_id: grasp_cube_1
+    skill_type: grasp
+    target_name: cube_1
+    instruction: "Grasp cube_1 with the Franka gripper."
+    success_condition: "object lifted and stable"
+  - task_id: grasp_cube_2
+    skill_type: grasp
+    target_name: cube_2
+    instruction: "Grasp cube_2 with the Franka gripper."
+    success_condition: "object lifted and stable"
+  - task_id: grasp_cube_3
+    skill_type: grasp
+    target_name: cube_3
+    instruction: "Grasp cube_3 with the Franka gripper."
+    success_condition: "object lifted and stable"
+  - task_id: grasp_knife
+    skill_type: grasp
+    target_name: knife
+    instruction: "Grasp the knife by its handle with the Franka gripper."
+    success_condition: "knife lifted and stable"
+
+  # --- place ----------------------------------------------------------------
+  - task_id: place_cube_1_left
+    skill_type: place
+    target_name: cube_1
+    instruction: "Place cube_1 to the left placement area."
+    success_condition: "object resting in left area, gripper released"
+  - task_id: place_cube_2_center
+    skill_type: place
+    target_name: cube_2
+    instruction: "Place cube_2 to the center placement area."
+    success_condition: "object resting in center area, gripper released"
+  - task_id: place_cube_3_right
+    skill_type: place
+    target_name: cube_3
+    instruction: "Place cube_3 to the right placement area."
+    success_condition: "object resting in right area, gripper released"
+  - task_id: place_knife_drawer
+    skill_type: place
+    target_name: knife
+    instruction: "Place the knife into the open drawer."
+    success_condition: "knife inside drawer, gripper released"
+
+  # --- drawer (cabinet) -----------------------------------------------------
+  - task_id: open_top_drawer
+    skill_type: open_drawer
+    target_name: top_drawer
+    instruction: "Open the top drawer."
+    success_condition: "top drawer joint past open threshold"
+  - task_id: close_top_drawer
+    skill_type: close_drawer
+    target_name: top_drawer
+    instruction: "Close the top drawer."
+    success_condition: "top drawer joint near zero"
+  - task_id: open_middle_drawer
+    skill_type: open_drawer
+    target_name: middle_drawer
+    instruction: "Open the middle drawer."
+    success_condition: "middle drawer joint past open threshold"
+  - task_id: close_middle_drawer
+    skill_type: close_drawer
+    target_name: middle_drawer
+    instruction: "Close the middle drawer."
+    success_condition: "middle drawer joint near zero"
+
+  # --- microwave door -------------------------------------------------------
+  - task_id: open_microwave_door
+    skill_type: open_door
+    target_name: microwave
+    instruction: "Open the microwave door."
+    success_condition: "microwave door joint past open threshold"
+  - task_id: close_microwave_door
+    skill_type: close_door
+    target_name: microwave
+    instruction: "Close the microwave door."
+    success_condition: "microwave door joint near closed"
+
+# The default task stamped when --task_catalog_id is not given on the CLI.
+default_task_id: grasp_cube_2

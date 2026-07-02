@@ -1,0 +1,1584 @@
+{
+  "contract_objects": [
+    "cube_1",
+    "cube_2",
+    "cube_3",
+    "knife",
+    "cabinet",
+    "microwave",
+    "coffee_machine"
+  ],
+  "control_mode": "joint",
+  "env_root": "/World/envs/env_0",
+  "meters_per_unit": 1.0,
+  "objects": [
+    {
+      "asset_refs": [],
+      "name": "Robot",
+      "path": "/World/envs/env_0/Robot",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -1.489094958451176e-10,
+          -8.78133399329073e-10,
+          -8.47253794900027e-11
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Cabinet",
+      "path": "/World/envs/env_0/Cabinet",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.012278857519195564,
+          0.0,
+          0.0,
+          0.7929880455770105
+        ],
+        "translation": [
+          1.2590051889419556,
+          2.367975950241089,
+          1.0729999542236328
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.017452456057071686,
+          0.0,
+          0.0,
+          0.9998477101325989
+        ],
+        "scale": [
+          0.6200000047683716,
+          0.4959999918937683,
+          0.4000000059604645
+        ],
+        "translate": [
+          1.2590051889419556,
+          2.367975950241089,
+          1.0729999542236328
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Knife",
+      "path": "/World/envs/env_0/Knife",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.5830951877595486,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.6540800821372423,
+          1.670786557628436,
+          0.7764795240900455
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.11999999731779099,
+          0.11999999731779099,
+          0.11999999731779099
+        ],
+        "translate": [
+          2.6540800821372423,
+          1.670786557628436,
+          0.7764795240900455
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "CoffeeMachine",
+      "path": "/World/envs/env_0/CoffeeMachine",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.9363366307137956e-17,
+          0.0,
+          0.0,
+          0.6324555338007362
+        ],
+        "translation": [
+          1.398658275604248,
+          1.3907185792922974,
+          0.9356151819229126
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          6.123234262925839e-17,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "scale": [
+          0.20000000298023224,
+          0.20000000298023224,
+          0.20000000298023224
+        ],
+        "translate": [
+          1.398658275604248,
+          1.3907185792922974,
+          0.9356151819229126
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "vla_front_static",
+      "path": "/World/envs/env_0/vla_front_static",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.566655933408286,
+          0.4229669645884704,
+          0.4229669645884704,
+          0.5666559334082859
+        ],
+        "translation": [
+          2.4,
+          0.0,
+          0.87
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.5666559334082859,
+          0.42296696458847044,
+          0.42296696458847044,
+          0.5666559334082859
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.4,
+          0.0,
+          0.87
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_005_tomato_soup_can",
+      "path": "/World/envs/env_0/Prop_005_tomato_soup_can",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.998714864253998,
+          -0.013767995561449812,
+          -0.0487548579920766,
+          -0.0014233897957485718
+        ],
+        "translation": [
+          2.077686444328728,
+          2.3007743358612087,
+          0.7942190766334509
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.998714864253998,
+          -0.013767995561449815,
+          -0.04875485799207661,
+          -0.001423389795748572
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.077686444328728,
+          2.3007743358612087,
+          0.7942190766334509
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_003_cracker_box",
+      "path": "/World/envs/env_0/Prop_003_cracker_box",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.7225270867347717,
+          0.0002781042927713762,
+          0.6913423945164162,
+          0.0004744859049704809
+        ],
+        "translation": [
+          2.6396918746670366,
+          1.9358725158951824,
+          0.8460528461723293
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7225270867347718,
+          0.00027810429277137615,
+          0.6913423945164161,
+          0.00047448590497048084
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.6396918746670366,
+          1.9358725158951824,
+          0.8460528461723293
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_011_banana",
+      "path": "/World/envs/env_0/Prop_011_banana",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.5803664922714236,
+          0.6857737793124425,
+          -0.32277208069158886,
+          0.29783761042238394
+        ],
+        "translation": [
+          2.0760369194514863,
+          2.4506022930145264,
+          0.7827852368354787
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.5803664922714235,
+          -0.6857737793124427,
+          0.32277208069158886,
+          -0.29783761042238394
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.0760369194514863,
+          2.4506022930145264,
+          0.7827852368354787
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_051_large_clamp",
+      "path": "/World/envs/env_0/Prop_051_large_clamp",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9980940222740173,
+          0.00399014029008775,
+          0.03878369319169451,
+          -0.04783541181751566
+        ],
+        "translation": [
+          1.2476218938827515,
+          1.591494083404541,
+          0.01940169371664524
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9980940222740173,
+          0.003990154713392258,
+          0.038783833384513855,
+          -0.0478355847299099
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          1.2476218938827515,
+          1.591494083404541,
+          0.01940169371664524
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_037_scissors",
+      "path": "/World/envs/env_0/Prop_037_scissors",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.400000810623169,
+          2.050013780593872,
+          0.771256148815155
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          1.290170814627345e-07,
+          -2.8900922188768163e-07,
+          0.0003433523525018245
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.400000810623169,
+          2.050013780593872,
+          0.771256148815155
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_025_mug",
+      "path": "/World/envs/env_0/Prop_025_mug",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.6867014169692993,
+          0.6867018563933234,
+          -0.16864368890817005,
+          0.16864468728591567
+        ],
+        "translation": [
+          2.2589962482452393,
+          2.1269185543060303,
+          0.8046591281890869
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.6867014169692993,
+          -0.6867018938064575,
+          0.16864369809627533,
+          -0.16864469647407532
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.2589962482452393,
+          2.1269185543060303,
+          0.8046591281890869
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_007_tuna_fish_can",
+      "path": "/World/envs/env_0/Prop_007_tuna_fish_can",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.4389058351516724,
+          -0.0557209295030979,
+          0.011887936948173092,
+          0.8967248869303449
+        ],
+        "translation": [
+          2.3973233699798584,
+          2.219352960586548,
+          0.8047446608543396
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.43890583515167236,
+          -0.05572092905640602,
+          0.011887936852872372,
+          0.8967248797416687
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.3973233699798584,
+          2.219352960586548,
+          0.8047446608543396
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_024_bowl",
+      "path": "/World/envs/env_0/Prop_024_bowl",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.487629532814026,
+          0.4876289978608992,
+          -0.5120716989734757,
+          0.5120722354152472
+        ],
+        "translation": [
+          2.3034145832061492,
+          1.7239242122226663,
+          0.7917956856340237
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.4876295328140259,
+          -0.4876289978608991,
+          0.5120716989734756,
+          -0.5120722354152473
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.3034145832061492,
+          1.7239242122226663,
+          0.7917956856340237
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_010_potted_meat_can",
+      "path": "/World/envs/env_0/Prop_010_potted_meat_can",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.09035097807645807,
+          0.8125735541884973,
+          0.575128521919084,
+          0.028073173480578896
+        ],
+        "translation": [
+          45.43528366088867,
+          68.29107666015625,
+          -1765289.75
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          -0.09035097807645798,
+          0.8125734329223633,
+          0.575128436088562,
+          0.02807316929101944
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          45.43528366088867,
+          68.29107666015625,
+          -1765289.75
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_mac_n_cheese_centered",
+      "path": "/World/envs/env_0/Prop_mac_n_cheese_centered",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.697025716304779,
+          0.005989833121485302,
+          0.716995396517793,
+          0.006072403254010104
+        ],
+        "translation": [
+          2.573096513748169,
+          2.235543966293335,
+          0.8103542923927307
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.697025716304779,
+          0.005989832803606987,
+          0.716995358467102,
+          0.006072402931749821
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.573096513748169,
+          2.235543966293335,
+          0.8103542923927307
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_SM_Mug_B1",
+      "path": "/World/envs/env_0/Prop_SM_Mug_B1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9975885152816772,
+          -2.18820311632444e-07,
+          2.984395307786046e-08,
+          -0.06940572150802864
+        ],
+        "translation": [
+          2.543790578842163,
+          2.0519394874572754,
+          0.7619999051094055
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9975885152816772,
+          -2.188233594324629e-07,
+          2.9844368754083916e-08,
+          -0.06940668821334839
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.543790578842163,
+          2.0519394874572754,
+          0.7619999051094055
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_SM_Mug_C1",
+      "path": "/World/envs/env_0/Prop_SM_Mug_C1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9999998211860657,
+          -2.8681868405762817e-07,
+          -2.2000957044646508e-07,
+          0.0005980198207490718
+        ],
+        "translation": [
+          2.5001370906829834,
+          1.7999061346054077,
+          0.7619998455047607
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9999998211860657,
+          -2.8785672157027875e-07,
+          -2.2080581629779772e-07,
+          0.0006001841393299401
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.5001370906829834,
+          1.7999061346054077,
+          0.7619998455047607
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_SM_Mug_D1",
+      "path": "/World/envs/env_0/Prop_SM_Mug_D1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9999993443489075,
+          -5.368621911905173e-07,
+          -2.61759006336926e-07,
+          0.0011451206916484608
+        ],
+        "translation": [
+          2.3500003814697266,
+          1.750000238418579,
+          0.7619999647140503
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9999993443489075,
+          -5.118700983075541e-07,
+          -2.495735600405169e-07,
+          0.0010918128537014127
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.3500003814697266,
+          1.750000238418579,
+          0.7619999647140503
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_sektion_cabinet_instanceable",
+      "path": "/World/envs/env_0/Prop_sektion_cabinet_instanceable",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          1.1500027179718018,
+          1.640000581741333,
+          0.39410272240638733
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          5.1608849138684576e-11,
+          6.019871268136967e-10,
+          4.1397850425450855e-11
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          1.1500027179718018,
+          1.640000581741333,
+          0.39410272240638733
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_L_Desk",
+      "path": "/World/envs/env_0/Prop_L_Desk",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.5074445780894323,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          1.7999999523162842,
+          1.7999999523162842,
+          -1.8997192455572076e-05
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          0.009999999776482582,
+          0.009999999776482582,
+          0.009999999776482582
+        ],
+        "translate": [
+          1.7999999523162842,
+          1.7999999523162842,
+          -1.8997192455572076e-05
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_KLT_1",
+      "path": "/World/envs/env_0/Prop_KLT_1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -1.0,
+          4.7018833590456994e-07,
+          -1.2040674773791253e-07,
+          0.6123956810683665
+        ],
+        "translation": [
+          2.5335891447947816,
+          1.4745697584023365,
+          0.8004284702207523
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7070906758308412,
+          -4.086190177143991e-07,
+          2.8357125611136152e-09,
+          -0.707122886175322
+        ],
+        "scale": [
+          1.5,
+          1.0,
+          0.5
+        ],
+        "translate": [
+          2.5335891447947816,
+          1.4745697584023365,
+          0.8004284702207523
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_KLT_2",
+      "path": "/World/envs/env_0/Prop_KLT_2",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.484689474105835,
+          2.4944338859526507,
+          0.7987995148806256
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.5,
+          1.0,
+          0.5
+        ],
+        "translate": [
+          2.484689474105835,
+          2.4944338859526507,
+          0.7987995148806256
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_KLT_3",
+      "path": "/World/envs/env_0/Prop_KLT_3",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6123954746029656,
+          -7.586631357451698e-08,
+          -5.327691640632583e-07,
+          1.0205823283852766
+        ],
+        "translation": [
+          1.8206623074076427,
+          2.3297672470342414,
+          0.7997828658326291
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.7071227431297302,
+          5.673363716311089e-08,
+          -4.3303303574303515e-07,
+          0.7070908188829034
+        ],
+        "scale": [
+          1.5,
+          1.0,
+          0.5
+        ],
+        "translate": [
+          1.8206623074076427,
+          2.3297672470342414,
+          0.7997828658326291
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "RobotStand",
+      "path": "/World/envs/env_0/RobotStand",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          -1.489094958451176e-10,
+          -8.78133399329073e-10,
+          -8.47253794900027e-11
+        ],
+        "scale": [
+          1.2,
+          1.2,
+          1.2
+        ],
+        "translate": [
+          2.119999885559082,
+          2.010000228881836,
+          0.6180000305175781
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_0",
+      "path": "/World/envs/env_0/InitCorner_0",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.2161617279052734,
+          0.877628743648529,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.2161617279052734,
+          0.877628743648529,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_1",
+      "path": "/World/envs/env_0/InitCorner_1",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.7798612117767334,
+          0.8864921927452087,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.7798612117767334,
+          0.8864921927452087,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_2",
+      "path": "/World/envs/env_0/InitCorner_2",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.7772045135498047,
+          2.5896928310394287,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.7772045135498047,
+          2.5896928310394287,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "InitCorner_3",
+      "path": "/World/envs/env_0/InitCorner_3",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          2.097048759460449,
+          2.548536777496338,
+          0.029999999329447746
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.097048759460449,
+          2.548536777496338,
+          0.029999999329447746
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_lemon_01",
+      "path": "/World/envs/env_0/Prop_lemon_01",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9824403524398804,
+          -0.1672004189617823,
+          -0.04121187646200922,
+          0.07180915704343156
+        ],
+        "translation": [
+          2.5011372566223176,
+          1.702237248420713,
+          0.7633263870492453
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9824403524398804,
+          -0.1672004189617823,
+          -0.04121187646200922,
+          0.07180915704343156
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.5011372566223176,
+          1.702237248420713,
+          0.7633263870492453
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_orange_01",
+      "path": "/World/envs/env_0/Prop_orange_01",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.8725169897079468,
+          -0.14460767660838666,
+          -0.1982912810039783,
+          -0.4224728280193985
+        ],
+        "translation": [
+          2.2473978996276855,
+          2.3744242191314697,
+          0.7603543996810913
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.8725169897079468,
+          -0.14460764825344086,
+          -0.19829124212265015,
+          -0.42247274518013
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.2473978996276855,
+          2.3744242191314697,
+          0.7603543996810913
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_orange_02",
+      "path": "/World/envs/env_0/Prop_orange_02",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          -0.25494560599327076,
+          0.8751469396006601,
+          -0.1895354569804196,
+          -0.3649614810353909
+        ],
+        "translation": [
+          2.5096731185913086,
+          2.170905590057373,
+          0.8151153326034546
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.2549456059932709,
+          -0.8751469254493713,
+          0.189535453915596,
+          0.3649614751338959
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.5096731185913086,
+          2.170905590057373,
+          0.8151153326034546
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "Prop_pomegranate01",
+      "path": "/World/envs/env_0/Prop_pomegranate01",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.9937347173690803,
+          0.09753389356915002,
+          -0.05392210093179234,
+          0.008417727231117562
+        ],
+        "translation": [
+          2.252139564570619,
+          2.2847225830786497,
+          0.7641549850479238
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          0.9937347173690803,
+          0.09753389356915003,
+          -0.053922100931792345,
+          0.008417727231117562
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          2.252139564570619,
+          2.2847225830786497,
+          0.7641549850479238
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "GroundPlane",
+      "path": "/World/GroundPlane",
+      "type": "Xform",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          -0.02500000037252903
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.0,
+          0.0,
+          -0.02500000037252903
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "light",
+      "path": "/World/light",
+      "type": "DomeLight",
+      "world_transform": {
+        "rotation_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "OmniverseKit_Persp",
+      "path": "/OmniverseKit_Persp",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.6683393950948149,
+          0.5027089428806703,
+          -0.3295753027659477,
+          -0.43816240313247995
+        ],
+        "translation": [
+          1.826089494002271,
+          1.5518947539350882,
+          1.0565138323944523
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          1.826089494002271,
+          1.5518947539350882,
+          1.0565138323944523
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "OmniverseKit_Front",
+      "path": "/OmniverseKit_Front",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.5000000000000001,
+          0.5000000000000001,
+          0.4999999999999999,
+          0.5
+        ],
+        "translation": [
+          5.0,
+          0.0,
+          0.0
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          5.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "OmniverseKit_Top",
+      "path": "/OmniverseKit_Top",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.7071067811865476,
+          -1.218024256020306e-16,
+          3.5206822099085174e-17,
+          -0.7071067811865475
+        ],
+        "translation": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      }
+    },
+    {
+      "asset_refs": [],
+      "name": "OmniverseKit_Right",
+      "path": "/OmniverseKit_Right",
+      "type": "Camera",
+      "world_transform": {
+        "rotation_wxyz": [
+          0.7071067811865476,
+          0.7071067811865475,
+          7.850462385055786e-17,
+          7.850462385055791e-17
+        ],
+        "translation": [
+          0.0,
+          -5.0,
+          0.0
+        ]
+      },
+      "xform": {
+        "orient_wxyz": [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "translate": [
+          0.0,
+          -5.0,
+          0.0
+        ]
+      }
+    }
+  ],
+  "restore_contract": {
+    "preferred_restore": "Load scene_v1_latest.usd directly.",
+    "programmatic_restore": "Recreate each object at path; apply xform translate/orient_wxyz/scale."
+  },
+  "schema_version": "franka-scene-v1",
+  "sensors": {
+    "foundationpose_d435_rgbd": {
+      "consumer": "foundationpose",
+      "consumer_modules": [
+        "skill_runtime",
+        "teleop_collection",
+        "pi05_training",
+        "perception_foundationpose"
+      ],
+      "depth": true,
+      "enabled": false,
+      "frame_id": "foundationpose_d435_rgbd",
+      "image_keys": [
+        "images.wrist_depth"
+      ],
+      "intrinsics": {
+        "cx": 320.0,
+        "cy": 240.0,
+        "fx": 610.8327368169888,
+        "fy": 610.8327368169888,
+        "height": 480,
+        "width": 640
+      },
+      "libero_compatible": false,
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          0.04414,
+          0.00482,
+          0.00429
+        ],
+        "rot_wxyz": [
+          0.06663008636930542,
+          0.7085909185115734,
+          0.7012009089322673,
+          0.04215005463704373
+        ]
+      },
+      "parent": "panda_hand",
+      "pose_is_approximate": false,
+      "prim_path": "{ENV_REGEX_NS}/Robot/panda_hand/foundationpose_d435_rgbd",
+      "resolution": [
+        640,
+        480
+      ],
+      "rgb": true,
+      "role": "depth",
+      "static": false,
+      "type": "rgbd",
+      "visible_body": false
+    },
+    "vla_front_static": {
+      "consumer": "vla_pi05",
+      "consumer_modules": [
+        "skill_runtime",
+        "teleop_collection",
+        "pi05_training",
+        "perception_foundationpose"
+      ],
+      "depth": false,
+      "enabled": false,
+      "frame_id": "vla_front_static",
+      "image_keys": [
+        "images.front_rgb",
+        "images.image"
+      ],
+      "intrinsics": {
+        "cx": 128.0,
+        "cy": 128.0,
+        "fx": 293.19971367215464,
+        "fy": 293.19971367215464,
+        "height": 256,
+        "width": 256
+      },
+      "libero_compatible": false,
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          2.4,
+          0.0,
+          0.87
+        ],
+        "rot_wxyz": [
+          0.5666559334082859,
+          0.42296696458847044,
+          0.42296696458847044,
+          0.5666559334082859
+        ]
+      },
+      "parent": "env_root",
+      "pose_is_approximate": false,
+      "prim_path": "{ENV_REGEX_NS}/vla_front_static",
+      "resolution": [
+        256,
+        256
+      ],
+      "rgb": true,
+      "role": "image",
+      "static": true,
+      "type": "rgb",
+      "visible_body": false
+    },
+    "vla_libero_eye_in_hand": {
+      "consumer": "vla_pi05",
+      "consumer_modules": [
+        "skill_runtime",
+        "teleop_collection",
+        "pi05_training",
+        "perception_foundationpose"
+      ],
+      "depth": false,
+      "enabled": false,
+      "frame_id": "vla_libero_eye_in_hand",
+      "image_keys": [
+        "images.wrist_rgb",
+        "images.eye_in_hand_rgb",
+        "images.robot0_eye_in_hand_rgb"
+      ],
+      "intrinsics": {
+        "cx": 64.0,
+        "cy": 64.0,
+        "fx": 83.40310188499166,
+        "fy": 83.40310188499166,
+        "height": 128,
+        "width": 128
+      },
+      "libero_compatible": true,
+      "offset": {
+        "convention": "opengl",
+        "pos": [
+          0.04414,
+          0.00482,
+          0.00429
+        ],
+        "rot_wxyz": [
+          0.06663008636930542,
+          0.7085909185115734,
+          0.7012009089322673,
+          0.04215005463704373
+        ]
+      },
+      "parent": "panda_hand",
+      "pose_is_approximate": false,
+      "prim_path": "{ENV_REGEX_NS}/Robot/panda_hand/vla_libero_eye_in_hand",
+      "resolution": [
+        128,
+        128
+      ],
+      "rgb": true,
+      "role": "wrist_image",
+      "static": false,
+      "type": "rgb",
+      "visible_body": false
+    }
+  },
+  "task": "Isaac-Stack-Cube-Franka-JointPolicy-v0",
+  "up_axis": "Z"
+}

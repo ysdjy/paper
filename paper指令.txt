@@ -1,0 +1,246 @@
+claude --dangerously-skip-permissions
+
+
+
+chatgpt
+终端1：
+  cd /home1/banghai/Documents/IsaacLab/projects/franka_v1_skill_lab/scene_describer
+  ./.venv_vlm/bin/python vlm_describe_server.py
+终端2：
+  ./isaaclab.sh -p projects/franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+      --no_stream --pengzhuang \
+      --controller state_machine.skill_test_controller:SkillTestController \
+      --describe
+
+
+
+
+VLA真机数据采集
+终端1
+  cd /home1/banghai/Documents/IsaacLab
+  bash projects/franka_real_teleop/scripts/1_run_bridge.sh 172.16.0.2 --vmax 1.5 --cutoff 4 --gripper --gripper-speed 0.15 2>&1 | tee /tmp/bridge.log
+终端2
+  cd /home1/banghai/Documents/IsaacLab
+  bash projects/franka_real_teleop/scripts/2_run_gello.sh \
+    --vmax_max 2.0 --gripper --gripper_open_raw 212 --gripper_close_raw 148 \
+    --soft_start --approach_vmax 0.2
+终端3
+  cd /home1/banghai/Documents/IsaacLab
+  DISPLAY=:1 bash projects/franka_real_teleop/collect/1_record.sh --task "pick up the blue cube" --preview
+
+
+
+
+
+
+
+
+
+StarVLA数据采集
+  终端1 — bridge(和你 pi0.5 完全一样,带夹爪)
+  cd /home1/banghai/Documents/IsaacLab
+  bash projects/franka_real_teleop/scripts/1_run_bridge.sh 172.16.0.2 \
+    --vmax 1.5 --cutoff 4 --gripper --gripper-speed 0.15 2>&1 | tee /tmp/bridge.log
+
+  终端2 — GELLO 遥操(一样,带夹爪)
+  cd /home1/banghai/Documents/IsaacLab
+  bash projects/franka_real_teleop/scripts/2_run_gello.sh \
+    --vmax_max 2.0 --gripper --gripper_open_raw 212 --gripper_close_raw 148 2>&1 | tee /tmp/gello.log
+
+  终端3 — 录制(改成 StarVLA 模块,带双相机预览)
+  cd /home1/banghai/Documents/IsaacLab
+  DISPLAY=:1 bash projects/franka_starvla_collect/1_record.sh \
+    --task "pick up the black charger and put it into the black basket" \
+    --preview
+
+StarVLA真机部署
+终端1
+  cd /home1/banghai/Documents/IsaacLab
+  bash projects/franka_real_teleop/scripts/1_run_bridge.sh 172.16.0.2 --vmax 1.5 --cutoff 4 --gripper --gripper-speed 0.15
+终端2
+  cd /home1/banghai/Documents/IsaacLab && TASK="pick up the cup and put it into the black basket" bash projects/franka_starvla_collect/deploy/run_deploy.sh --host 127.0.0.1 --port 6694 --max_joint_step 0.05 --rate 15
+
+
+
+
+
+
+
+
+  ./isaaclab.sh -p projects/franka_v1_skill_lab/layout_editor/layout_v1_ui.py --property_edit
+最新场景编辑
+./isaaclab.sh -p projects/franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+    --no_cameras --no_stream --pengzhuang \
+    --controller state_machine.skill_test_controller:SkillTestController
+
+  ./isaaclab.sh -p projects/franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+      --no_cameras --no_stream \
+      --controller state_machine.skill_test_controller:SkillTestController
+      
+  ./isaaclab.sh -p projects/franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+      --no_stream \
+      --controller state_machine.skill_test_controller:SkillTestController
+遥操作真机
+
+终端A
+bash projects/franka_real_teleop/scripts/1_run_bridge.sh 172.16.0.2 --vmax 1.5 --cutoff 4 --gripper --gripper-speed 0.15 2>&1 | tee /tmp/bridge.log
+终端B
+bash projects/franka_real_teleop/scripts/2_run_gello.sh --vmax_max 2.0 --gripper 2>&1 | tee /tmp/gello.log
+
+
+
+真机笛卡尔阻抗
+/home1/banghai/franka_ws/libfranka/build/examples/cartesian_impedance_control 172.16.0.2
+真机关节阻抗
+/home1/banghai/franka_ws/libfranka/build/examples/joint_impedance_control 172.16.0.2 
+ 
+ 测试技能
+  ./isaaclab.sh -p projects/franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+    --no_cameras --no_stream \
+    --controller state_machine.skill_test_controller:SkillTestController
+    
+    
+    
+遥操作设备测试 isaacsim
+  sg dialout -c './isaaclab.sh -p projects/franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+    --controller franka_v1_skill_lab.scene_interface.gello_controller:GelloTeleopController'
+    
+    
+    
+真机franka遥操作isaacsim
+  终端 1 — 真机发布状态（机器人就绪、可手拖）：
+  cd real_franka_to_sim_minimal/build
+  sudo chrt -f 80 ./zero_torque_state_streamer \
+    --robot_ip 172.16.0.2 \
+    --publish_zmq 'tcp://*:5555' \
+    --duration 6000
+  启动会打印安全提示、按 Enter 继续；默认 30s 后自动退出（这里设了 60s），Ctrl+C 也可退。
+  （--robot_ip 默认 172.16.0.2，--publish_zmq 默认 tcp://*:5555，--duration 默认 30。）
+
+  终端 2 — 仿真跟随：
+  cd /home1/banghai/Documents/IsaacLab
+  conda activate env_isaaclab
+  ./isaaclab.sh -p real_franka_to_sim_minimal/run_real2sim_latest_scene.py \
+    --subscribe_zmq tcp://127.0.0.1:5555 \
+    --load_latest_scene \
+    --follow_hz 60 \
+    --enable_cameras \
+    --gripper_keyboard
+
+
+
+测试foundationpose
+  # 终端 1 — FoundationPose worker(foundationpose 环境)
+  cd /home1/banghai/Documents/IsaacLab
+  conda run -n foundationpose --no-capture-output \
+    python projects/foundationpose_deploy/runtime/fp_server.py --serve --addr 'tcp://*:5560'
+  等打印 serving on tcp://*:5560 + calib for ['knife'] 再开下一个。
+
+  # 终端 2 — 场景消费端(env_isaaclab;默认=最新场景+你的保存视角+修好的knife标定)
+  cd /home1/banghai/Documents/IsaacLab
+  conda run -n env_isaaclab --no-capture-output \
+    python projects/foundationpose_deploy/runtime/fp_scene_consumer.py \
+    --view front --steps 300 --reset_every 25 --stream_addr 'tcp://*:5557' --addr tcp://localhost:5560
+  启动会打印 front camera pos_w=[0.23, 2.06, 1.27] 确认是你的视角；每帧打印 4 个物体 err（cube ~1mm、knife ~2-4mm）。
+
+  # 终端 3 — Web 可视化(env_isaaclab)，浏览器开 http://localhost:8088
+  cd /home1/banghai/Documents/IsaacLab
+  conda run -n env_isaaclab --no-capture-output \
+    python projects/franka_v1_skill_lab/scene_interface/image_viewer.py \
+    --connect tcp://localhost:5557 --port 8088
+
+
+
+
+
+
+读取并持续打印机器人状态，不主动控制运动	./echo_robot_state 172.16.0.2
+打印各关节及末端位姿，不主动控制运动	./print_joint_poses 172.16.0.2
+FCI 实时通信测试，会先移动机械臂	./communication_test 172.16.0.2
+使用实时线程运行 FCI 通信测试	sudo chrt -f 80 ./communication_test 172.16.0.2
+异步关节位置控制案例，会运动	./async_position_control 172.16.0.2
+关节位置控制案例，会运动	./generate_joint_position_motion 172.16.0.2
+外部循环关节位置控制，会运动	./generate_joint_position_motion_external_control_loop 172.16.0.2
+关节速度控制案例，会运动	./generate_joint_velocity_motion 172.16.0.2
+外部循环关节速度控制，会运动	./generate_joint_velocity_motion_external_control_loop 172.16.0.2
+笛卡尔末端位姿控制，会运动	./generate_cartesian_pose_motion 172.16.0.2
+外部循环笛卡尔位姿控制，会运动	./generate_cartesian_pose_motion_external_control_loop 172.16.0.2
+笛卡尔末端速度控制，会运动	./generate_cartesian_velocity_motion 172.16.0.2
+外部循环笛卡尔速度控制，会运动	./generate_cartesian_velocity_motion_external_control_loop 172.16.0.2
+肘部冗余运动控制，末端基本保持不变	./generate_elbow_motion 172.16.0.2
+连续执行多段运动并演示错误恢复	./generate_consecutive_motions 172.16.0.2
+笛卡尔阻抗控制，可用手推动机械臂	./cartesian_impedance_control 172.16.0.2
+关节阻抗控制案例，会主动运动	./joint_impedance_control 172.16.0.2
+力矩控制与运动生成器组合案例	./motion_with_control 172.16.0.2
+外部循环的力矩与运动组合控制	./motion_with_control_external_control_loop 172.16.0.2
+接触力控制案例，必须按案例要求接触刚性平面	./force_control 172.16.0.2
+移动到标准关节姿态，速度比例为 0.2	./joint_point_to_point_motion 172.16.0.2 0 -0.785398 0 -2.356194 0 1.570796 0.785398 0.2
+平行夹爪执行 Homing 后夹持 3 cm 宽物体	./grasp_object 172.16.0.2 1 0.03
+平行夹爪不执行 Homing，直接夹持 3 cm 宽物体	./grasp_object 172.16.0.2 0 0.03
+真空夹爪吸取案例，仅适用于真空夹爪	./vacuum_object 172.16.0.2
+
+一键回home
+  cd ~/franka_ws/libfranka/build/examples
+  ./joint_point_to_point_motion 172.16.0.2 \
+      0 -0.7853981634 0 -2.3561944902 0 1.5707963268 0.7853981634 \
+      0.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned_Physics/006_mustard_bottle.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned_Physics/005_tomato_soup_can.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned_Physics/004_sugar_box.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned_Physics/003_cracker_box.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/011_banana.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/051_large_clamp.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/037_scissors.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/025_mug.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/011_banana.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/007_tuna_fish_can.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/024_bowl.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/002_master_chef_can.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/010_potted_meat_can.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/YCB/Axis_Aligned/019_pitcher_base.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/KLT_Bin/small_KLT_visual_collision.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Mounts/Stand/stand_instanceable.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Beaker/beaker_500ml.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Food/mac_n_cheese_centered.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Mugs/SM_Mug_A2.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Mugs/SM_Mug_B1.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Mugs/SM_Mug_C1.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Mugs/SM_Mug_D1.usd
+https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/Isaac/Props/Sektion_Cabinet/sektion_cabinet_instanceable.usd
+
+
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/contemporary_lockedstorage/contemporary_lockedstorage.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/contemporary_openstorage/contemporary_openstorage.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/contemporary_laterialfile/contemporary_laterialfile.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/danny/danny.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/modern/modern.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/modularcurved/modularcurved.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/pumpkinlarge/pumpkinlarge.usd
+https://omniverse-content-staging.s3.us-west-2.amazonaws.com/Assets/simready_content/common_assets/props/redonion/redonion.usd
+
+
+
+
+
+
+
+
+
+
+
+

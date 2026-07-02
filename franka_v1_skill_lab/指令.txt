@@ -1,0 +1,518 @@
+============================================================
+Franka V1 Skill Lab 指令汇总
+============================================================
+
+默认执行位置：
+cd /home1/banghai/Documents/IsaacLab
+
+如路径不同，请先进入你的 IsaacLab 根目录。
+
+状态标记：[ready]=可直接跑  [GPU]=需显示/GPU  [mock]=无硬件占位  [stub]=接口未实现
+
+============================================================
+0. 环境准备
+============================================================
+
+激活 IsaacLab 环境：
+conda activate env_isaaclab
+
+检查当前项目结构是否完整（[ready] 无需 GPU）：
+python projects/franka_v1_skill_lab/scripts/check_project_layout.py
+
+查看 V1 项目总说明：
+cat projects/franka_v1_skill_lab/README.md
+
+查看 V1 常用命令说明：
+cat projects/franka_v1_skill_lab/docs/commands.md
+
+查看迁移报告（已实现/wrapper/stub/TODO）：
+cat projects/franka_v1_skill_lab/docs/migration_report.md
+
+============================================================
+1. V1 场景编辑 / Scene Layout
+============================================================
+
+打开 V1 场景编辑器，从 JointPolicy 任务环境创建场景（[GPU]）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/layout_editor/layout_v1_ui.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0
+
+加载最近一次保存的 V1 场景（[GPU]，注意 flag 是 --load_latest_v1）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/layout_editor/layout_v1_ui.py \
+  --num_envs 1 \
+  --load_latest_v1
+
+运行 V1 场景编辑 smoke test（[ready] 字节编译+打印启动命令）：
+bash projects/franka_v1_skill_lab/scripts/smoke_layout_v1.sh
+
+检查 V1 场景 registry（[ready]）：
+python projects/franka_v1_skill_lab/scene/tools/check_scene_v1.py
+
+打印 V1 场景对象（[ready]，从 manifest 读取；未保存时会提示）：
+python projects/franka_v1_skill_lab/scene/tools/print_scene_objects.py
+
+从已保存 USD 打印对象（需 isaacsim pxr）：
+python projects/franka_v1_skill_lab/scene/tools/print_scene_objects.py --from usd
+
+V1 场景 registry 路径：
+projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json
+
+V1 最新 USD 场景路径（保存后才会生成）：
+projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_latest.usd
+
+V1 最新 JSON manifest 路径（保存后才会生成）：
+projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_latest.json
+
+============================================================
+2. 状态机技能测试 / Skill Runtime
+============================================================
+
+启动 V1 joint-action 状态机技能 UI（[GPU]）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/skill_runtime/entries/skill_test_ui_joint_v1.py \
+  --num_envs 1 \
+  --show_affordance_debug \
+  --grasp_backend joint_ik \
+  --place_backend joint_ik \
+  --drawer_backend ik_pull \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --seed 1
+
+启动原始状态机入口（[GPU]，对照用，不接 registry）：
+./isaaclab.sh -p projects/franka_skill_state_machine/entries/skill_test_ui_joint.py \
+  --num_envs 1 \
+  --show_affordance_debug \
+  --grasp_backend joint_ik \
+  --place_backend joint_ik \
+  --drawer_backend ik_pull \
+  --seed 1
+
+自动启动抓取 cube_2 测试（[GPU] headless）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/skill_runtime/entries/skill_test_ui_joint_v1.py \
+  --num_envs 1 \
+  --headless \
+  --auto_start \
+  --skill grasp \
+  --target cube_2 \
+  --grasp_backend joint_ik \
+  --place_backend joint_ik \
+  --drawer_backend ik_pull \
+  --max_steps 800 \
+  --seed 1
+
+自动启动放置测试（[GPU] headless）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/skill_runtime/entries/skill_test_ui_joint_v1.py \
+  --num_envs 1 \
+  --headless \
+  --auto_start \
+  --skill place \
+  --grasp_backend joint_ik \
+  --place_backend joint_ik \
+  --drawer_backend ik_pull \
+  --max_steps 800 \
+  --seed 1
+
+自动启动打开抽屉测试（[GPU] headless）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/skill_runtime/entries/skill_test_ui_joint_v1.py \
+  --num_envs 1 \
+  --headless \
+  --auto_start \
+  --skill open_drawer \
+  --drawer_backend ik_pull \
+  --max_steps 1200 \
+  --seed 1
+
+自动启动关闭抽屉测试（[GPU] headless）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/skill_runtime/entries/skill_test_ui_joint_v1.py \
+  --num_envs 1 \
+  --headless \
+  --auto_start \
+  --skill close_drawer \
+  --drawer_backend ik_pull \
+  --max_steps 1200 \
+  --seed 1
+
+运行状态机 smoke test（[ready] 字节编译+registry 检查）：
+bash projects/franka_v1_skill_lab/scripts/smoke_skill_ui_v1.sh
+
+注意：
+- bottom_drawer 在资产中可能 locked / non-functional，抽屉测试优先 top_drawer / middle_drawer。
+- open_door / close_door 技能代码已有，但 microwave 仍 WIP，先用 grasp/place/drawer。
+
+============================================================
+3. GELLO 遥操作 / Teleop Collection
+============================================================
+
+--- 3.1 真实 GELLO 只读（stage 1，硬件 + 隔离 venv，脚本在 legacy 子项目）---
+
+进入 GELLO legacy 子模块：
+cd projects/gello_franka_teleop
+
+安装 GELLO 读取环境（一次性）：
+bash scripts/setup_gello_env.sh
+
+检测 GELLO 串口：
+bash scripts/detect_gello_port.sh
+
+激活 GELLO 虚拟环境：
+source .venv-gello/bin/activate
+
+GELLO 环境自检：
+python scripts/diagnose_gello.py --config configs/gello_franka.yaml
+
+只读取 GELLO 关节，不控制 Isaac Sim：
+python scripts/read_gello_joints.py --config configs/gello_franka.yaml --hz 30
+
+只读取 GELLO 关节，不写 CSV：
+python scripts/read_gello_joints.py --config configs/gello_franka.yaml --hz 30 --no-log
+
+退出 venv 并返回 IsaacLab 根目录：
+deactivate
+cd /home1/banghai/Documents/IsaacLab
+
+--- 3.2 V1 无硬件接口（[ready] mock，纯 python，不经 isaaclab.sh）---
+
+运行 GELLO read-only smoke test（mock）：
+bash projects/franka_v1_skill_lab/scripts/smoke_gello_readonly.sh
+
+mock GELLO -> Franka 关节目标（低通+限幅+急停，stage 2 接口）：
+python projects/franka_v1_skill_lab/teleop_collection/entries/gello_to_isaac_joint_test.py \
+  --mock_gello \
+  --steps 30
+
+遥操作采集离线全链路 smoke test（[ready] 无硬件无 Isaac：状态机+录制+HDF5+转换）：
+bash projects/franka_v1_skill_lab/scripts/smoke_teleop_collection_v1.sh
+
+采集脚本 dry-run（[ready] 打印 HDF5 记录格式 + 任务标签，不启动 Isaac）：
+python projects/franka_v1_skill_lab/teleop_collection/entries/collect_teleop_demos_joint_v1.py \
+  --dry_run \
+  --task_config projects/franka_v1_skill_lab/configs/teleop_tasks.yaml \
+  --task_catalog_id grasp_cube_2
+
+--- 3.3 V1 实时采集（[ready] mock，经 isaaclab.sh 启动真实 env）---
+
+mock GELLO 驱动真实 Isaac env（[ready] 仅映射+驱动，不录制）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/teleop_collection/entries/gello_to_isaac_joint_test.py \
+  --drive_isaac --mock_gello --headless \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --num_envs 1 --steps 60 --seed 1
+
+mock 模式采集数据（[ready] 自动录 1 个 episode 后退出；含 wrist D435 + 物体 GT）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/teleop_collection/entries/collect_teleop_demos_joint_v1.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --teleop_device mock \
+  --enable_wrist_d435 \
+  --record_objects \
+  --task_config projects/franka_v1_skill_lab/configs/teleop_tasks.yaml \
+  --task_catalog_id grasp_cube_2 \
+  --out_dir projects/franka_v1_skill_lab/data/teleop_raw_hdf5 \
+  --max_steps_per_episode 300 \
+  --seed 1
+
+真实 GELLO 先验证机器人"跟随"（[ready] 不录制，纯驱动；建议先跑这条确认能动）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/teleop_collection/entries/gello_to_isaac_joint_test.py \
+  --drive_isaac --teleop_device gello \
+  --gello_config projects/franka_v1_skill_lab/teleop_collection/gello/configs/gello_franka.yaml \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 --num_envs 1 --steps 600 --seed 1
+
+真实 GELLO 采集数据（[ready] 已验证：实读 /dev/ttyUSB0，机器人安全跟随并录制）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/teleop_collection/entries/collect_teleop_demos_joint_v1.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --teleop_device gello \
+  --gello_config projects/franka_v1_skill_lab/teleop_collection/gello/configs/gello_franka.yaml \
+  --enable_wrist_d435 \
+  --record_objects \
+  --keyboard \
+  --out_dir projects/franka_v1_skill_lab/data/teleop_raw_hdf5 \
+  --max_steps_per_episode 1200 \
+  --hz 30 \
+  --seed 1
+
+提高控制精度/频率（遥操作发飘/滞后时调这几个；test 与 collect 入口都支持）：
+  --control_hz 50      控制频率，换算 env decimation=round(100/hz)。底层任务才 20Hz（卡）；50→50Hz，100→100Hz。最关键。
+  --arm_stiffness 400  Franka 关节 PD 刚度（默认任务只有 80=软，追不准）；400=HIGH_PD，跟踪紧。
+  --arm_damping 80     关节 PD 阻尼。
+  --max_joint_vel 4.0  关节最大角速度(rad/s)，per-step 限幅=vel/control_hz；手快跟不上就调大。
+  --lowpass_alpha 0.5  GELLO 读数 EMA（越大越跟手/越少滞后，1.0=不平滑）。
+  --gello_hz 100       真实 GELLO 串口读取频率。
+  # 先用 drive_isaac 试手感（不录制）：--control_hz 100 --arm_stiffness 600 --lowpass_alpha 0.7
+  # 代价：刚度越大撞击越硬；vel/alpha 越大越跟手但安全平滑越少；频率越高越吃实时性（单环境、headless 或轻量 GUI）。
+
+采集时键盘控制（GUI；headless/mock 走自动脚本，无需按键）：
+  SPACE：暂停 / 恢复 recording
+  S：标记当前 episode 成功并保存
+  F：标记失败（--save_failed 则存到 failed 文件，否则丢弃）
+  D：丢弃当前 episode
+  R：重置当前 episode（丢弃 + 重置场景）
+  N：进入下一个 episode
+  E：紧急停止 / 冻结关节目标（再按一次解除）
+  H：回到 home / hold 姿态
+  Q：安全退出采集
+  1-6：选择技能类型（grasp/place/open_drawer/close_drawer/open_door/close_door）
+
+转换采集数据到 pi0.5 / LeRobot（[ready] normalized 必出；LeRobot best-effort）：
+python projects/franka_v1_skill_lab/pi05_training/adapters/skill_demo_to_lerobot.py \
+  --input projects/franka_v1_skill_lab/data/teleop_raw_hdf5/latest.hdf5 \
+  --output projects/franka_v1_skill_lab/data/lerobot/franka_v1_skill_pi05 \
+  --task_config projects/franka_v1_skill_lab/configs/teleop_tasks.yaml
+
+注意：
+- mock 与真实 GELLO 都已端到端验证（真机：实读 /dev/ttyUSB0，机器人安全跟随并录制）。
+- GUI 下 gello 默认走键盘控制：ENTER 开始录制，S 保存，Q 退出（headless 自动录 N 步后退出）。
+- 机器人在 PREPARE/RECORDING 状态跟随设备；SPACE 暂停 / E 急停时冻结不动。
+- GELLO 标定在 teleop_collection/gello/configs/gello_franka.yaml；机器人乱跳就重标定。
+- 只有 success episode 进训练集；failed/discarded 不会混入（转换默认只取 success）。
+- 无相机用 --no_camera；无 GELLO 用 --teleop_device mock。
+
+============================================================
+4. pi0.5 / OpenPI 微调训练管线
+============================================================
+
+进入 pi0.5 V1 工作流目录：
+cd projects/franka_v1_skill_lab/pi05_training
+
+查看 V1 pi0.5 工作流说明：
+cat README.md
+cat WORKFLOW/README.md
+cat docs/pi05_v1_migration.md
+
+检查 pipeline 配置：
+cat WORKFLOW/pipeline.env
+
+Stage 1：采集 V1 demonstration（[ready] mock；--dry_run 无 Isaac，真采集自动用 isaaclab.sh）：
+bash WORKFLOW/1_collect.sh --dry_run
+
+Stage 2：HDF5 转 normalized + LeRobot（[ready] normalized 必出，LeRobot best-effort）：
+bash WORKFLOW/2_convert.sh --dry_run
+
+Stage 3：pi0.5 LoRA 微调（[wrapper] 只打印真实命令，不自动长训练）：
+bash WORKFLOW/3_train.sh
+
+Stage 4：启动 policy server（[wrapper] 默认 mock 后端，无需 OpenPI）：
+bash WORKFLOW/4_serve.sh
+
+Stage 5：在 IsaacLab 中闭环评估（[wrapper] 打印真实 eval 命令）：
+bash WORKFLOW/5_eval.sh
+
+停止 policy server / 管线进程：
+bash WORKFLOW/stop.sh
+
+返回 IsaacLab 根目录：
+cd /home1/banghai/Documents/IsaacLab
+
+运行 pi0.5 V1 smoke test（[ready] obs/action 适配器+映射）：
+bash projects/franka_v1_skill_lab/scripts/smoke_pi05_v1.sh
+
+检查采集到的 HDF5（沿用 legacy inspect，根目录执行）：
+bash pi05_isaacsim_baseline/WORKFLOW/inspect.sh
+
+原 pi0.5 baseline 评估入口，适合对照测试（[GPU]，需先起 policy server）：
+./isaaclab.sh -p pi05_isaacsim_baseline/scripts/isaaclab/run_policy_in_isaaclab.py \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --env_kind joint \
+  --num_rollouts 1 \
+  --max_steps 100 \
+  --policy_port 8008 \
+  --image_mode none \
+  --action_source zero
+
+注意：
+- V1 主线是 joint action，不是 IK-Rel 7D delta EE；训练数据与评估环境 action space 必须一致。
+- OpenPI 只在 .venv_openpi 里跑，IsaacLab 侧仅通过 HTTP 通信。不要下大模型、不要长时间训练。
+
+============================================================
+5. FoundationPose / 仿真感知测试
+============================================================
+
+运行 FoundationPose sim-GT pose adapter smoke test（[ready]）：
+bash projects/franka_v1_skill_lab/scripts/smoke_foundationpose_sim_v1.sh
+
+用仿真 GT pose 伪装 FoundationPose 输出（[ready] demo 模式，打印 objects[]）：
+python projects/franka_v1_skill_lab/perception_foundationpose/sim/sim_gt_pose_as_foundationpose.py --demo
+
+测试 sim pose adapter（[ready]）：
+python projects/franka_v1_skill_lab/perception_foundationpose/sim/test_sim_pose_adapter.py
+
+查看 FoundationPose 接口说明：
+cat projects/franka_v1_skill_lab/perception_foundationpose/README.md
+cat projects/franka_v1_skill_lab/perception_foundationpose/docs/perception_contract.md
+
+查看 D435 接口说明：
+cat projects/franka_v1_skill_lab/perception_foundationpose/d435/d435_setup.md
+
+查看真实 FoundationPose runner 接口（[stub]，当前无独立 CLI）：
+cat projects/franka_v1_skill_lab/perception_foundationpose/foundationpose/foundationpose_runner.py
+
+注意：
+- 当前优先先用 sim GT pose 打通 objects[] 接口，再替换成真实 FoundationPose 输出。
+- live-scene 读取需从 Isaac entry 调用 poses_from_provider(provider)，不是独立命令。
+
+============================================================
+6. SAPIEN / PartNet 资产转换
+============================================================
+
+查看资产管线说明：
+cat projects/franka_v1_skill_lab/asset_pipeline/README.md
+cat SapienAssetPipeline/README.md
+
+列出已知 SAPIEN / USD 资产：
+python SapienAssetPipeline/tools/convert_sapien_asset.py list
+
+只清洗 URDF 和 mesh 文件名：
+python SapienAssetPipeline/tools/convert_sapien_asset.py prepare 12345
+
+转换已有 raw_sapien 资产：
+python SapienAssetPipeline/tools/convert_sapien_asset.py convert 12345 --name ObjectName
+
+转换新的 SAPIEN zip 资产：
+python SapienAssetPipeline/tools/convert_sapien_asset.py convert /path/to/12345.zip --name ObjectName
+
+============================================================
+7. 常用检查命令
+============================================================
+
+查看当前 git 状态：
+git status
+
+查看 V1 目录文件：
+find projects/franka_v1_skill_lab -maxdepth 2 -type f | sort
+
+查看最近生成的 skill test 日志（如有）：
+ls -lh logs/
+
+查看 pi0.5 评估日志（如有）：
+ls -lh pi05_isaacsim_baseline/logs/
+
+查看 V1 场景保存文件：
+ls -lh projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/
+
+一键跑全部无 GPU smoke / 检查：
+python projects/franka_v1_skill_lab/scripts/check_project_layout.py && \
+bash projects/franka_v1_skill_lab/scripts/smoke_foundationpose_sim_v1.sh && \
+bash projects/franka_v1_skill_lab/scripts/smoke_pi05_v1.sh && \
+bash projects/franka_v1_skill_lab/scripts/smoke_gello_readonly.sh && \
+bash projects/franka_v1_skill_lab/scripts/smoke_skill_ui_v1.sh && \
+bash projects/franka_v1_skill_lab/scripts/smoke_layout_v1.sh && \
+bash projects/franka_v1_skill_lab/scripts/smoke_d435_scene_v1.sh && \
+bash projects/franka_v1_skill_lab/scripts/smoke_d435_foundationpose_v1.sh
+
+============================================================
+末端相机 / FoundationPose RGB-D / VLA RGB
+============================================================
+
+V1 共用场景固定挂三个相机（sensors/d435/d435_config.py 是唯一来源）：
+- vla_front_static         ：固定第三人称 RGB 256x256 -> LeRobot/π0.5 `image`（主视角）
+    挂在 {ENV_REGEX_NS}/vla_front_static（env 根下，静态，不随手腕动）
+    位姿复用 IsaacLab table_cam：pos(1.0,0,0.4) ros，正对 Franka+cube 工作区，不是俯视
+- vla_libero_eye_in_hand   ：手腕 RGB 128x128/224x224 -> LeRobot/π0.5 `wrist_image`
+    挂在 {ENV_REGEX_NS}/Robot/panda_hand/，参考 robosuite/LIBERO robot0_eye_in_hand
+- foundationpose_d435_rgbd ：手腕 RGB+depth 640x480 -> FoundationPose（与 wrist 同位姿）
+- LeRobot 映射：image <- vla_front_static；wrist_image <- vla_libero_eye_in_hand
+  （pi05_isaacsim_baseline/configs/dataset_mapping_isaaclab_franka.yaml，image_resize 256x256）
+- attach_wrist_cameras(env_cfg) 是唯一把三个相机加进场景的入口，layout/状态机/遥操作都调它
+- registry scene_v1_registry.json 的 sensors 里记录这三个相机
+- D435_Body 外形 mesh 默认隐藏（纯视觉、无碰撞）；要看用 --show_camera_body
+- 相机渲染需要 --enable_cameras；FoundationPose 相机若没渲染 depth，capture() 会明确报错
+  "Depth output is not available for foundationpose_d435_rgbd."，不会静默返回 None
+
+0) 渲染并保存三路相机图像 + 报告（[GPU] headless，无需 UI）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/sensors/d435/check_three_cameras.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --headless
+  # 输出 franka_d435_foundationpose/outputs/camera_view_checks/<timestamp>/
+  #   front_image.png / wrist_image.png / d435_rgb.png / d435_depth_vis.png / camera_check_report.md
+
+1) 打开带两个末端相机的 V1 layout editor（[GPU]，默认隐藏 D435 mesh）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/layout_editor/layout_v1_ui.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --enable_wrist_cameras \
+  --hide_camera_body \
+  --enable_cameras
+
+2) 显示 D435 外观 mesh（[GPU]，调试用）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/layout_editor/layout_v1_ui.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --enable_wrist_cameras \
+  --show_camera_body \
+  --enable_cameras
+
+3) 导出 FoundationPose RGB-D（[GPU]，存 debug_outputs/）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/sensors/d435/test_d435_observation.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --camera foundationpose_d435_rgbd \
+  --save_debug_outputs
+
+4) 导出 VLA / LIBERO-style RGB（[GPU]）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/sensors/d435/test_d435_observation.py \
+  --num_envs 1 \
+  --task Isaac-Stack-Cube-Franka-JointPolicy-v0 \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --camera vla_libero_eye_in_hand \
+  --vla_camera_resolution 128 128 \
+  --save_debug_outputs
+
+5) 测试 FoundationPose input builder（[ready] 纯 python，也可经 isaaclab.sh 跑）：
+python projects/franka_v1_skill_lab/perception_foundationpose/sim/test_d435_foundationpose_input.py \
+  --camera foundationpose_d435_rgbd
+
+6) 测试 pi0.5 / VLA observation adapter（[ready] 纯 python）：
+python projects/franka_v1_skill_lab/pi05_training/adapters/isaaclab_obs_adapter_v1.py \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --camera vla_libero_eye_in_hand \
+  --dry_run
+
+7) 离线两相机契约 + 相机三轴（确认 VLA 不是垂直向下，[ready] 纯 python）：
+python projects/franka_v1_skill_lab/sensors/d435/test_d435_observation.py
+
+8) 检查三个相机是否都在 V1 registry（[ready]，exit!=0 表示缺失/未启用）：
+python projects/franka_v1_skill_lab/scene/tools/check_scene_v1.py --expect_sensor vla_front_static
+python projects/franka_v1_skill_lab/scene/tools/check_scene_v1.py --expect_sensor vla_libero_eye_in_hand
+python projects/franka_v1_skill_lab/scene/tools/check_scene_v1.py --expect_sensor foundationpose_d435_rgbd
+
+9) 状态机加载两相机并打印 pose（[GPU]，自动开 --enable_cameras，mesh 默认隐藏）：
+./isaaclab.sh -p projects/franka_v1_skill_lab/skill_runtime/entries/skill_test_ui_joint_v1.py \
+  --num_envs 1 \
+  --show_affordance_debug \
+  --show_camera_debug \
+  --enable_wrist_cameras \
+  --grasp_backend joint_ik \
+  --place_backend joint_ik \
+  --drawer_backend ik_pull \
+  --scene_registry projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json \
+  --seed 1
+
+10) smoke test（[ready] 无 GPU）：
+bash projects/franka_v1_skill_lab/scripts/smoke_d435_scene_v1.sh
+bash projects/franka_v1_skill_lab/scripts/smoke_d435_foundationpose_v1.sh
+
+明确分工：
+- LeRobot/π0.5 `image`（主视角）使用 vla_front_static（固定第三人称 RGB，不随手腕动）。
+- LeRobot/π0.5 `wrist_image` 使用 vla_libero_eye_in_hand（手腕 RGB），参考 LIBERO/robosuite robot0_eye_in_hand，不是垂直向下。
+- FoundationPose 使用 foundationpose_d435_rgbd（RGB-D）。
+- 两个相机都属于同一个 V1 共用场景，经 attach_wrist_cameras 加载，所有模块不各自调位姿。
+- D435 mesh 默认隐藏、无碰撞、不改变 Franka 动力学。
+- 左右 IR（left/right_ir）暂不实现；FoundationPose 用 RGB-D 即可。
+- VLA 的 right_hand→panda_hand 对齐当前是 approximate（identity 默认），见 sensors/docs/d435_foundationpose_contract.md。
+
+============================================================
+8. 当前主线提醒
+============================================================
+
+1. 当前主线不是 Connection。
+2. 当前主线是 projects/franka_v1_skill_lab/，底层复用 projects/franka_skill_state_machine/。
+3. 控制模式是 joint action。
+4. 抓取/放置通过 joint_ik。
+5. 抽屉通过 ik_pull 物理拉/推。
+6. 门技能已有代码，但 microwave 资产碰撞和开门角度仍需继续调（WIP）。
+7. SceneLayoutModule / layout_editor 负责编辑和保存 V1 场景。
+8. 状态机、遥操作采集、pi0.5、FoundationPose 都必须围绕同一个 V1 scene registry。
+9. FoundationPose 先用 sim GT pose adapter 打通接口，再接真实模型。
+10. pi0.5 先跑 smoke / mock / zero action，不要一开始长时间训练。

@@ -1,0 +1,45 @@
+# Franka V1 Skill Lab — perception / FoundationPose config (V1).
+# Two stages: sim GT pose (stage 1, ready) and real FoundationPose (stage 2, stub).
+
+scene_registry: "projects/franka_v1_skill_lab/scene/saved_scenes/v1_active/scene_v1_registry.json"
+
+# Objects whose 6D pose perception should publish (subset of the V1 contract).
+tracked_objects:
+  - cube_1
+  - cube_2
+  - cube_3
+  - knife
+  - cabinet
+  - microwave
+
+# Unified pose-entry output schema (both sim-GT and FoundationPose emit this).
+pose_entry_schema:
+  name: "str"
+  position: "[x, y, z]"          # world frame, meters
+  quat: "[x, y, z, w]"           # world frame
+  confidence: "float (0..1)"
+  pose_in_camera: "[4x4] or null"
+  mesh_path: "str or null"
+  mask_path: "str or null"
+
+# Stage 1: sim ground-truth pose dressed up as FoundationPose output.
+sim_gt:
+  enabled: true
+  confidence: 1.0
+
+# Stage 2: real FoundationPose runner (needs separate env; not installed here).
+foundationpose:
+  enabled: false
+  repo_path: "/home1/banghai/Documents/FoundationPose"   # cloned separately
+  weights: null
+  mock_flag: "--mock_foundationpose"
+  meshes_dir: "franka_d435_foundationpose/assets/meshes"
+  masks_dir: "franka_d435_foundationpose/assets/masks"
+
+# D435 camera (sim or real). Mirrors franka_d435_foundationpose/configs/camera_d435.yaml.
+camera:
+  width: 640
+  height: 480
+  fx: 615.0
+  fy: 615.0
+  mount: end_effector          # end_effector | fixed_scene
