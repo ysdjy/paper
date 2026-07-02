@@ -86,7 +86,7 @@ class Ridge:
         self.l2 = l2
     def fit(self, X, y):
         self.st = Standardizer().fit(X); Xs = np.c_[self.st.tf(X), np.ones(len(X))]
-        d = Xs.shape[1]; A = Xs.T @ Xs + self.l2 * np.eye(d); A[-1, -1] = 0.0
+        d = Xs.shape[1]; A = Xs.T @ Xs + self.l2 * np.eye(d); A[-1, -1] -= self.l2  # don't penalize bias
         self.w = np.linalg.solve(A, Xs.T @ y); return self
     def pred(self, X):
         return np.c_[self.st.tf(X), np.ones(len(X))] @ self.w

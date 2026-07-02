@@ -1,0 +1,135 @@
+{
+ "run_id": "damping_pilot_v2_20260703_000056",
+ "contract_version": "open_drawer_v2",
+ "scene_version": "paper_scene_v2",
+ "config": {
+  "run_prefix": "damping_pilot",
+  "drawers": [
+   "middle_drawer"
+  ],
+  "damping_levels": [
+   {
+    "id": "L1_low",
+    "value": 3.0
+   },
+   {
+    "id": "L2_mid",
+    "value": 20.0
+   },
+   {
+    "id": "L3_high",
+    "value": 40.0
+   }
+  ],
+  "theta_ranges": {
+   "grasp_offset_local_y": [
+    -0.06,
+    0.06
+   ],
+   "max_pos_step": [
+    0.008,
+    0.035
+   ],
+   "pull_lead": [
+    0.03,
+    0.14
+   ]
+  },
+  "targets": [
+   0.2
+  ],
+  "sessions_per_condition": 3,
+  "n_probes": 3,
+  "candidate_groups_per_session": 1,
+  "candidates_per_group": 5,
+  "seed": 11,
+  "max_steps": 1800
+ },
+ "n_sessions": 9,
+ "damping_levels": [
+  {
+   "id": "L1_low",
+   "value": 3.0
+  },
+  {
+   "id": "L2_mid",
+   "value": 20.0
+  },
+  {
+   "id": "L3_high",
+   "value": 40.0
+  }
+ ],
+ "damping_set_maxerr": 0.0,
+ "damping_verified": true,
+ "sessions": [
+  {
+   "session_id": "sess_000",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L1_low",
+   "damping": 3.0,
+   "seed": 11
+  },
+  {
+   "session_id": "sess_001",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L1_low",
+   "damping": 3.0,
+   "seed": 12
+  },
+  {
+   "session_id": "sess_002",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L1_low",
+   "damping": 3.0,
+   "seed": 13
+  },
+  {
+   "session_id": "sess_003",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L2_mid",
+   "damping": 20.0,
+   "seed": 14
+  },
+  {
+   "session_id": "sess_004",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L2_mid",
+   "damping": 20.0,
+   "seed": 15
+  },
+  {
+   "session_id": "sess_005",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L2_mid",
+   "damping": 20.0,
+   "seed": 16
+  },
+  {
+   "session_id": "sess_006",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L3_high",
+   "damping": 40.0,
+   "seed": 17
+  },
+  {
+   "session_id": "sess_007",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L3_high",
+   "damping": 40.0,
+   "seed": 18
+  },
+  {
+   "session_id": "sess_008",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L3_high",
+   "damping": 40.0,
+   "seed": 19
+  }
+ ],
+ "run_command": "projects/paper/deployment_calibration/data_generation/generate_drawer_sessions_v2.py --headless --config projects/paper/deployment_calibration/configs/damping_pilot_v1.yaml",
+ "captured_at": "2026-07-03 00:31:27",
+ "git_commit": "ec18e4cdd347a64cc5e5cb0f2a7950de7f0c87fa",
+ "branch": "main",
+ "dirty_worktree": true
+}

@@ -1,0 +1,62 @@
+{
+ "fracs_by_session": true,
+ "counts": {
+  "train": 3,
+  "val": 3,
+  "test": 3
+ },
+ "sessions": {
+  "train": [
+   {
+    "session_id": "sess_000",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L1_low"
+   },
+   {
+    "session_id": "sess_003",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L2_mid"
+   },
+   {
+    "session_id": "sess_006",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L3_high"
+   }
+  ],
+  "val": [
+   {
+    "session_id": "sess_001",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L1_low"
+   },
+   {
+    "session_id": "sess_004",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L2_mid"
+   },
+   {
+    "session_id": "sess_007",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L3_high"
+   }
+  ],
+  "test": [
+   {
+    "session_id": "sess_002",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L1_low"
+   },
+   {
+    "session_id": "sess_005",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L2_mid"
+   },
+   {
+    "session_id": "sess_008",
+    "drawer": "middle_drawer",
+    "hidden_state_id": "L3_high"
+   }
+  ]
+ },
+ "disjoint": true
+}

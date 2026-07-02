@@ -1,0 +1,126 @@
+{
+ "run": "damping_pilot_v2_20260703_000056",
+ "split": {
+  "train": 3,
+  "val": 3,
+  "test": 3
+ },
+ "disjoint_split": true,
+ "n_train_cand": 30,
+ "n_test_cand": 15,
+ "damping_verified": true,
+ "predictors": {
+  "B0_default": {
+   "auroc": 0.17857142857142858,
+   "brier": 0.25888888888888895,
+   "err_mae": 0.0831,
+   "time_mae": 5.747,
+   "regret": 0.4804,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "B1_static": {
+   "auroc": 0.5357142857142857,
+   "brier": 0.2762208083503996,
+   "err_mae": 0.0839,
+   "time_mae": 6.024,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "B2_mean": {
+   "auroc": 0.7142857142857143,
+   "brier": 0.21080538570301705,
+   "err_mae": 0.0722,
+   "time_mae": 6.031,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "B2_seq_deepsets": {
+   "auroc": 0.6964285714285714,
+   "brier": 0.20939716696018984,
+   "err_mae": 0.0723,
+   "time_mae": 6.02,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "OracleZ": {
+   "auroc": 0.7142857142857143,
+   "brier": 0.21665856969520858,
+   "err_mae": 0.0724,
+   "time_mae": 6.029,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  }
+ },
+ "adaptation_curve_B2Seq": {
+  "0": {
+   "auroc": 0.5357142857142857,
+   "brier": 0.2762208083503996,
+   "err_mae": 0.0839,
+   "time_mae": 6.024,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "1": {
+   "auroc": 0.7142857142857143,
+   "brier": 0.21953906528171582,
+   "err_mae": 0.0716,
+   "time_mae": 6.032,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "2": {
+   "auroc": 0.6964285714285714,
+   "brier": 0.20981874644978477,
+   "err_mae": 0.0725,
+   "time_mae": 6.027,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  },
+  "3": {
+   "auroc": 0.6964285714285714,
+   "brier": 0.20939716696018984,
+   "err_mae": 0.0723,
+   "time_mae": 6.02,
+   "regret": 0.5803,
+   "top1_acc": 0.333,
+   "sel_success_rate": 0.667,
+   "n_test": 15,
+   "n_groups": 3
+  }
+ },
+ "diagnostics": {
+  "D1_damping_affects_final_maxspread": 0.1179,
+  "D1_damping_affects_pulldur_maxspread": 1.14,
+  "D2_x_std_across_all": 0.0,
+  "D3_history_identifies_state_acc": 1.0,
+  "D3_chance": 0.333
+ },
+ "utility": {
+  "LAM_ERR": 1.0,
+  "LAM_TIME": 0.02
+ }
+}

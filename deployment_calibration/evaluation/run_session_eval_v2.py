@@ -148,10 +148,12 @@ def main() -> int:
     apx = argparse.ArgumentParser()
     apx.add_argument("run_dir")
     apx.add_argument("--k", default="0,1,2,4")
+    apx.add_argument("--fracs", default="0.34,0.33,0.33", help="train,val,test session fractions")
     a = apx.parse_args()
     run = Path(a.run_dir)
     episodes = load_episodes(run)
-    split = split_sessions(episodes, seed=0)
+    fr = tuple(float(x) for x in a.fracs.split(","))
+    split = split_sessions(episodes, fracs=fr, seed=0)
     man = split_manifest(episodes, split)
 
     train_c = candidates_in(episodes, split["train"] + split["val"])
