@@ -1,66 +1,139 @@
-# paper/ — 论文项目（与平台/感知-记忆项目代码隔离，共用测试场景）
+# paper — Franka 技能状态机实验平台 + 部署条件化计划评估
 
-本文件夹是**论文专用**工作区。设计目标：论文项目与"感知模块/记忆模块"等其它项目**互不感染**，但
-**共用同一个会持续更新的测试场景**。
+本仓库是**论文实验专用**的独立工作区，包含：一个基于 Isaac Lab 的 **Franka 关节动作技能状态机**（抓取 / 放置 / 开关抽屉 / 开关门 / 咖啡机），配套的**测试场景与可视化 UI**，以及论文方法层 **Deployment-Conditioned Plan Evaluation（部署条件化计划评估）**。
 
-## 隔离策略（两项目完全独立运行）
-- **执行后端隔离**：`paper/skill_backend/` = `franka_skill_state_machine` 的 runtime/skills/
-  state_machine/learned_drawer **冻结副本**。论文只 import 这份副本。
-- **场景隔离（已私有化）**：`paper/scene/stackpkg/` = 上游 `manipulation/stack` + franka env cfg 的
-  **冻结私有副本**；`paper/scene/paper_tasks.py` 注册**论文自有任务 `Isaac-Paper-OpenDrawer-Franka-v0`**。
-  论文**不再** import 共享的 `isaaclab_tasks` franka 配置（其包自动导入会把另一项目对共享 cfg 的编辑
-  牵连进来）。数据生成入口直接实例化 paper cfg，不调用 `parse_env_cfg`/`import isaaclab_tasks`。
-  `skill_backend` 的 `drawer_target_config`/`microwave_door_config`/`target_registry` 均改指
-  `stackpkg` 私有副本。
-- **资产共享（稳定二进制，不复制）**：场景 USD（`simv2/USD/Cabinet_44853`、Knife、
-  `SapienAssetPipeline/usd_assets/*`、`Connection/.../panda_instanceable.usd`）仍从**共享仓库树**解析
-  （paper cfg 的 `_repo_path`）。这些是**稳定二进制**，另一项目不编辑它们（他们改的是 cfg 代码，paper
-  已私有）；且 crate USD 内部为绝对引用，复制无真正隔离意义（实测副本反而破坏抓取）。**Sektion 橱柜
-  （另一项目频繁改动）默认禁用**（open_drawer 不需要；`PAPER_ENABLE_SEKTION=1` 可开）。cube 为程序化
-  立方体无需资产。**关键**：paper 私有 cfg 里**保留了另一项目删除的把手碰撞代理**（TopHandleProxy 等），
-  否则夹爪无处可抓（这正是"复制 cfg 代码"提供隔离的意义）。
-- **数据隔离**：`paper/deployment_calibration/data/`（大文件 .gitignore）。
-- **仅共享框架 + 稳定资产**：`isaaclab`/`isaaclab_assets`（框架）+ Isaac Sim + 稳定场景 USD 二进制。
-  会被编辑的"项目代码"（scene cfg / 技能 / 方法层）全部私有。
+> 与"感知/记忆"等其它项目**代码完全隔离**、独立运行。仓库根即 `projects/paper` 的内容。
 
-> 已验证：`Isaac-Paper-OpenDrawer-Franka-v0` 独立加载并跑 open_drawer，成功率复现隔离前 kill_test 水平；
-> 把手代理已在 paper cfg 内恢复（不依赖另一项目对共享 cfg 的删除）。
+---
 
-## 结构
+## 目录结构
+
 ```
 paper/
-├── skill_backend/            # 冻结的执行后端（论文自有副本；勿与平台同步）
-│   ├── runtime/ skills/ state_machine/ learned_drawer/
-└── deployment_calibration/   # 论文方法层（Deployment-Conditioned Plan Evaluation）
-    ├── contracts/ adapters/ data_generation/ baselines/ evaluation/ configs/ data/
+├── franka_v1_skill_lab/        # 测试平台/工坊（场景、UI、传感器、感知、遥操作、pi0.5）
+│   ├── scene_interface/        #   test_mode_ui.py + skill_test_controller + 各 UI 面板
+│   ├── layout_editor/          #   场景布局编辑器（保存/复现 scene_v1_latest）
+│   ├── scene/                  #   任务 id、保存的场景 (saved_scenes/v1_active/*)
+│   ├── sensors/                #   D435 / ZED 相机
+│   ├── perception_foundationpose/, perception_qwen/, scene_describer/   # 感知后端
+│   ├── teleop_collection/      #   GELLO 遥操作数据采集
+│   └── pi05_training/          #   pi0.5 训练/转换
+├── franka_skill_state_machine/ # 技能后端（执行状态机，纯物理 IK，无作弊关节目标）
+│   ├── skills/                 #   grasp / place / open_drawer / close_drawer / microwave_door / move_to_pose
+│   ├── runtime/                #   IK 适配、抽屉/门配置、观测适配、日志、参数解析
+│   ├── state_machine/          #   skill_executor + skill_test_controller（技能测试主控 + coffee）
+│   └── learned_drawer/         #   官方抽屉 RL 策略（备选，默认用 IK）
+├── deployment_calibration/     # 论文方法层：契约/采样/适配/基线/评估 + 数据
+├── scene/                      # 冻结的场景任务副本（stackpkg + paper_tasks + captured_scene）
+└── docs/                       # 平台审计 / 实验契约 / kill test / 设计文档
 ```
 
-## 当前状态（round-1, open_drawer）
-- 审计/契约/偏差登记：见`projects/paper/docs/paper_*_v1.md`（HEAD f2e77e7 审计）。
-- 干净独立-episode 管线（修复 episode 独立性 R1）+ B0/B1/B2 + regret 评估：就绪并验证。
-- Kill test 裁决 **MODIFY**（见 `projects/paper/docs/paper_round1_kill_test_v1.md`）：H1 成立、管线可信，但干净 sim 平稳→
-  历史 H 无可校准漂移。
+---
 
-## 选定的部署漂移轴（round-1）
-**机构物理：每 session 随机化抽屉关节 damping/friction（不可观测，不进 state）。**
-- 物理真实、安全、可辩护（真实机构阻力随磨损/温度变化）；直接影响 open_drawer 拉动结果；
-  真机对应"编码器读关节、读不到摩擦" → 契合"用近期历史校准部署状态"。
-- 第二轴（感知偏置：把手 pose 漂移）留作 round-2 / H3-sim2real。
+## 环境准备
 
-## 下一步（待执行）
-1. 在 `adapters/` + `generate_open_drawer.py` 加 **per-session 隐藏 damping/friction 注入**
-   （每 session 重建 env 以可靠设置 actuator；漂移值记为 secret label，不入 x）。
-2. 生成数百集多-session 数据 → 重跑 `run_eval` 比 **B2(+history) vs B1** 的 AUROC/regret →
-   得出 round-1 H1/H2 正式结论。
-3. H3（VLM/vision）在数据链稳定后接入。
-
-## 运行
 ```bash
-conda activate env_isaaclab
-./isaaclab.sh -p projects/paper/deployment_calibration/data_generation/generate_open_drawer.py \
-  --n_conditions 12 --candidates 3 --seed 7 --run_id kill_test \
-  --output_dir projects/paper/deployment_calibration/data --headless
-python projects/paper/deployment_calibration/evaluation/run_eval.py \
-  --episodes projects/paper/deployment_calibration/data/kill_test/episodes.jsonl \
-  --out      projects/paper/deployment_calibration/data/kill_test/_eval
+source ~/miniconda3/etc/profile.d/conda.sh && conda activate env_isaaclab
+cd <IsaacLab>/projects/paper
 ```
+
+底层基座任务：`Isaac-Stack-Cube-Franka-JointPolicy-v0`（8 维关节动作：7 臂 + 1 夹爪 + 1 抽屉标志；20Hz；DLS 微分 IK）。技能全程**纯物理抓取拉动**，不写关节目标作弊。
+
+---
+
+## 快速开始
+
+### 1) 可视化测试（GUI + 抓取面板 + 碰撞体可视化）
+```bash
+./isaaclab.sh -p franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+  --controller state_machine.skill_test_controller:SkillTestController \
+  --grasp --viz --scene --no_cameras --no_stream
+```
+- 技能面板：选目标（桌面物体/把手/抽屉/门/咖啡机）→ 执行对应技能
+- Grasp Pose 面板：调各把手/物体的抓取位姿（**技能实时取用**，单一来源）
+- Viz 面板：Show Colliders（绿色碰撞体）/ Show grasp blocks / 目标箭头
+
+### 2) 无 GUI 自动回归（出成功/失败）
+```bash
+SKILL_TEST_AUTORUN="open_drawer:top_drawer,close_drawer:top_drawer,open_drawer:sektion_top_drawer,close_drawer:sektion_top_drawer" \
+./isaaclab.sh -p franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+  --controller state_machine.skill_test_controller:SkillTestController \
+  --headless --no_cameras
+```
+
+### 3) 咖啡机技能（夹住把手方块，绕竖直世界 Z 轴旋转 joint_5）
+```bash
+SKILL_TEST_COFFEE=1 SKILL_TEST_COFFEE_TARGET=0.55 \
+./isaaclab.sh -p franka_v1_skill_lab/scene_interface/test_mode_ui.py \
+  --controller state_machine.skill_test_controller:SkillTestController \
+  --headless --no_cameras
+```
+
+### 4) 看相机画面（网页版）
+去掉 `--no_cameras`/`--no_stream` 启动仿真；另一终端：
+```bash
+python franka_v1_skill_lab/scene_interface/image_viewer.py --connect tcp://localhost:5557 --port 8088
+# 浏览器打开 http://localhost:8088  （front/wrist RGB+Depth）
+```
+
+---
+
+## UI 面板（`--ui all` 或单独 `--franka/--asset/--grasp/...`；默认全关）
+
+| 标志 | 面板 | 功能 |
+|---|---|---|
+| `--franka` | 机器人控制 | 关节/任务空间读写 + 执行 |
+| `--asset` | 资产位姿编辑 | 实时移动/旋转/缩放场景物体 |
+| `--grasp` | 抓取位姿编辑 | 物体+把手抓取 pose（抽屉/咖啡技能取此值） |
+| `--waypoints` | 技能途径点 | 每个技能的过渡绕行途径点 |
+| `--joint` | 家电关节驱动 | 抽屉/门/咖啡机关节目标 |
+| `--camera` | 相机视角 | 调相机位姿（需相机） |
+| `--scene` | 场景 | 重置 + 保存最新场景 |
+| `--viz` | 可视化 | 碰撞体 / 目标箭头 / grasp blocks |
+
+其它：`--keep_fridge`（保留冰箱，门技能 target=fridge 需要）、`--keep_dishwasher`、`--no_props`、`--describe`（VLM 场景描述）。
+
+---
+
+## 技能清单与状态
+
+| 技能 | 目标 | 状态 |
+|---|---|---|
+| **抓取 grasp** | 桌面物体 / 碗 | ✅ IK 抓取（rest_offset 防穿模） |
+| **放置 place** | KLT 筐 / 指定点 | ✅ |
+| **开抽屉 open_drawer** | 桌面柜 `top/middle_drawer`、地面 Sektion `sektion_top/bottom_drawer` | ✅ 先 ARC_TO_FACE 转身对正 → 抓把手 → 沿抓取轴直线拉 |
+| **关抽屉 close_drawer** | 同上 | ✅ 先关节空间 ARC_TO_FACE 转身（不自撞）→ 抓 → 推回 |
+| **咖啡机 coffee** | `handle_coffee_lever` | ✅ 夹把手方块，绕**竖直世界 Z 轴**(joint_5) 闭环旋转到目标角 |
+| **开关门 door** | 微波炉 / 冰箱(`--keep_fridge`) | ✅ 自动定位把手 + 铰链摆动 |
+
+**关键机制**
+- **单一来源把手 pose**：抽屉抓取姿态**只**取 Grasp Pose 面板 / `grasp_poses.json` 的值（`override_grasp_local` 实时注入 obs_adapter）；已删除代理/网格/计算等其它 pose 来源，杜绝分叉。
+- **ARC_TO_FACE**：够不到/斜后方的柜子先**关节空间旋转第 1 轴**把整体姿态转向柜子，再规划抓取，避免仰身/自撞。
+- **咖啡机世界 Z 轴**：`joint_5/link_5` 实测绕世界 Z 水平摆动；直接用世界 Z 轴 + 关节锚点做闭环旋转（不再靠脆弱的探测标定）。
+- **防穿模**：桌面刚体 prop spawn 时 `rest_offset=0.002` + 提高解穿插速度，夹取不再穿入。
+
+---
+
+## deployment_calibration —— 论文方法层
+
+预测多维技能执行结果 `y`，输入 `(x, g, θ, H)`：部署状态 `x`、计划 `g`、扰动 `θ`、近期历史 `H`。
+
+```
+contracts/       episode schema（契约版本、θ 范围）
+data_generation/ 采样器 + generate_open_drawer.py（每 episode 全复位，独立性已修）
+adapters/        Isaac 环境适配（reset_full + run episode）
+baselines/       B0 / B1 / B2(+history)
+evaluation/      AUROC / regret 评估
+data/            run 输出（episodes.jsonl + trajectories/*.npz）
+```
+
+Round-1 结论见 `docs/paper_round1_kill_test_v1.md`（裁决 MODIFY：管线可信，干净 sim 无可校准漂移 → 需注入 per-session 隐藏 damping/friction 漂移）。
+
+---
+
+## 备注
+
+- 场景资产（Cabinet_44853 / CoffeeMachine / SAPIEN props / Franka USD）从共享 Isaac Lab 仓库树解析——本仓库只含**代码 + 场景清单 + 抓取标定**，不含大资产二进制。
+- `scene/saved_scenes/v1_active/scene_v1_latest.usd` 为布局编辑器的场景快照（可由 "Save V1" 重生）。
+- 已排除 `__pycache__` / 传感器 debug 输出 / logs（见 `.gitignore`）。
+- `projects/paper` 为独立 git 仓库；推送：`cd projects/paper && git add -A && git commit -m "..." && git push`。
