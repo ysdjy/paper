@@ -1,0 +1,108 @@
+{
+ "run_id": "damping_micro_sweep_v2_20260702_235622",
+ "rows": [
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 3.0,
+   "damping_eff": 3.0,
+   "damping_post": 3.0,
+   "success": true,
+   "final": 0.1962,
+   "pull_dur": 0.7,
+   "reason": "NONE"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 3.0,
+   "damping_eff": 3.0,
+   "damping_post": 3.0,
+   "success": true,
+   "final": 0.1963,
+   "pull_dur": 0.7,
+   "reason": "NONE"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 20.0,
+   "damping_eff": 20.0,
+   "damping_post": 20.0,
+   "success": true,
+   "final": 0.1871,
+   "pull_dur": 0.74,
+   "reason": "NONE"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 20.0,
+   "damping_eff": 20.0,
+   "damping_post": 20.0,
+   "success": true,
+   "final": 0.1897,
+   "pull_dur": 0.86,
+   "reason": "NONE"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 60.0,
+   "damping_eff": 60.0,
+   "damping_post": 60.0,
+   "success": false,
+   "final": 0.034,
+   "pull_dur": 2.38,
+   "reason": "HANDLE_DETACHED"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 60.0,
+   "damping_eff": 60.0,
+   "damping_post": 60.0,
+   "success": false,
+   "final": 0.034,
+   "pull_dur": 2.38,
+   "reason": "HANDLE_DETACHED"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 120.0,
+   "damping_eff": 120.0,
+   "damping_post": 120.0,
+   "success": false,
+   "final": 0.016,
+   "pull_dur": 1.76,
+   "reason": "HANDLE_DETACHED"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 120.0,
+   "damping_eff": 120.0,
+   "damping_post": 120.0,
+   "success": false,
+   "final": 0.0152,
+   "pull_dur": 1.78,
+   "reason": "HANDLE_DETACHED"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 200.0,
+   "damping_eff": 200.0,
+   "damping_post": 200.0,
+   "success": false,
+   "final": 0.0087,
+   "pull_dur": 1.68,
+   "reason": "HANDLE_DETACHED"
+  },
+  {
+   "drawer": "middle_drawer",
+   "damping_req": 200.0,
+   "damping_eff": 200.0,
+   "damping_post": 200.0,
+   "success": false,
+   "final": 0.0092,
+   "pull_dur": 1.64,
+   "reason": "HANDLE_DETACHED"
+  }
+ ],
+ "git_commit": "5f59fe7e112379f94dddf97763ebbb679a4a317b",
+ "branch": "main",
+ "dirty_worktree": true
+}

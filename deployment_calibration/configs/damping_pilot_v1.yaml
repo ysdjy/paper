@@ -7,10 +7,10 @@ run_prefix: damping_pilot
 
 drawers: [middle_drawer]              # single-drawer core validation first (cleanest from Stage-0)
 
-damping_levels:                       # PLACEHOLDER -- update from micro-sweep before the real pilot run
-  - {id: L1_low,  value: 3.0}
-  - {id: L2_mid,  value: 60.0}
-  - {id: L3_high, value: 150.0}
+damping_levels:                       # from damping_micro_sweep_v2 (nominal: 3/20 succeed, >=60 detach).
+  - {id: L1_low,  value: 3.0}          # easy (baseline); nominal final ~0.196
+  - {id: L2_mid,  value: 20.0}         # moderate resistance; nominal final ~0.188 (still succeeds)
+  - {id: L3_high, value: 40.0}         # near detach threshold; only aggressive candidates open it
 
 theta_ranges:                         # FROZEN from capability_map_v2_20260702_231522 (middle 0.58 mix).
   grasp_offset_local_y: [-0.06, 0.06]  # dominant driver: center=success, |y| large=edge-miss failure
