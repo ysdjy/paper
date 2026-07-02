@@ -1,4 +1,10 @@
-"""Isaac execution backend adapter for open_drawer episodes (paper round-1).
+"""[LEGACY v1 -- kept, do not delete] Isaac execution backend adapter for open_drawer (paper round-1).
+
+Superseded by adapters/articulated_drawer_v2.py (member-aware: desktop cabinet + Sektion; reads the
+frozen scene/paper_scene_v2 registry). This v1 is cabinet-only (hardcoded scene["cabinet"]) and is
+retained for reproducing round-1 v1 data. New experiments must use the v2 adapter.
+
+Isaac execution backend adapter for open_drawer episodes (paper round-1).
 
 Reuses the verified franka_skill_state_machine backend (SkillExecutor + OpenDrawerIKSkill + DLS IK +
 SceneStateProvider) as the *physical executor* only. Adds:
