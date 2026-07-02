@@ -1,0 +1,122 @@
+{
+ "run_id": "stage0_drawer_validation_v2_20260702_210317",
+ "contract_version": "open_drawer_v2",
+ "scene_version": "paper_scene_v2",
+ "git_commit": "f57d02da74b8d1bf30318f413ad9c1990a742614",
+ "dirty_worktree": true,
+ "reps": 5,
+ "default_theta": {
+  "grasp_offset_local_y": 0.0,
+  "max_pos_step": 0.02,
+  "pull_lead": 0.08
+ },
+ "default_g": {
+  "target_open_position": 0.2,
+  "target_tolerance": 0.02
+ },
+ "thresholds": {
+  "robot_joint": 0.001,
+  "tcp": 0.002,
+  "drawer": 0.0001,
+  "handle": 0.002
+ },
+ "drawers": [
+  "top_drawer",
+  "middle_drawer",
+  "sektion_top_drawer",
+  "sektion_bottom_drawer"
+ ],
+ "per_drawer": {
+  "top_drawer": {
+   "member": "cabinet",
+   "reps": 5,
+   "n_success": 5,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.233,
+    0.2315,
+    0.1948,
+    0.234,
+    0.234
+   ],
+   "elapsed_mean": 9.26,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": true
+  },
+  "middle_drawer": {
+   "member": "cabinet",
+   "reps": 5,
+   "n_success": 5,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.1964,
+    0.1964,
+    0.1965,
+    0.1963,
+    0.1964
+   ],
+   "elapsed_mean": 9.36,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": true
+  },
+  "sektion_top_drawer": {
+   "member": "sektion_cabinet",
+   "reps": 5,
+   "n_success": 5,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.1974,
+    0.1975,
+    0.1974,
+    0.1975,
+    0.1973
+   ],
+   "elapsed_mean": 8.33,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": true
+  },
+  "sektion_bottom_drawer": {
+   "member": "sektion_cabinet",
+   "reps": 5,
+   "n_success": 0,
+   "success_rate": 0.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "elapsed_mean": 20.96,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": false
+  }
+ },
+ "control_dt": 0.02,
+ "run_command": "projects/paper/deployment_calibration/data_generation/generate_stage0_validation_v2.py --headless --reps 5 --drawers top_drawer,middle_drawer,sektion_top_drawer,sektion_bottom_drawer",
+ "captured_at": "2026-07-02 21:10:24"
+}

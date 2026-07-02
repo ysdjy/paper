@@ -1,0 +1,93 @@
+{
+ "run_id": "stage0_drawer_validation_v2_20260702_210317",
+ "per_drawer": {
+  "top_drawer": {
+   "member": "cabinet",
+   "reps": 5,
+   "n_success": 5,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.233,
+    0.2315,
+    0.1948,
+    0.234,
+    0.234
+   ],
+   "elapsed_mean": 9.26,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": true
+  },
+  "middle_drawer": {
+   "member": "cabinet",
+   "reps": 5,
+   "n_success": 5,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.1964,
+    0.1964,
+    0.1965,
+    0.1963,
+    0.1964
+   ],
+   "elapsed_mean": 9.36,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": true
+  },
+  "sektion_top_drawer": {
+   "member": "sektion_cabinet",
+   "reps": 5,
+   "n_success": 5,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.1974,
+    0.1975,
+    0.1974,
+    0.1975,
+    0.1973
+   ],
+   "elapsed_mean": 8.33,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": true
+  },
+  "sektion_bottom_drawer": {
+   "member": "sektion_cabinet",
+   "reps": 5,
+   "n_success": 0,
+   "success_rate": 0.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "elapsed_mean": 20.96,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": false
+  }
+ }
+}
