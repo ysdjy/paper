@@ -1,0 +1,734 @@
+{
+ "scene_version": "paper_scene_v2",
+ "source_commit": "822d14db114d1a8008c83e11eaa0efab709db097",
+ "task_id": "Isaac-Stack-Cube-Franka-JointPolicy-v0",
+ "captured_at": "2026-07-02 20:49:42",
+ "enabled_members": [
+  "cabinet",
+  "robot",
+  "sektion_cabinet"
+ ],
+ "disabled_but_kept": [
+  "coffee_machine"
+ ],
+ "handle_pose_source": "scene/paper_scene_v2/grasp_poses.json",
+ "privileged_note": "actuator joint_damping of cabinet/sektion_cabinet drawers is z_secret; it must NEVER enter ordinary model input x.",
+ "mechanisms": {
+  "top_drawer": {
+   "drawer_name": "top_drawer",
+   "member": "cabinet",
+   "joint_name": "joint_0",
+   "link_name": "link_0",
+   "handle_frame": "top_drawer_handle",
+   "config_handle_offset": [
+    -0.0733,
+    -0.0053,
+    0.0395
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    -0.060458963945629086,
+    -0.004223109238231279,
+    0.024644174020193577
+   ],
+   "handle_local_quat": [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "handle_link": "link_0",
+   "joint_index": 0,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 2,
+   "link_world_pos": [
+    1.611816,
+    2.412786,
+    1.305755
+   ],
+   "link_world_quat": [
+    0.50865,
+    0.50865,
+    0.491198,
+    0.491198
+   ],
+   "handle_world_pos": [
+    1.634335,
+    2.351504,
+    1.301532
+   ],
+   "handle_world_quat": [
+    -0.50865,
+    0.50865,
+    0.491198,
+    -0.491198
+   ],
+   "present_in_scene": true
+  },
+  "middle_drawer": {
+   "drawer_name": "middle_drawer",
+   "member": "cabinet",
+   "joint_name": "joint_2",
+   "link_name": "link_2",
+   "handle_frame": "middle_drawer_handle",
+   "config_handle_offset": [
+    0.0306,
+    0.0389,
+    0.6824
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "handle_local_quat": [
+    -3.1699758982357787e-18,
+    -0.9999999999999986,
+    -3.3306690738754696e-16,
+    2.4078357466264072e-17
+   ],
+   "handle_link": "link_2",
+   "joint_index": 2,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 4,
+   "link_world_pos": [
+    0.966371,
+    2.352091,
+    1.117076
+   ],
+   "link_world_quat": [
+    0.50865,
+    0.50865,
+    0.491198,
+    0.491198
+   ],
+   "handle_world_pos": [
+    1.623857,
+    2.353763,
+    1.141763
+   ],
+   "handle_world_quat": [
+    0.50865,
+    -0.50865,
+    -0.491198,
+    0.491198
+   ],
+   "present_in_scene": true
+  },
+  "bottom_drawer": {
+   "drawer_name": "bottom_drawer",
+   "member": "cabinet",
+   "joint_name": "joint_1",
+   "link_name": "link_1",
+   "handle_frame": "bottom_drawer_handle",
+   "config_handle_offset": [
+    0.0741,
+    0.022,
+    0.6737
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.05997596235050873,
+    0.005245397059275951,
+    0.6677481890470297
+   ],
+   "handle_local_quat": [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "handle_link": "link_1",
+   "joint_index": 1,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 3,
+   "link_world_pos": [
+    0.965158,
+    2.317374,
+    0.936462
+   ],
+   "link_world_quat": [
+    0.50865,
+    0.50865,
+    0.491198,
+    0.491198
+   ],
+   "handle_world_pos": [
+    1.634593,
+    2.354009,
+    0.941707
+   ],
+   "handle_world_quat": [
+    -0.50865,
+    0.50865,
+    0.491198,
+    -0.491198
+   ],
+   "present_in_scene": true
+  },
+  "sektion_top_drawer": {
+   "drawer_name": "sektion_top_drawer",
+   "member": "sektion_cabinet",
+   "joint_name": "drawer_top_joint",
+   "link_name": "drawer_handle_top",
+   "handle_frame": "sektion_top_drawer_handle",
+   "config_handle_offset": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.29999999999999993,
+    0.0,
+    0.01
+   ],
+   "handle_local_quat": [
+    0.5000000596046448,
+    0.5000000596046448,
+    -0.5000000596046448,
+    -0.5000000596046448
+   ],
+   "handle_link": "drawer_handle_top",
+   "joint_index": 1,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 6,
+   "link_world_pos": [
+    1.035767,
+    1.640001,
+    0.711303
+   ],
+   "link_world_quat": [
+    1.0,
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "handle_world_pos": [
+    1.335767,
+    1.640001,
+    0.721303
+   ],
+   "handle_world_quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ],
+   "present_in_scene": true
+  },
+  "sektion_bottom_drawer": {
+   "drawer_name": "sektion_bottom_drawer",
+   "member": "sektion_cabinet",
+   "joint_name": "drawer_bottom_joint",
+   "link_name": "drawer_handle_bottom",
+   "handle_frame": "sektion_bottom_drawer_handle",
+   "config_handle_offset": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.3,
+    -3.469446951953614e-18,
+    0.009999999999999997
+   ],
+   "handle_local_quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ],
+   "handle_link": "drawer_handle_bottom",
+   "joint_index": 0,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 5,
+   "link_world_pos": [
+    1.035767,
+    1.640001,
+    0.582053
+   ],
+   "link_world_quat": [
+    1.0,
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "handle_world_pos": [
+    1.335767,
+    1.640001,
+    0.592053
+   ],
+   "handle_world_quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ],
+   "present_in_scene": true
+  }
+ },
+ "objects": {
+  "robot": {
+   "root_pos_w": [
+    2.12,
+    2.01,
+    0.718
+   ],
+   "root_quat_w": [
+    1.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "joint_names": [
+    "panda_joint1",
+    "panda_joint2",
+    "panda_joint3",
+    "panda_joint4",
+    "panda_joint5",
+    "panda_joint6",
+    "panda_joint7",
+    "panda_finger_joint1",
+    "panda_finger_joint2"
+   ],
+   "joint_pos": [
+    -0.042806,
+    -0.049388,
+    0.077805,
+    -0.070039,
+    -0.354428,
+    0.215823,
+    0.226375,
+    0.04,
+    0.04
+   ],
+   "default_joint_pos": [
+    0.110454,
+    -1.035484,
+    0.019921,
+    -2.795719,
+    0.018206,
+    1.759282,
+    0.886971,
+    0.04,
+    0.04
+   ],
+   "joint_stiffness": [
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    2000.0,
+    2000.0
+   ],
+   "joint_damping": [
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    100.0,
+    100.0
+   ],
+   "body_names": [
+    "panda_link0",
+    "panda_link1",
+    "panda_link2",
+    "panda_link3",
+    "panda_link4",
+    "panda_link5",
+    "panda_link6",
+    "panda_link7",
+    "panda_hand",
+    "panda_leftfinger",
+    "panda_rightfinger"
+   ],
+   "member": "robot",
+   "enabled": true,
+   "role": "observable",
+   "note": ""
+  },
+  "cabinet": {
+   "root_pos_w": [
+    1.259005,
+    2.367976,
+    1.073
+   ],
+   "root_quat_w": [
+    0.017452,
+    0.0,
+    0.0,
+    0.999848
+   ],
+   "scale": [
+    0.6200000047683716,
+    0.4959999918937683,
+    0.4000000059604645
+   ],
+   "joint_names": [
+    "joint_0",
+    "joint_1",
+    "joint_2"
+   ],
+   "joint_pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "default_joint_pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_stiffness": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_damping": [
+    3.0,
+    3.0,
+    3.0
+   ],
+   "body_names": [
+    "base",
+    "link_3",
+    "link_0",
+    "link_1",
+    "link_2"
+   ],
+   "member": "cabinet",
+   "enabled": true,
+   "role": "privileged: actuator damping is the hidden deployment axis",
+   "note": ""
+  },
+  "sektion_cabinet": {
+   "root_pos_w": [
+    0.984267,
+    1.640001,
+    0.394103
+   ],
+   "root_quat_w": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "joint_names": [
+    "drawer_bottom_joint",
+    "drawer_top_joint",
+    "door_left_joint",
+    "door_right_joint"
+   ],
+   "joint_pos": [
+    0.0,
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "default_joint_pos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_stiffness": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_damping": [
+    3.0,
+    3.0,
+    2.5,
+    2.5
+   ],
+   "body_names": [
+    "sektion",
+    "drawer_bottom",
+    "drawer_top",
+    "door_left_link",
+    "door_right_link",
+    "drawer_handle_bottom",
+    "drawer_handle_top",
+    "door_left_nob_link",
+    "door_right_nob_link"
+   ],
+   "member": "sektion_cabinet",
+   "enabled": true,
+   "role": "privileged: actuator damping is the hidden deployment axis",
+   "note": ""
+  },
+  "knife": {
+   "root_pos_w": [
+    2.326052,
+    1.956888,
+    0.019343
+   ],
+   "root_quat_w": [
+    -0.542168,
+    -0.25733,
+    0.342936,
+    0.722655
+   ],
+   "scale": [
+    0.11999999731779099,
+    0.11999999731779099,
+    0.11999999731779099
+   ],
+   "joint_names": [
+    "joint_0"
+   ],
+   "joint_pos": [
+    2e-05
+   ],
+   "default_joint_pos": [
+    -2.85
+   ],
+   "joint_stiffness": [
+    3000.0
+   ],
+   "joint_damping": [
+    200.0
+   ],
+   "body_names": [
+    "base",
+    "link_0"
+   ],
+   "member": "knife",
+   "enabled": false,
+   "role": "observable",
+   "note": ""
+  },
+  "coffee_machine": {
+   "root_pos_w": [
+    2.672815,
+    1.579245,
+    0.899563
+   ],
+   "root_quat_w": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "scale": [
+    0.20000000298023224,
+    0.20000000298023224,
+    0.20000000298023224
+   ],
+   "joint_names": [
+    "joint_0",
+    "joint_1",
+    "joint_10",
+    "joint_11",
+    "joint_12",
+    "joint_13",
+    "joint_14",
+    "joint_2",
+    "joint_3",
+    "joint_4",
+    "joint_5",
+    "joint_6",
+    "joint_7",
+    "joint_8",
+    "joint_9"
+   ],
+   "joint_pos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.0,
+    -0.0,
+    -1e-06,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "default_joint_pos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.45,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_stiffness": [
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    0.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0
+   ],
+   "joint_damping": [
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    20.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0
+   ],
+   "body_names": [
+    "base",
+    "link_15",
+    "link_0",
+    "link_1",
+    "link_10",
+    "link_11",
+    "link_12",
+    "link_13",
+    "link_14",
+    "link_2",
+    "link_3",
+    "link_4",
+    "link_5",
+    "link_6",
+    "link_7",
+    "link_8",
+    "link_9"
+   ],
+   "member": "coffee_machine",
+   "enabled": false,
+   "role": "observable",
+   "note": "kept but disabled for drawer profile"
+  },
+  "cube_1": {
+   "root_pos_w": [
+    2.299706,
+    1.854109,
+    0.0203
+   ],
+   "root_quat_w": [
+    0.999982,
+    5e-06,
+    -4e-06,
+    -0.005956
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "body_names": [
+    "Cube_1"
+   ],
+   "member": "cube_1",
+   "enabled": false,
+   "role": "observable",
+   "note": ""
+  },
+  "cube_2": {
+   "root_pos_w": [
+    2.453591,
+    1.643557,
+    0.0203
+   ],
+   "root_quat_w": [
+    1.0,
+    6e-06,
+    -4e-06,
+    -3.8e-05
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "body_names": [
+    "Cube_2"
+   ],
+   "member": "cube_2",
+   "enabled": false,
+   "role": "observable",
+   "note": ""
+  },
+  "cube_3": {
+   "root_pos_w": [
+    2.477839,
+    1.986125,
+    0.0203
+   ],
+   "root_quat_w": [
+    0.99885,
+    6e-06,
+    -4e-06,
+    0.047933
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "body_names": [
+    "Cube_3"
+   ],
+   "member": "cube_3",
+   "enabled": false,
+   "role": "observable",
+   "note": ""
+  }
+ }
+}

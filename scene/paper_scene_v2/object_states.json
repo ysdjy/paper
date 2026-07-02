@@ -1,0 +1,423 @@
+{
+ "scene_version": "paper_scene_v2",
+ "note": "runtime ground-truth capture (post reset+settle)",
+ "objects": {
+  "robot": {
+   "root_pos_w": [
+    2.12,
+    2.01,
+    0.718
+   ],
+   "root_quat_w": [
+    1.0,
+    -0.0,
+    -0.0,
+    -0.0
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "joint_names": [
+    "panda_joint1",
+    "panda_joint2",
+    "panda_joint3",
+    "panda_joint4",
+    "panda_joint5",
+    "panda_joint6",
+    "panda_joint7",
+    "panda_finger_joint1",
+    "panda_finger_joint2"
+   ],
+   "joint_pos": [
+    -0.042806,
+    -0.049388,
+    0.077805,
+    -0.070039,
+    -0.354428,
+    0.215823,
+    0.226375,
+    0.04,
+    0.04
+   ],
+   "default_joint_pos": [
+    0.110454,
+    -1.035484,
+    0.019921,
+    -2.795719,
+    0.018206,
+    1.759282,
+    0.886971,
+    0.04,
+    0.04
+   ],
+   "joint_stiffness": [
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    400.0,
+    2000.0,
+    2000.0
+   ],
+   "joint_damping": [
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    80.0,
+    100.0,
+    100.0
+   ],
+   "body_names": [
+    "panda_link0",
+    "panda_link1",
+    "panda_link2",
+    "panda_link3",
+    "panda_link4",
+    "panda_link5",
+    "panda_link6",
+    "panda_link7",
+    "panda_hand",
+    "panda_leftfinger",
+    "panda_rightfinger"
+   ]
+  },
+  "cabinet": {
+   "root_pos_w": [
+    1.259005,
+    2.367976,
+    1.073
+   ],
+   "root_quat_w": [
+    0.017452,
+    0.0,
+    0.0,
+    0.999848
+   ],
+   "scale": [
+    0.6200000047683716,
+    0.4959999918937683,
+    0.4000000059604645
+   ],
+   "joint_names": [
+    "joint_0",
+    "joint_1",
+    "joint_2"
+   ],
+   "joint_pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "default_joint_pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_stiffness": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_damping": [
+    3.0,
+    3.0,
+    3.0
+   ],
+   "body_names": [
+    "base",
+    "link_3",
+    "link_0",
+    "link_1",
+    "link_2"
+   ]
+  },
+  "sektion_cabinet": {
+   "root_pos_w": [
+    0.984267,
+    1.640001,
+    0.394103
+   ],
+   "root_quat_w": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "joint_names": [
+    "drawer_bottom_joint",
+    "drawer_top_joint",
+    "door_left_joint",
+    "door_right_joint"
+   ],
+   "joint_pos": [
+    0.0,
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "default_joint_pos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_stiffness": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_damping": [
+    3.0,
+    3.0,
+    2.5,
+    2.5
+   ],
+   "body_names": [
+    "sektion",
+    "drawer_bottom",
+    "drawer_top",
+    "door_left_link",
+    "door_right_link",
+    "drawer_handle_bottom",
+    "drawer_handle_top",
+    "door_left_nob_link",
+    "door_right_nob_link"
+   ]
+  },
+  "knife": {
+   "root_pos_w": [
+    2.326052,
+    1.956888,
+    0.019343
+   ],
+   "root_quat_w": [
+    -0.542168,
+    -0.25733,
+    0.342936,
+    0.722655
+   ],
+   "scale": [
+    0.11999999731779099,
+    0.11999999731779099,
+    0.11999999731779099
+   ],
+   "joint_names": [
+    "joint_0"
+   ],
+   "joint_pos": [
+    2e-05
+   ],
+   "default_joint_pos": [
+    -2.85
+   ],
+   "joint_stiffness": [
+    3000.0
+   ],
+   "joint_damping": [
+    200.0
+   ],
+   "body_names": [
+    "base",
+    "link_0"
+   ]
+  },
+  "coffee_machine": {
+   "root_pos_w": [
+    2.672815,
+    1.579245,
+    0.899563
+   ],
+   "root_quat_w": [
+    1.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "scale": [
+    0.20000000298023224,
+    0.20000000298023224,
+    0.20000000298023224
+   ],
+   "joint_names": [
+    "joint_0",
+    "joint_1",
+    "joint_10",
+    "joint_11",
+    "joint_12",
+    "joint_13",
+    "joint_14",
+    "joint_2",
+    "joint_3",
+    "joint_4",
+    "joint_5",
+    "joint_6",
+    "joint_7",
+    "joint_8",
+    "joint_9"
+   ],
+   "joint_pos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.0,
+    -0.0,
+    -1e-06,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "default_joint_pos": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -0.45,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "joint_stiffness": [
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    0.0,
+    10000.0,
+    10000.0,
+    10000.0,
+    10000.0
+   ],
+   "joint_damping": [
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    20.0,
+    1000.0,
+    1000.0,
+    1000.0,
+    1000.0
+   ],
+   "body_names": [
+    "base",
+    "link_15",
+    "link_0",
+    "link_1",
+    "link_10",
+    "link_11",
+    "link_12",
+    "link_13",
+    "link_14",
+    "link_2",
+    "link_3",
+    "link_4",
+    "link_5",
+    "link_6",
+    "link_7",
+    "link_8",
+    "link_9"
+   ]
+  },
+  "cube_1": {
+   "root_pos_w": [
+    2.299706,
+    1.854109,
+    0.0203
+   ],
+   "root_quat_w": [
+    0.999982,
+    5e-06,
+    -4e-06,
+    -0.005956
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "body_names": [
+    "Cube_1"
+   ]
+  },
+  "cube_2": {
+   "root_pos_w": [
+    2.453591,
+    1.643557,
+    0.0203
+   ],
+   "root_quat_w": [
+    1.0,
+    6e-06,
+    -4e-06,
+    -3.8e-05
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "body_names": [
+    "Cube_2"
+   ]
+  },
+  "cube_3": {
+   "root_pos_w": [
+    2.477839,
+    1.986125,
+    0.0203
+   ],
+   "root_quat_w": [
+    0.99885,
+    6e-06,
+    -4e-06,
+    0.047933
+   ],
+   "scale": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "body_names": [
+    "Cube_3"
+   ]
+  }
+ }
+}

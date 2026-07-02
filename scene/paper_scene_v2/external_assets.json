@@ -1,0 +1,41 @@
+{
+ "scene_version": "paper_scene_v2",
+ "isaaclab_root": "/home1/banghai/Documents/IsaacLab",
+ "assets": {
+  "simv2/USD/Cabinet_44853/configuration/cabinet_base.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/simv2/USD/Cabinet_44853/configuration/cabinet_base.usd",
+   "bytes": 579864,
+   "mtime": "2026-06-09 21:06:09",
+   "sha256": "f328f79844ef2f8e5550b5816a2f746ed57d0dd296dc8482a251fc34596e0f85"
+  },
+  "simv2/USD/Cabinet_44853/configuration/cabinet_physics.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/simv2/USD/Cabinet_44853/configuration/cabinet_physics.usd",
+   "bytes": 4422,
+   "mtime": "2026-06-09 21:06:09",
+   "sha256": "22e03d438786ade47f14b2e9a4b79f817fe9a7e3d6cd8d01606ed4c5b0de5db7"
+  },
+  "Connection/assets/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/Connection/assets/Isaac/IsaacLab/Robots/FrankaEmika/panda_instanceable.usd",
+   "bytes": 8038,
+   "mtime": "2026-06-08 10:42:49",
+   "sha256": "7f5a0c0aa6760cfbd348e08bc464d4b94341f027f51c2d9e42406ceefcc7787f"
+  },
+  "SapienAssetPipeline/usd_assets/CoffeeMachine_103046/coffeemachine.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/CoffeeMachine_103046/coffeemachine.usd",
+   "bytes": 1900,
+   "mtime": "2026-06-30 19:02:43",
+   "sha256": "f9c2b1a9d6b54a5b313c8bdf89f8122a918e6e7e0e038c152a6132787bbda8d1"
+  },
+  "SapienAssetPipeline/usd_assets/IsaacProps/Props/Sektion_Cabinet/sektion_cabinet_instanceable.usd": {
+   "exists": true,
+   "abs_path": "/home1/banghai/Documents/IsaacLab/SapienAssetPipeline/usd_assets/IsaacProps/Props/Sektion_Cabinet/sektion_cabinet_instanceable.usd",
+   "bytes": 15836,
+   "mtime": "2026-06-21 16:36:08",
+   "sha256": "991c866c3f90dce45a62aa980317f18eba360d4addc1e6919b242712a58d1284"
+  }
+ }
+}

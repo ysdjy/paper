@@ -1,0 +1,89 @@
+{
+ "scene_version": "paper_scene_v2",
+ "frame": "reference_local",
+ "note": "SINGLE SOURCE for paper drawer handle poses. Synced from active grasp_poses.json; do not let the two silently overwrite each other.",
+ "quat_order": "wxyz",
+ "source": "/home1/banghai/Documents/IsaacLab/projects/paper/franka_v1_skill_lab/scene/saved_scenes/v1_active/grasp_poses.json",
+ "poses": {
+  "handle_bottom_drawer": {
+   "kind": "handle",
+   "link": "link_1",
+   "member": "cabinet",
+   "pos": [
+    0.05997596235050873,
+    0.005245397059275951,
+    0.6677481890470297
+   ],
+   "quat": [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ]
+  },
+  "handle_middle_drawer": {
+   "kind": "handle",
+   "link": "link_2",
+   "member": "cabinet",
+   "pos": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "quat": [
+    -3.1699758982357787e-18,
+    -0.9999999999999986,
+    -3.3306690738754696e-16,
+    2.4078357466264072e-17
+   ]
+  },
+  "handle_sektion_bottom_drawer": {
+   "kind": "handle",
+   "link": "drawer_handle_bottom",
+   "member": "sektion_cabinet",
+   "pos": [
+    0.3,
+    -3.469446951953614e-18,
+    0.009999999999999997
+   ],
+   "quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ]
+  },
+  "handle_sektion_top_drawer": {
+   "kind": "handle",
+   "link": "drawer_handle_top",
+   "member": "sektion_cabinet",
+   "pos": [
+    0.29999999999999993,
+    0.0,
+    0.01
+   ],
+   "quat": [
+    0.5000000596046448,
+    0.5000000596046448,
+    -0.5000000596046448,
+    -0.5000000596046448
+   ]
+  },
+  "handle_top_drawer": {
+   "kind": "handle",
+   "link": "link_0",
+   "member": "cabinet",
+   "pos": [
+    -0.060458963945629086,
+    -0.004223109238231279,
+    0.024644174020193577
+   ],
+   "quat": [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ]
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "scene_version": "paper_scene_v2",
+ "cameras": {
+  "vla_front_static": {
+   "role": "front RGB",
+   "enabled": false,
+   "note": "registered for later VLM stage; disabled in drawer experiment profile."
+  }
+ }
+}

@@ -1,0 +1,270 @@
+{
+ "scene_version": "paper_scene_v2",
+ "mechanisms": {
+  "top_drawer": {
+   "drawer_name": "top_drawer",
+   "member": "cabinet",
+   "joint_name": "joint_0",
+   "link_name": "link_0",
+   "handle_frame": "top_drawer_handle",
+   "config_handle_offset": [
+    -0.0733,
+    -0.0053,
+    0.0395
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    -0.060458963945629086,
+    -0.004223109238231279,
+    0.024644174020193577
+   ],
+   "handle_local_quat": [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "handle_link": "link_0",
+   "joint_index": 0,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 2,
+   "link_world_pos": [
+    1.611816,
+    2.412786,
+    1.305755
+   ],
+   "link_world_quat": [
+    0.50865,
+    0.50865,
+    0.491198,
+    0.491198
+   ],
+   "handle_world_pos": [
+    1.634335,
+    2.351504,
+    1.301532
+   ],
+   "handle_world_quat": [
+    -0.50865,
+    0.50865,
+    0.491198,
+    -0.491198
+   ],
+   "present_in_scene": true
+  },
+  "middle_drawer": {
+   "drawer_name": "middle_drawer",
+   "member": "cabinet",
+   "joint_name": "joint_2",
+   "link_name": "link_2",
+   "handle_frame": "middle_drawer_handle",
+   "config_handle_offset": [
+    0.0306,
+    0.0389,
+    0.6824
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "handle_local_quat": [
+    -3.1699758982357787e-18,
+    -0.9999999999999986,
+    -3.3306690738754696e-16,
+    2.4078357466264072e-17
+   ],
+   "handle_link": "link_2",
+   "joint_index": 2,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 4,
+   "link_world_pos": [
+    0.966371,
+    2.352091,
+    1.117076
+   ],
+   "link_world_quat": [
+    0.50865,
+    0.50865,
+    0.491198,
+    0.491198
+   ],
+   "handle_world_pos": [
+    1.623857,
+    2.353763,
+    1.141763
+   ],
+   "handle_world_quat": [
+    0.50865,
+    -0.50865,
+    -0.491198,
+    0.491198
+   ],
+   "present_in_scene": true
+  },
+  "bottom_drawer": {
+   "drawer_name": "bottom_drawer",
+   "member": "cabinet",
+   "joint_name": "joint_1",
+   "link_name": "link_1",
+   "handle_frame": "bottom_drawer_handle",
+   "config_handle_offset": [
+    0.0741,
+    0.022,
+    0.6737
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.05997596235050873,
+    0.005245397059275951,
+    0.6677481890470297
+   ],
+   "handle_local_quat": [
+    0.0,
+    1.0,
+    0.0,
+    0.0
+   ],
+   "handle_link": "link_1",
+   "joint_index": 1,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 3,
+   "link_world_pos": [
+    0.965158,
+    2.317374,
+    0.936462
+   ],
+   "link_world_quat": [
+    0.50865,
+    0.50865,
+    0.491198,
+    0.491198
+   ],
+   "handle_world_pos": [
+    1.634593,
+    2.354009,
+    0.941707
+   ],
+   "handle_world_quat": [
+    -0.50865,
+    0.50865,
+    0.491198,
+    -0.491198
+   ],
+   "present_in_scene": true
+  },
+  "sektion_top_drawer": {
+   "drawer_name": "sektion_top_drawer",
+   "member": "sektion_cabinet",
+   "joint_name": "drawer_top_joint",
+   "link_name": "drawer_handle_top",
+   "handle_frame": "sektion_top_drawer_handle",
+   "config_handle_offset": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.29999999999999993,
+    0.0,
+    0.01
+   ],
+   "handle_local_quat": [
+    0.5000000596046448,
+    0.5000000596046448,
+    -0.5000000596046448,
+    -0.5000000596046448
+   ],
+   "handle_link": "drawer_handle_top",
+   "joint_index": 1,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 6,
+   "link_world_pos": [
+    1.035767,
+    1.640001,
+    0.711303
+   ],
+   "link_world_quat": [
+    1.0,
+    -0.0,
+    0.0,
+    0.0
+   ],
+   "handle_world_pos": [
+    1.335767,
+    1.640001,
+    0.721303
+   ],
+   "handle_world_quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ],
+   "present_in_scene": true
+  },
+  "sektion_bottom_drawer": {
+   "drawer_name": "sektion_bottom_drawer",
+   "member": "sektion_cabinet",
+   "joint_name": "drawer_bottom_joint",
+   "link_name": "drawer_handle_bottom",
+   "handle_frame": "sektion_bottom_drawer_handle",
+   "config_handle_offset": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "handle_pose_source": "grasp_poses.json (single source)",
+   "handle_local_pos": [
+    0.3,
+    -3.469446951953614e-18,
+    0.009999999999999997
+   ],
+   "handle_local_quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ],
+   "handle_link": "drawer_handle_bottom",
+   "joint_index": 0,
+   "init_joint_pos": 0.0,
+   "joint_stiffness": 0.0,
+   "joint_damping": 3.0,
+   "link_index": 5,
+   "link_world_pos": [
+    1.035767,
+    1.640001,
+    0.582053
+   ],
+   "link_world_quat": [
+    1.0,
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "handle_world_pos": [
+    1.335767,
+    1.640001,
+    0.592053
+   ],
+   "handle_world_quat": [
+    0.5,
+    0.5,
+    -0.5,
+    -0.5
+   ],
+   "present_in_scene": true
+  }
+ }
+}

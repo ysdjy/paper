@@ -1,0 +1,9 @@
+{
+ "scene_version": "paper_scene_v2",
+ "source_commit": "822d14db114d1a8008c83e11eaa0efab709db097",
+ "branch": "main",
+ "dirty_worktree": true,
+ "captured_at": "2026-07-02 20:49:42",
+ "task_id": "Isaac-Stack-Cube-Franka-JointPolicy-v0",
+ "capture_tool": "scene/tools/export_paper_scene_v2.py"
+}
