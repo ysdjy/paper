@@ -76,3 +76,41 @@ def test_independence_blocker_on_deterministic_replicates():
 def test_synthetic_flag_present():
     eps = synthetic.make_synthetic(replicates=2)
     assert all(e.get("synthetic_only") for e in eps)
+
+
+# ---- exploration gate criterion 3 is a CONJUNCTION (success-only AND frozen VSI) ----
+from deployment_calibration.evaluation.offline_v2.calibration_bias import pipeline as PIPE
+
+
+def _dv(succ_gain, vsi, robust=False):
+    return {"success_only": {"state_aware_selected_success_gain": succ_gain},
+            "VSI_frozen": vsi, "robust_offset": {"robust_generalist_exists": robust,
+                                                  "worst_case_gap_of_most_robust": 0.5}}
+
+
+_OKV = {"ok": True}
+_NOBLOCK = {"blocker": False}
+
+
+def test_gate_requires_both_success_gain_and_vsi():
+    # both above threshold -> criterion 3 passes
+    g = PIPE.exploration_gate(_dv(0.3, 0.2), _NOBLOCK, _OKV, n_distinct_best=4)
+    assert g["criteria"]["3_success_gain>=0.15_AND_vsi>=0.05"]["ok"]
+    assert g["gate_passed"]
+
+
+def test_gate_fails_on_time_only_vsi_without_success_gain():
+    # frozen VSI high (from time/error) but success-only gain ~0 -> criterion 3 FAILS (AND, not OR)
+    g = PIPE.exploration_gate(_dv(0.0, 0.2), _NOBLOCK, _OKV, n_distinct_best=4)
+    c3 = g["criteria"]["3_success_gain>=0.15_AND_vsi>=0.05"]
+    assert c3["frozen_vsi_ok(>=0.05)"] and not c3["success_only_gain_ok(>=0.15)"]
+    assert not c3["ok"]
+    assert not g["gate_passed"]
+
+
+def test_gate_fails_on_success_gain_without_vsi():
+    # success gain high but frozen VSI below threshold -> criterion 3 FAILS
+    g = PIPE.exploration_gate(_dv(0.3, 0.01), _NOBLOCK, _OKV, n_distinct_best=4)
+    c3 = g["criteria"]["3_success_gain>=0.15_AND_vsi>=0.05"]
+    assert c3["success_only_gain_ok(>=0.15)"] and not c3["frozen_vsi_ok(>=0.05)"]
+    assert not g["gate_passed"]

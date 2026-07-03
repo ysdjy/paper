@@ -71,9 +71,10 @@ def split_bias_levels(levels: dict, n_test_interior: int = 2, n_val_interior: in
 
 def build_manifest(episodes, split: dict, fm: FieldMap = DEFAULT_FIELDS) -> dict:
     levels = level_values(episodes, fm)
-    # map sessions + seeds per level
+    # map sessions + seeds + nuisance BLOCKS per level
     lvl_sessions = defaultdict(set)
     lvl_seeds = defaultdict(set)
+    lvl_blocks = defaultdict(set)
     for e in episodes:
         try:
             lvl = bias_level_of(e, fm)
@@ -82,31 +83,28 @@ def build_manifest(episodes, split: dict, fm: FieldMap = DEFAULT_FIELDS) -> dict
         lvl_sessions[lvl].add(e.get(fm.session_id))
         if e.get(fm.nuisance_seed) is not None:
             lvl_seeds[lvl].add(e.get(fm.nuisance_seed))
+        if e.get(fm.nuisance_block_id) is not None:
+            lvl_blocks[lvl].add(e.get(fm.nuisance_block_id))
 
-    def sessions_of(split_name):
+    def union_of(sset, split_name):
         s = set()
         for lid in split[split_name]:
-            s |= lvl_sessions[lid]
+            s |= sset[lid]
         return s
 
-    def seeds_of(split_name):
-        s = set()
-        for lid in split[split_name]:
-            s |= lvl_seeds[lid]
-        return s
-
-    audit = audit_split(split, levels, lvl_sessions, lvl_seeds)
+    audit = audit_split(split, levels, lvl_sessions, lvl_seeds, lvl_blocks)
     return {
         "levels": {k: levels[k] for k in levels},
         "split_level_ids": split,
         "split_values": {k: [levels[l] for l in v] for k, v in split.items()},
-        "sessions": {k: sorted(sessions_of(k)) for k in ("train", "val", "test")},
-        "nuisance_seeds": {k: sorted(seeds_of(k), key=str) for k in ("train", "val", "test")},
+        "sessions": {k: sorted(union_of(lvl_sessions, k)) for k in ("train", "val", "test")},
+        "nuisance_seeds": {k: sorted(union_of(lvl_seeds, k), key=str) for k in ("train", "val", "test")},
+        "nuisance_blocks": {k: sorted(union_of(lvl_blocks, k), key=str) for k in ("train", "val", "test")},
         "audit": audit,
     }
 
 
-def audit_split(split, levels, lvl_sessions, lvl_seeds) -> dict:
+def audit_split(split, levels, lvl_sessions, lvl_seeds, lvl_blocks=None) -> dict:
     tr, va, te = set(split["train"]), set(split["val"]), set(split["test"])
     all_lvls = set(levels)
     # pairwise-disjoint levels
@@ -124,6 +122,16 @@ def audit_split(split, levels, lvl_sessions, lvl_seeds) -> dict:
     sessions_disjoint = not (tr_s & va_s or tr_s & te_s or va_s & te_s)
     tr_z, va_z, te_z = (collect(lvl_seeds, "train"), collect(lvl_seeds, "val"), collect(lvl_seeds, "test"))
     seeds_disjoint = not (tr_z & va_z or tr_z & te_z or va_z & te_z)
+    # confirmatory rule: a nuisance BLOCK must not cross a split (blocks may still pair across bias
+    # levels WITHIN a split). Only checked when block ids are recorded.
+    blocks_disjoint = True
+    block_overlaps = {"train_val": [], "train_test": [], "val_test": []}
+    if lvl_blocks:
+        tr_b, va_b, te_b = (collect(lvl_blocks, "train"), collect(lvl_blocks, "val"), collect(lvl_blocks, "test"))
+        block_overlaps = {"train_val": sorted(tr_b & va_b, key=str),
+                          "train_test": sorted(tr_b & te_b, key=str),
+                          "val_test": sorted(va_b & te_b, key=str)}
+        blocks_disjoint = not (tr_b & va_b or tr_b & te_b or va_b & te_b)
 
     # interpolation: every test level bracketed by a train level below and above
     ordered = [k for k, _ in sorted(levels.items(), key=lambda kv: kv[1])]
@@ -135,11 +143,13 @@ def audit_split(split, levels, lvl_sessions, lvl_seeds) -> dict:
         bracket[lid] = bool(below and above)
     interpolation_ok = all(bracket.values()) and len(split["test"]) > 0
 
-    ok = levels_ok and partition_ok and sessions_disjoint and seeds_disjoint and interpolation_ok
+    ok = (levels_ok and partition_ok and sessions_disjoint and seeds_disjoint
+          and blocks_disjoint and interpolation_ok)
     return {"ok": bool(ok),
             "levels_pairwise_disjoint": levels_ok, "level_overlaps": pair,
             "partition_ok": partition_ok,
             "sessions_disjoint": sessions_disjoint,
             "nuisance_seeds_disjoint": seeds_disjoint,
+            "nuisance_blocks_disjoint": blocks_disjoint, "block_overlaps": block_overlaps,
             "test_levels_bracketed_by_train": bracket, "interpolation_ok": interpolation_ok,
             "counts": {k: len(v) for k, v in split.items()}}

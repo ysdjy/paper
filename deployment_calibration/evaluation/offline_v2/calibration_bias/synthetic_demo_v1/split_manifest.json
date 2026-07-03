@@ -97,6 +97,35 @@
       1011
     ]
   },
+  "nuisance_blocks": {
+    "train": [
+      "blk_B0_r0",
+      "blk_B0_r1",
+      "blk_B0_r2",
+      "blk_B2_r0",
+      "blk_B2_r1",
+      "blk_B2_r2",
+      "blk_B4_r0",
+      "blk_B4_r1",
+      "blk_B4_r2",
+      "blk_B6_r0",
+      "blk_B6_r1",
+      "blk_B6_r2"
+    ],
+    "val": [
+      "blk_B5_r0",
+      "blk_B5_r1",
+      "blk_B5_r2"
+    ],
+    "test": [
+      "blk_B1_r0",
+      "blk_B1_r1",
+      "blk_B1_r2",
+      "blk_B3_r0",
+      "blk_B3_r1",
+      "blk_B3_r2"
+    ]
+  },
   "audit": {
     "ok": true,
     "levels_pairwise_disjoint": true,
@@ -108,6 +137,12 @@
     "partition_ok": true,
     "sessions_disjoint": true,
     "nuisance_seeds_disjoint": true,
+    "nuisance_blocks_disjoint": true,
+    "block_overlaps": {
+      "train_val": [],
+      "train_test": [],
+      "val_test": []
+    },
     "test_levels_bracketed_by_train": {
       "B1": true,
       "B3": true

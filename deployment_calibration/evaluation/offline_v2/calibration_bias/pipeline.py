@@ -8,7 +8,7 @@ is reported as a co-primary. If any episode is synthetic, outputs carry syntheti
 The frozen EXPLORATION gate (GO-to-preregistration, NOT final significance):
   1. >=3 bias levels have a different best offset.
   2. no single offset is near-optimal at every bias (no robust generalist).
-  3. state-aware oracle vs best-single: success gain >= 0.15 OR frozen VSI >= 0.05.
+  3. state-aware oracle vs best-single: success-only gain >= 0.15 AND frozen VSI >= 0.05 (both).
   4. replicate-independence audit passes (no blocker).
   5. pairing / leakage / provenance pass.
 """
@@ -168,8 +168,13 @@ def voi_analysis(episodes, cfg, fm, seeds=(0, 1, 2, 3, 4)) -> dict:
 def exploration_gate(dv, ind, validation, n_distinct_best) -> dict:
     c1 = n_distinct_best >= GATE["min_bias_levels_with_distinct_best_offset"]
     c2 = not dv["robust_offset"].get("robust_generalist_exists", True)
+    # criterion 3 is a CONJUNCTION: the success-only selected-success gain (physical decision value,
+    # NECESSARY) AND the frozen-utility VSI (combined utility, NECESSARY). AND — not OR — so a design
+    # cannot enter the confirmatory stage on the time/error term alone.
     succ_gain = (dv.get("success_only") or {}).get("state_aware_selected_success_gain") or 0.0
-    c3 = (succ_gain >= GATE["min_success_gain"]) or ((dv["VSI_frozen"] or 0) >= GATE["min_frozen_vsi"])
+    c3a = succ_gain >= GATE["min_success_gain"]                      # success-only necessary condition
+    c3b = (dv["VSI_frozen"] or 0) >= GATE["min_frozen_vsi"]          # frozen-utility necessary condition
+    c3 = c3a and c3b
     c4 = not ind["blocker"]
     c5 = validation["ok"]
     passed = c1 and c2 and c3 and c4 and c5
@@ -178,8 +183,13 @@ def exploration_gate(dv, ind, validation, n_distinct_best) -> dict:
                 "1_distinct_best_offsets>=3": {"ok": bool(c1), "value": n_distinct_best},
                 "2_no_robust_generalist": {"ok": bool(c2),
                                            "worst_gap": dv["robust_offset"].get("worst_case_gap_of_most_robust")},
-                "3_success_gain>=0.15_or_vsi>=0.05": {"ok": bool(c3), "success_gain": succ_gain,
-                                                      "vsi_frozen": dv["VSI_frozen"]},
+                "3_success_gain>=0.15_AND_vsi>=0.05": {
+                    "ok": bool(c3),
+                    "success_only_gain_ok(>=0.15)": bool(c3a), "success_gain": succ_gain,
+                    "frozen_vsi_ok(>=0.05)": bool(c3b), "vsi_frozen": dv["VSI_frozen"],
+                    "note": "AND: success-only gain is necessary for physical decision value; frozen "
+                            "VSI is necessary for combined utility. Net VOI is NOT a capability-map "
+                            "gate here but MUST be positive in the final confirmatory GO."},
                 "4_replicate_independence": {"ok": bool(c4), "blocker": ind["blocker"]},
                 "5_pairing_leakage_provenance": {"ok": bool(c5)},
             }}

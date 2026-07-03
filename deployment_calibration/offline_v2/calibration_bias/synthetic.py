@@ -26,8 +26,15 @@ def _rng(seed):
 
 def make_synthetic(*, bias_levels=None, offsets=None, probe_offsets=(-0.04, 0.0, 0.04),
                    targets=("T020",), replicates=3, grasp_tol=0.02, err_cap=0.2,
-                   base_time=10.0, noise=0.004, seed=0) -> list:
-    """Return a list of episode dicts (schema-compatible). Deterministic given seed."""
+                   base_time=10.0, noise=0.004, seed=0, paired_blocks=False) -> list:
+    """Return a list of episode dicts (schema-compatible). Deterministic given seed.
+
+    paired_blocks: if True, stamp each session with nuisance_block_id = f"blk_r{rep}", i.e. the SAME
+    nuisance block is reused across all bias levels for a given replicate index. This is the
+    exploration-stage PAIRED design (matched nuisance context under every bias); it is independence-
+    legal (block reused across bias, not 1:1 with bias) but, if split by bias level, a block would
+    cross splits — which the confirmatory split audit correctly flags.
+    """
     if bias_levels is None:
         # 7 continuous bias levels spanning the compensable range
         vals = np.round(np.linspace(-0.045, 0.045, 7), 4)
@@ -44,6 +51,8 @@ def make_synthetic(*, bias_levels=None, offsets=None, probe_offsets=(-0.04, 0.0,
             # independent nuisance seed per session, NOT a function of bias
             nseed = seed_counter
             seed_counter += 1
+            # paired block id (shared across bias for a replicate) or per-session id
+            block_id = f"blk_r{rep}" if paired_blocks else f"blk_{bias_id}_r{rep}"
             rng = _rng(seed * 100003 + nseed)
             order = 0
 
@@ -53,7 +62,7 @@ def make_synthetic(*, bias_levels=None, offsets=None, probe_offsets=(-0.04, 0.0,
                 succ = abs(eff) <= grasp_tol
                 eps.append(_episode(
                     sid=sid, role="probe", order=order, offset=po, bias=bias, bias_id=bias_id,
-                    nseed=nseed, target=None, succ=succ, err=min(abs(eff), err_cap),
+                    nseed=nseed, block_id=block_id, target=None, succ=succ, err=min(abs(eff), err_cap),
                     time=base_time + abs(po) * 5 + rng.normal(0, 0.05), probe_index=pidx,
                     rep=rep, grasp_tol=grasp_tol))
                 order += 1
@@ -66,7 +75,7 @@ def make_synthetic(*, bias_levels=None, offsets=None, probe_offsets=(-0.04, 0.0,
                     succ = abs(eff) <= grasp_tol
                     eps.append(_episode(
                         sid=sid, role="candidate", order=order, offset=off, bias=bias, bias_id=bias_id,
-                        nseed=nseed, target=target, succ=succ, err=min(abs(eff), err_cap),
+                        nseed=nseed, block_id=block_id, target=target, succ=succ, err=min(abs(eff), err_cap),
                         time=base_time + abs(off) * 5 + rng.normal(0, 0.05),
                         candidate_group=cg, candidate_index=ci, offset_id=oid,
                         candidate_id=f"{target}_{oid}", matched_group_id=f"{target}__r{rep}",
@@ -76,8 +85,8 @@ def make_synthetic(*, bias_levels=None, offsets=None, probe_offsets=(-0.04, 0.0,
 
 
 def _episode(*, sid, role, order, offset, bias, bias_id, nseed, target, succ, err, time,
-             rep, grasp_tol, probe_index=None, candidate_group=None, candidate_index=None,
-             offset_id=None, candidate_id=None, matched_group_id=None) -> dict:
+             rep, grasp_tol, block_id=None, probe_index=None, candidate_group=None,
+             candidate_index=None, offset_id=None, candidate_id=None, matched_group_id=None) -> dict:
     e = {
         "episode_id": f"{sid}_{role}_{order:03d}",
         "session_id": sid, "episode_role": role, "order_in_session": order,
@@ -96,7 +105,7 @@ def _episode(*, sid, role, order, offset, bias, bias_id, nseed, target, succ, er
               "handle_detached": False},
         "secret_deployment_state": {"bias_y": float(bias)},   # ORACLE-ONLY
         "bias_id": bias_id, "bias_level_id": bias_id,
-        "nuisance_seed": int(nseed),
+        "nuisance_seed": int(nseed), "nuisance_block_id": block_id,
         "history_cutoff": 3,
         "replicate_id": int(rep),
         "synthetic_only": True,

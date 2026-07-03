@@ -20,7 +20,7 @@
     {
       "check": "nuisance_seed_independent_of_bias",
       "ok": true,
-      "detail": "n_seeds=21 n_bias=7 deterministic_map=False seed_reused_across_bias=False"
+      "detail": "key=nuisance_block_id n_ids=21 n_bias=7 deterministic_map=False paired_reuse_across_bias=False"
     },
     {
       "check": "matched_offset_bank_consistent",

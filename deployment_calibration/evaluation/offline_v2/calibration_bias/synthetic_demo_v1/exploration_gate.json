@@ -16,10 +16,13 @@
       "ok": true,
       "worst_gap": 1.0414810230404685
     },
-    "3_success_gain>=0.15_or_vsi>=0.05": {
+    "3_success_gain>=0.15_AND_vsi>=0.05": {
       "ok": true,
+      "success_only_gain_ok(>=0.15)": true,
       "success_gain": 0.6190476190476191,
-      "vsi_frozen": 0.5898935376289933
+      "frozen_vsi_ok(>=0.05)": true,
+      "vsi_frozen": 0.5898935376289933,
+      "note": "AND: success-only gain is necessary for physical decision value; frozen VSI is necessary for combined utility. Net VOI is NOT a capability-map gate here but MUST be positive in the final confirmatory GO."
     },
     "4_replicate_independence": {
       "ok": true,

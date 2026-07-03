@@ -68,6 +68,7 @@ class FieldMap:
     bias_id: str = "bias_id"                            # oracle-only label, e.g. "B-03"
     bias_level_id: str = "bias_level_id"               # oracle-only, e.g. "L2"
     nuisance_seed: str = "nuisance_seed"               # provenance only, NOT a feature
+    nuisance_block_id: str = "nuisance_block_id"        # paired-block id; provenance only, NOT a feature
     candidate_group: str = "candidate_group"           # selection group (session x target)
     candidate_index: str = "candidate_index"
     candidate_id: str = "candidate_id"                 # offset identity, matched across bias

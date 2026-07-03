@@ -55,16 +55,26 @@ def test_reject_candidate_outcome_in_history():
     assert any(c["check"] == "probes_have_no_candidate_fields" and not c["ok"] for c in v["checks"])
 
 
-def test_reject_seed_bias_one_to_one():
-    # make nuisance_seed a deterministic function of bias (seed == bias level index) -> rejected
+def test_reject_block_bias_one_to_one():
+    # make the nuisance BLOCK a deterministic function of bias (block == bias level) -> rejected
     eps = _base()
-    lvl_to_idx = {}
     for e in eps:
-        lvl = e["bias_level_id"]
-        lvl_to_idx.setdefault(lvl, len(lvl_to_idx))
-        e["nuisance_seed"] = lvl_to_idx[lvl]  # every session at a bias shares one seed == 1:1
+        e["nuisance_block_id"] = e["bias_level_id"]  # one block per bias, 1:1 -> bias-encoding
     ind = V.nuisance_bias_independence(eps)
-    assert ind["deterministic_map"] or not ind["ok"]
+    assert ind["deterministic_map"]
+    assert not ind["ok"]
     v = V.validate(eps)
     assert not v["ok"]
     assert any(c["check"] == "nuisance_seed_independent_of_bias" and not c["ok"] for c in v["checks"])
+
+
+def test_exploration_paired_blocks_are_independence_legal():
+    # exploration PAIRED design: the same block reused across ALL bias levels (matched context).
+    # This must NOT be flagged as leakage — reuse-across-bias is healthy, only 1:1 is bad.
+    eps = synthetic.make_synthetic(replicates=3, paired_blocks=True)
+    ind = V.nuisance_bias_independence(eps)
+    assert ind["paired_reuse_across_bias"]
+    assert not ind["deterministic_map"]
+    assert ind["ok"]
+    v = V.validate(eps, expect_bias_levels=7)
+    assert v["ok"], [c for c in v["checks"] if not c["ok"]]

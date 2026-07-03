@@ -26,20 +26,32 @@ Offline/CPU only; never launches Isaac; only writes under
 - `evaluation/offline_v2/calibration_bias/pipeline.py` — validate → independence → decision-value →
   bias-level split → held-out selection + adaptation → VOI → **frozen exploration gate** → artifacts.
 
-### Tests — `pytest deployment_calibration/tests/offline_v2/calibration_bias/` → **14 passed**
-(+ 48 total offline_v2, framework unaffected). Poison: bias/seed/effective-error in x, candidate
-masquerading as probe, seed↔bias 1:1. Split: partition/pairwise-disjoint/interpolation/<5-levels.
-Pipeline: positive world (gate PASS, VSI>0.05, no robust offset, DeepSets K0→K2 history gain),
-negative world (robust offset → gate concepts fail), deterministic-replicate → blocker.
+### Tests — `pytest deployment_calibration/tests/offline_v2/calibration_bias/` → **20 passed**
+(+ 48 total offline_v2, framework unaffected). Poison: bias/seed/block-id/effective-error in x,
+candidate masquerading as probe, block↔bias 1:1. Independence: exploration paired block-reuse across
+bias is LEGAL. Split: partition/pairwise-disjoint(levels+sessions+seeds+blocks)/interpolation/<5-levels;
+confirmatory block-crossing-split flagged. Pipeline: positive world (gate PASS, VSI>0.05 AND success
+gain>0.15, no robust offset, DeepSets K0→K2 history gain), negative world (robust offset → gate fails),
+deterministic-replicate → blocker; **gate criterion-3 AND logic** (time-only VSI without success gain
+FAILS; success gain without VSI FAILS).
 
 ### Frozen exploration gate (GO-to-preregistration; thresholds fixed in the draft)
 1. ≥3 bias levels have a different best offset. 2. no robust generalist (worst-case gap ≤0.02 → none).
-3. success gain ≥0.15 OR frozen VSI ≥0.05. 4. independence blocker False. 5. validation ok.
+3. **success-only gain ≥0.15 AND frozen VSI ≥0.05 (both; AND not OR)** — 3a necessary for physical
+decision value, 3b necessary for combined utility. 4. independence blocker False. 5. validation ok.
+Net VOI is NOT a capability-map gate but MUST be positive in the final confirmatory GO.
 
 ### Held-out bias split scheme
 ≥5–7 continuous levels; extremes→train; ≥1–2 unseen **interior** levels→test (bracketed by train =
-interpolation); intermediate→val; disjoint by level+session+**nuisance seed**; deterministic seed
-never crosses split. Manifest + pairwise-disjoint unit tests.
+interpolation); intermediate→val; disjoint by level+session+**nuisance seed + nuisance block**;
+deterministic seed/block never crosses split. Manifest + pairwise-disjoint unit tests.
+
+### Nuisance-block rules (exploration vs confirmatory)
+- Exploration Capability Map: same block MAY be reused across ALL bias levels (paired matched context);
+  probe+all candidates in a session share one x/g nuisance; raw seed/block id never in `x`; independence
+  treats block-reuse-across-bias as HEALTHY and rejects only a 1:1 block↔bias encoding.
+- Confirmatory: train/val/test use non-overlapping block ids + seeds; a block must NOT cross a split;
+  within a split a block may still pair across that split's bias levels. Enforced by split audit.
 
 ### Independence blocker rule
 same-bias sessions near-deterministic AND seeds absent/not-varied-within-level ⇒ blocker=True ⇒

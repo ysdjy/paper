@@ -41,11 +41,12 @@ recorded **observable** nuisance features.
 
 A deployable model MUST NOT read: `bias_y`, `bias_id`/`bias_level_id`, `secret_deployment_state`, any
 effective / ground-truth calibration error, future probes, candidate outcomes, other-session history,
-or the **raw nuisance seed** (provenance, not a feature).
+or the **raw nuisance seed / block id** (provenance, not a feature).
 
-Validator + poison tests enforce: bias/secret/calib keys never in `x`; raw seed never in `x`; a probe
-never carries candidate-only fields; every candidate's history is same-session, strictly earlier,
-whitelisted-field probes only; and the nuisance seed is not a one-to-one function of bias.
+Validator + poison tests enforce: bias/secret/calib keys never in `x`; raw seed AND block id never in
+`x`; a probe never carries candidate-only fields; every candidate's history is same-session, strictly
+earlier, whitelisted-field probes only; and the nuisance block/seed is not a one-to-one function of
+bias (paired reuse across bias is explicitly allowed).
 
 ## 3. Preregistered scientific questions (report the four levels separately)
 
@@ -78,12 +79,27 @@ final significance**. Implemented in `pipeline.exploration_gate` / `GATE`.
 1. **≥ 3 bias levels have a different best offset** (`n_distinct_best_offsets_across_bias ≥ 3`).
 2. **No robust generalist**: no single offset is within `0.02` utility of the per-bias best at every
    bias (`robust_offset.robust_generalist_exists == False`).
-3. **State-aware vs best-single**: selected-success absolute gain **≥ 0.15** (success-only) OR
-   frozen-utility **VSI ≥ 0.05**.
+3. **State-aware vs train/validation best-single offset — BOTH must hold (AND, not OR):**
+   - **3a** selected-success absolute gain **≥ 0.15** on **success-only**, AND
+   - **3b** frozen-utility **VSI ≥ 0.05**.
 4. **Replicate-independence audit passes** (`independence.blocker == False`).
 5. **Pairing / leakage / provenance all pass** (`validator.ok == True`).
 
-All five required. These thresholds are frozen in this draft and will not be relaxed after seeing data.
+All five required. Thresholds are frozen in this draft and will not be relaxed after seeing data.
+
+**Why criterion 3 is a conjunction.** Because this stage's decision-value claim must hold on grasp
+SUCCESS, a design may **not** enter the confirmatory stage on the time/error term alone. Therefore:
+- **3a (success-only selected-success gain) is a NECESSARY condition for physical decision value** —
+  knowing the bias must let you SUCCEED where the best fixed offset fails.
+- **3b (frozen-utility VSI) is a NECESSARY condition for combined utility** — the effect must also
+  survive under the frozen U that the paper reports.
+Requiring both (AND) rules out the damping-stage trap where an apparent effect was carried by a small
+time term. (Previously this criterion was an OR; revised to AND in this draft.)
+
+**Net VOI is NOT a capability-map gate.** Gross/Net VOI are reported at the exploration stage as
+diagnostics, but Net VOI is deliberately **excluded** from the entry gate (probe-time economics depend
+on the finalized probe set). However, **Net VOI(K) > 0 is a REQUIRED condition in the final
+confirmatory GO** — a design whose probing never pays for itself is not shippable even if VSI > 0.
 
 ## 5. Confirmatory split (avoids discrete-state memorisation) — `splits.py`
 
@@ -113,14 +129,38 @@ All five required. These thresholds are frozen in this draft and will not be rel
 - Report the **K = 0,1,2,3 adaptation curve**; record the **real** probe elapsed time.
 - **Net VOI** charges probe time at the frozen λ_time.
 
-## 7. Independent-sample audit rules — `independence.py`
+## 7. Nuisance-block rules — exploration vs confirmatory (distinct)
+
+A **nuisance block** is a matched nuisance context (init offset / friction / sensor-noise realisation)
+identified by `nuisance_block_id` (with a `nuisance_seed`). The two stages use blocks differently:
+
+**Exploratory Capability Map**
+- The **same block MAY be reused across all bias levels** (paired design), so a candidate offset can be
+  compared under an identical nuisance context at every bias — the strongest paired comparison.
+- Within a session, the probe and ALL candidates share the **same `x` / `g` nuisance** context.
+- The **raw seed / block id never enters the model** (`x`); they are provenance only.
+- The independence check treats **block-reuse-across-bias as HEALTHY** (`paired_reuse_across_bias`) and
+  rejects **only** a block/seed that is a one-to-one encoding of bias (`deterministic_map`).
+
+**Confirmatory pilot**
+- **train / val / test use non-overlapping nuisance block ids and seeds; a block must NOT cross a
+  split.** Enforced by the split audit (`nuisance_blocks_disjoint`, `nuisance_seeds_disjoint`).
+- **Within a split**, a block may still be reused across that split's bias levels for paired analysis.
+- The same deterministic seed never crosses a split.
+
+Consequence for the generator (documented for Claude A): because we split BY bias level, confirmatory
+blocks must be assigned **per split** (a block spans only bias levels that land in the same split).
+The paired exploration structure — one block spanning all biases — is independence-legal but would make
+a block cross splits, so it is valid for the capability map, **not** for the confirmatory split.
+
+## 7b. Independent-sample audit rules — `independence.py`
 
 Reports: session-level nuisance provenance (distinct seeds? varied within a bias level?), per-cell
 (bias × target × offset) replicate variance, near-duplicate outcome fingerprints, and effective
 sample counts. **Blocker rule:** if same-bias sessions are near-deterministic clones AND nuisance
 seeds are absent or not varied within a level, `blocker = True` → formal CIs may **not** be narrowed
 by session count and **GO is disallowed**. (This is exactly the damping-stage failure mode we refuse
-to repeat.) Formal CIs bootstrap over independent nuisance seeds / bias-level blocks, not raw sessions.
+to repeat.) Formal CIs bootstrap over independent nuisance blocks / bias-level blocks, not raw sessions.
 
 ## 8. Models and baselines — `pipeline.py` (reuses the frozen framework)
 

@@ -31,12 +31,13 @@ def validate(episodes, fm: FieldMap = DEFAULT_FIELDS, *, expect_bias_levels=None
     cands = [e for e in episodes if e.get(fm.episode_role) == ROLE_CANDIDATE]
     probes = [e for e in episodes if e.get(fm.episode_role) == ROLE_PROBE]
 
-    # 1 + 2: nothing forbidden (bias/secret/seed) inside x
+    # 1 + 2: nothing forbidden (bias/secret) and no raw nuisance provenance (seed / block id) in x
+    forbidden_exact = {fm.nuisance_seed, fm.nuisance_block_id}
     x_ok, x_detail = True, "x clean"
     for e in episodes:
         for k in e.get(fm.x, {}):
             low = str(k).lower()
-            if any(s in low for s in FORBIDDEN_X_SUBSTRINGS) or low == fm.nuisance_seed:
+            if any(s in low for s in FORBIDDEN_X_SUBSTRINGS) or low in forbidden_exact:
                 x_ok, x_detail = False, f"{e.get('episode_id')} x has forbidden key {k!r}"
                 break
         if not x_ok:
@@ -85,37 +86,48 @@ def validate(episodes, fm: FieldMap = DEFAULT_FIELDS, *, expect_bias_levels=None
 
 
 def nuisance_bias_independence(episodes, fm: FieldMap = DEFAULT_FIELDS) -> dict:
-    """Reject a one-to-one seed<->bias mapping or a seed that determines the bias level.
+    """Reject only a bias-ENCODING nuisance id: a one-to-one id<->bias mapping (the id determines
+    the bias level). It does NOT penalise the legitimate PAIRED design where the same nuisance
+    block/seed is reused across many bias levels — that is the intended exploration-stage structure
+    (a block gives a matched nuisance context under every bias), so reuse-across-bias is HEALTHY.
 
-    ok=True requires: (a) at least one nuisance seed value co-occurs with >1 bias level OR at
-    least one bias level co-occurs with >1 seed (i.e. the crosstab is not a permutation), and
-    (b) no single seed value maps to exactly one bias level for ALL seeds.
+    Uses the nuisance BLOCK id when present (that is the paired-context identity), else the raw seed.
+
+    ok=True requires: NOT a permutation map (some id co-occurs with >1 bias, or >1 id per bias) AND
+    the id is not a deterministic 1:1 encoding of bias.
     """
+    key_field = fm.nuisance_block_id
     pairs = []
     for e in episodes:
-        seed = e.get(fm.nuisance_seed)
-        if seed is None:
+        nid = e.get(fm.nuisance_block_id)
+        if nid is None:
+            nid = e.get(fm.nuisance_seed)
+            key_field = fm.nuisance_seed if e.get(fm.nuisance_block_id) is None else key_field
+        if nid is None:
             continue
-        pairs.append((seed, bias_level_of(e, fm)))
+        pairs.append((nid, bias_level_of(e, fm)))
     if not pairs:
-        return {"ok": False, "detail": "no nuisance_seed recorded — cannot certify independence"}
-    seed_to_bias = defaultdict(set)
-    bias_to_seed = defaultdict(set)
+        return {"ok": False, "detail": "no nuisance seed/block recorded — cannot certify independence"}
+    id_to_bias = defaultdict(set)
+    bias_to_id = defaultdict(set)
     for s, b in pairs:
-        seed_to_bias[s].add(b)
-        bias_to_seed[b].add(s)
-    n_seeds = len(seed_to_bias)
-    n_bias = len(bias_to_seed)
-    # a seed that determines bias: every seed maps to exactly one bias AND every bias to one seed
-    deterministic_map = all(len(v) == 1 for v in seed_to_bias.values()) and \
-        all(len(v) == 1 for v in bias_to_seed.values()) and n_seeds == n_bias
-    # healthier: seeds are shared across bias levels (same seed reused under different bias)
-    seed_reused_across_bias = any(len(v) > 1 for v in seed_to_bias.values())
-    ok = (not deterministic_map) and (n_seeds > n_bias or seed_reused_across_bias or n_seeds >= 2 * n_bias)
-    detail = (f"n_seeds={n_seeds} n_bias={n_bias} deterministic_map={deterministic_map} "
-              f"seed_reused_across_bias={seed_reused_across_bias}")
-    return {"ok": bool(ok), "detail": detail, "n_seeds": n_seeds, "n_bias_levels": n_bias,
-            "deterministic_map": deterministic_map, "seed_reused_across_bias": seed_reused_across_bias}
+        id_to_bias[s].add(b)
+        bias_to_id[b].add(s)
+    n_ids = len(id_to_bias)
+    n_bias = len(bias_to_id)
+    # bias-encoding: every id -> exactly one bias AND every bias -> exactly one id (a permutation)
+    deterministic_map = all(len(v) == 1 for v in id_to_bias.values()) and \
+        all(len(v) == 1 for v in bias_to_id.values()) and n_ids == n_bias
+    # PAIRED design: same nuisance id reused under different bias levels (matched context) — healthy
+    paired_reuse_across_bias = any(len(v) > 1 for v in id_to_bias.values())
+    ok = (not deterministic_map) and (paired_reuse_across_bias or n_ids > n_bias or n_ids >= 2 * n_bias)
+    detail = (f"key={key_field} n_ids={n_ids} n_bias={n_bias} deterministic_map={deterministic_map} "
+              f"paired_reuse_across_bias={paired_reuse_across_bias}")
+    return {"ok": bool(ok), "detail": detail, "n_ids": n_ids, "n_bias_levels": n_bias,
+            "deterministic_map": deterministic_map,
+            "paired_reuse_across_bias": paired_reuse_across_bias,
+            # kept for back-compat with existing callers/tests
+            "n_seeds": n_ids, "seed_reused_across_bias": paired_reuse_across_bias}
 
 
 def matched_offset_bank(episodes, fm: FieldMap = DEFAULT_FIELDS) -> dict:
