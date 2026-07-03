@@ -1,0 +1,27 @@
+{
+ "experiment": "band_edge_contact_sensor_smoke_v1",
+ "smoke_only": true,
+ "sensor_available": true,
+ "contact_backend": "isaaclab.sensors.ContactSensor(robot_contact.net_forces_w, non-finger links)",
+ "clean_baseline": {
+  "max_unintended_contact_force_N": 0.0,
+  "unintended_contact_frame_count": 0,
+  "first_unintended_contact_phase": "NONE",
+  "contact_force_by_phase": {},
+  "contact_sensor_available": true,
+  "contact_sensor_backend": "isaaclab.sensors.ContactSensor(robot_contact.net_forces_w, non-finger links)"
+ },
+ "positive_control": {
+  "max_unintended_contact_force_N": 240.083786,
+  "unintended_contact_frame_count": 16,
+  "first_unintended_contact_phase": "SMOKE",
+  "contact_force_by_phase": {
+   "SMOKE": 240.083786
+  },
+  "contact_sensor_available": true,
+  "contact_sensor_backend": "isaaclab.sensors.ContactSensor(robot_contact.net_forces_w, non-finger links)"
+ },
+ "force_gap_N": 240.0838,
+ "discriminates": true,
+ "captured_at": "2026-07-04 00:09:58"
+}

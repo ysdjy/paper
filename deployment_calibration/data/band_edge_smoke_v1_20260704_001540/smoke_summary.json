@@ -1,0 +1,16 @@
+{
+ "run_id": "band_edge_smoke_v1_20260704_001540",
+ "mode": "smoke",
+ "smoke_only": true,
+ "n_episodes": 6,
+ "contact_sensor_available": true,
+ "matched_block_ok": true,
+ "matched_block_errors": [],
+ "duplicate_ok": true,
+ "no_probes_ok": true,
+ "all_records_valid": true,
+ "wall_clock_minutes": 3.25,
+ "git_commit": "5f0dfdb74cd919ce69701e05cbf451fca4170365",
+ "branch": "experiment/runtime-calibration-band-edge-v1",
+ "dirty_worktree": true
+}
