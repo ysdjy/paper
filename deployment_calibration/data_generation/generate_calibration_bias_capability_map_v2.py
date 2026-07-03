@@ -144,8 +144,9 @@ def main() -> int:
 
     damping_verify, reset_verify = [], []
     t0 = time.time(); n = 0
+    # NB: bias_injection_version / bias_axis are provided by secret_provenance() (sec); do NOT repeat them
+    # here or the record dict() gets duplicate kwargs.
     common0 = dict(offset_grid_version=grid_version, offset_grid_sha256=grid_sha,
-                   bias_injection_version=BIAS_INJECTION_VERSION, bias_axis=BIAS_AXIS,
                    nuisance_level="replicate_block", runtime_design_commit=runtime_design_commit)
     total = len(sessions_exec) * (len(probes) + len(cand))
     for exec_pos, sess in enumerate(sessions_exec):
