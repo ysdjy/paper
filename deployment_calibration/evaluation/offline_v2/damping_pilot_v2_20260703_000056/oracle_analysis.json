@@ -1,0 +1,40 @@
+{
+  "oracle_candidate_test_groups": {
+    "sess_002_g0": {
+      "best_true_utility": 0.8024324997426812,
+      "best_candidate_index": 3,
+      "best_success": true,
+      "best_task_error": 0.0071675002574920765,
+      "best_time": 9.519999999991342
+    },
+    "sess_005_g0": {
+      "best_true_utility": 0.7799941916229182,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.01760580837726594,
+      "best_time": 10.119999999990796
+    },
+    "sess_008_g0": {
+      "best_true_utility": 0.7918100389720804,
+      "best_candidate_index": 0,
+      "best_success": true,
+      "best_task_error": 0.010989961028099071,
+      "best_time": 9.859999999991032
+    }
+  },
+  "oracle_candidate_mean_true_utility": 0.7914122434458933,
+  "matched_bank_available": false,
+  "matched_bank_reason": "no candidate theta-set is shared across >=2 damping levels; this run is NOT a matched candidate bank, so switch-rate / rank-reversal / VSI are not computable",
+  "value_of_state_information": {
+    "available": false,
+    "reason": "no candidate theta-set is shared across >=2 damping levels; this run is NOT a matched candidate bank, so switch-rate / rank-reversal / VSI are not computable"
+  },
+  "optimal_candidate_switch_rate": {
+    "available": false,
+    "reason": "no candidate theta-set is shared across >=2 damping levels; this run is NOT a matched candidate bank, so switch-rate / rank-reversal / VSI are not computable"
+  },
+  "pairwise_rank_reversal_rate": {
+    "available": false,
+    "reason": "no candidate theta-set is shared across >=2 damping levels; this run is NOT a matched candidate bank, so switch-rate / rank-reversal / VSI are not computable"
+  }
+}
