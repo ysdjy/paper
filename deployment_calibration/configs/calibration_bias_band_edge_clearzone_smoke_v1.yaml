@@ -1,0 +1,12 @@
+# Band-edge CLEAR-ZONE smoke (v1) -- instrumentation + matched-block + schema smoke. NOT the 306 run.
+# 2 blocks x 3 offsets {-0.05, 0.00, +0.05} = 6 episodes. Uses ONLY clear-zone offsets (far from the
+# grasp-tolerance boundary): deep-fail (-0.05/+0.05) and clear-success (0.00). Deliberately EXCLUDES the
+# core edge points +/-0.025, +/-0.030, +/-0.035 so no edge is fit and the science protocol is untouched.
+# smoke_only=true is set by --mode smoke; these records are excluded from any formal analysis.
+
+master_seed: 8801150          # SAME master seed as the full plan -> identical residual/nuisance per block
+drawer: middle_drawer
+target_open_position: 0.20
+damping: 3.0
+blocks_subset: [0, 1]
+offsets_subset: [-0.05, 0.0, 0.05]
