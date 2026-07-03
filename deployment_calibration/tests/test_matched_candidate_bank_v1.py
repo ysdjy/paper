@@ -196,7 +196,7 @@ def check_data(bank, bank_sha, cfg, fails):
 
     # 5) leakage: reconstructed history for each candidate = same-session probes before it, only
     try:
-        sys.path.insert(0, str(_DC / "evaluation"))
+        sys.path.insert(0, str(_DC))
         from evaluation.run_session_eval_v2 import build_history  # noqa: E402
         for e in cand:
             Hh = build_history(eps, e["session_id"], e["order_in_session"])
