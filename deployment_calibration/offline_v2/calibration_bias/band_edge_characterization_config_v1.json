@@ -1,0 +1,362 @@
+{
+  "experiment": "band_edge_characterization_v1",
+  "purpose": "EXPLORATORY mechanism characterization (NOT confirmatory data). Measure the true success band + softness at previously-unmeasured odd |eff|, verify the v3 block residual induces genuine success-label variation, validate the 6 instrumentation fields + collision sensor.",
+  "not_confirmatory": true,
+  "design": {
+    "nominal_bias_y": 0.0,
+    "uses_future_test_nominal_bias": false,
+    "future_test_nominal_bias_excluded": [
+      -0.03,
+      0.03
+    ],
+    "n_blocks": 18,
+    "offsets": [
+      -0.05,
+      -0.04,
+      -0.035,
+      -0.03,
+      -0.025,
+      -0.02,
+      -0.015,
+      -0.01,
+      0.0,
+      0.01,
+      0.015,
+      0.02,
+      0.025,
+      0.03,
+      0.035,
+      0.04,
+      0.05
+    ],
+    "n_offsets": 17,
+    "run_probes": false,
+    "n_episodes": 306,
+    "effective_error_definition": "eff_signed = actual_bias_y + grasp_offset_local_y ; |eff| = |eff_signed|",
+    "abs_eff_coverage_at_nominal_zero": [
+      0.0,
+      0.01,
+      0.015,
+      0.02,
+      0.025,
+      0.03,
+      0.035,
+      0.04,
+      0.05
+    ],
+    "required_abs_eff_points": [
+      0.0,
+      0.01,
+      0.015,
+      0.02,
+      0.025,
+      0.03,
+      0.035,
+      0.04,
+      0.05
+    ]
+  },
+  "residual_nuisance": {
+    "sigma": 0.005,
+    "lo": -0.01,
+    "hi": 0.01,
+    "mean": 0.0,
+    "axis": "handle_local_y",
+    "scheme": "one zero-mean residual per nuisance block, reused across the split's bias levels; blocks independent; residual/actual_bias are secret/audit-only"
+  },
+  "residual_note": "actual_bias_y = nominal_bias_y + residual_bias_y ; one residual per block, shared by all 17 offsets in the block; blocks independent.",
+  "within_block_shared": [
+    "residual_bias_y",
+    "initial_joint_perturbation",
+    "target_open_position_jitter",
+    "mechanism",
+    "initial_state",
+    "task_target"
+  ],
+  "within_block_varies": [
+    "grasp_offset_local_y"
+  ],
+  "randomization": {
+    "block_execution_order": "randomized, saved to manifest",
+    "within_block_offset_order": "randomized, saved to manifest",
+    "note": "manifest records seeds + realized orders for reproducibility"
+  },
+  "analysis_plan_frozen": {
+    "bin_width_m": 0.005,
+    "models": [
+      "logistic p=sigmoid((center-|eff|)/scale)",
+      "isotonic (decreasing)"
+    ],
+    "logistic_init_only": {
+      "center": 0.03,
+      "scale": 0.005
+    },
+    "block_bootstrap": {
+      "n_boot": 2000,
+      "ci": 0.95,
+      "resample_unit": "block"
+    },
+    "decisive_point_abs_eff": 0.03,
+    "operating_region_abs_eff": [
+      0.025,
+      0.03,
+      0.035
+    ],
+    "symmetry": "fit +/- signed-eff sides separately; compare centers",
+    "collision_handling": "collision-confounded episodes flagged (not deleted); report full + collision-excluded sensitivity",
+    "frozen_thresholds": {
+      "asymmetry_max_center_diff_m": 0.005,
+      "edge_scale_min_soft_m": 0.0001,
+      "collision_result_shift_max_m": 0.005
+    }
+  },
+  "instrumentation_fields": {
+    "minimum_joint_limit_margin_rad": {
+      "dtype": "float",
+      "unit": "rad",
+      "range": "[0, joint_range]",
+      "definition": "per-episode min over ALL IK steps and 7 arm joints of min(q-q_lower, q_upper-q) vs soft_joint_pos_limits",
+      "model_legal": false
+    },
+    "minimum_joint_limit_margin_normalized": {
+      "dtype": "float",
+      "unit": "unitless",
+      "range": "[0, 1]",
+      "definition": "same margin divided by (q_upper - q_lower) for that joint",
+      "model_legal": false
+    },
+    "minimum_joint_limit_joint_index": {
+      "dtype": "int",
+      "unit": "index",
+      "range": "[0, 6]",
+      "definition": "arm-joint index achieving the episode-min margin",
+      "model_legal": false
+    },
+    "minimum_joint_limit_phase": {
+      "dtype": "str",
+      "unit": "phase",
+      "range": "PHASES",
+      "definition": "skill phase in which the episode-min margin occurred",
+      "model_legal": false
+    },
+    "ik_solve_count": {
+      "dtype": "int",
+      "unit": "count",
+      "range": "[0, inf)",
+      "definition": "IKJointAdapter.solve() calls in the episode",
+      "model_legal": false
+    },
+    "ik_failure_count": {
+      "dtype": "int",
+      "unit": "count",
+      "range": "[0, inf)",
+      "definition": "solve() returns with success==False",
+      "model_legal": false
+    },
+    "max_consecutive_ik_failures": {
+      "dtype": "int",
+      "unit": "count",
+      "range": "[0, inf)",
+      "definition": "longest run of consecutive IK failures",
+      "model_legal": false
+    },
+    "ik_failure_phase_counts": {
+      "dtype": "dict",
+      "unit": "count",
+      "range": "phase->int",
+      "definition": "IK failures grouped by skill phase",
+      "model_legal": false
+    },
+    "joint_step_clamp_count": {
+      "dtype": "int",
+      "unit": "count",
+      "range": "[0, inf)",
+      "definition": "steps where raw IK step exceeded max_joint_step (step clamp)",
+      "model_legal": false
+    },
+    "joint_limit_clamp_count": {
+      "dtype": "int",
+      "unit": "count",
+      "range": "[0, inf)",
+      "definition": "steps where q_des still exceeded soft joint limits AFTER step clamp (limit clamp)",
+      "model_legal": false
+    },
+    "failure_phase": {
+      "dtype": "str",
+      "unit": "phase",
+      "range": "PHASES|NONE",
+      "definition": "last active skill state before entering FAILED",
+      "model_legal": false
+    },
+    "failure_transition": {
+      "dtype": "str",
+      "unit": "transition",
+      "range": "e.g. APPROACH->FAILED",
+      "definition": "the terminal state transition",
+      "model_legal": false
+    },
+    "true_handle_error_at_close_3d": {
+      "dtype": "float",
+      "unit": "m",
+      "range": "[0, inf)",
+      "definition": "TCP-vs-TRUE-handle 3D error at the CLOSE_GRIPPER->PULL control step (true, not perceived)",
+      "model_legal": false
+    },
+    "true_handle_error_at_close_local_y": {
+      "dtype": "float",
+      "unit": "m",
+      "range": "(-inf, inf)",
+      "definition": "signed local-Y component of the same true error",
+      "model_legal": false
+    },
+    "tcp_pose_at_close": {
+      "dtype": "list",
+      "unit": "m,quat",
+      "range": "len 7",
+      "definition": "TCP pose (pos3+quat4) at the CLOSE->PULL step",
+      "model_legal": false
+    },
+    "true_handle_pose_at_close": {
+      "dtype": "list",
+      "unit": "m,quat",
+      "range": "len 7",
+      "definition": "TRUE handle pose (pos3+quat4) at the same step",
+      "model_legal": false
+    },
+    "gripper_width_at_close": {
+      "dtype": "float",
+      "unit": "m",
+      "range": "[0, ~0.08]",
+      "definition": "actual gripper width at end of CLOSE_GRIPPER",
+      "model_legal": false
+    },
+    "gripper_command_at_close": {
+      "dtype": "float",
+      "unit": "m",
+      "range": "[0, ~0.08]",
+      "definition": "commanded gripper width at the same instant",
+      "model_legal": false
+    },
+    "max_unintended_contact_force_N": {
+      "dtype": "float",
+      "unit": "N",
+      "range": "[0, inf)",
+      "definition": "max contact force on arm/hand-vs-cabinet EXCLUDING finger-handle grasp contact",
+      "model_legal": false
+    },
+    "unintended_contact_frame_count": {
+      "dtype": "int",
+      "unit": "count",
+      "range": "[0, inf)",
+      "definition": "steps with unintended contact > 0",
+      "model_legal": false
+    },
+    "first_unintended_contact_phase": {
+      "dtype": "str",
+      "unit": "phase",
+      "range": "PHASES|NONE",
+      "definition": "phase of first unintended contact",
+      "model_legal": false
+    },
+    "contact_force_by_phase": {
+      "dtype": "dict",
+      "unit": "N",
+      "range": "phase->float",
+      "definition": "max unintended contact force per phase",
+      "model_legal": false
+    },
+    "contact_sensor_available": {
+      "dtype": "bool",
+      "unit": "flag",
+      "range": "{true,false}",
+      "definition": "whether the contact sensor was active",
+      "model_legal": false
+    }
+  },
+  "instrumentation_groups": {
+    "joint_limit_margin": [
+      "minimum_joint_limit_margin_rad",
+      "minimum_joint_limit_margin_normalized",
+      "minimum_joint_limit_joint_index",
+      "minimum_joint_limit_phase"
+    ],
+    "ik_failure": [
+      "ik_solve_count",
+      "ik_failure_count",
+      "max_consecutive_ik_failures",
+      "ik_failure_phase_counts"
+    ],
+    "clamps": [
+      "joint_step_clamp_count",
+      "joint_limit_clamp_count"
+    ],
+    "failure_phase": [
+      "failure_phase",
+      "failure_transition"
+    ],
+    "handle_error_at_close": [
+      "true_handle_error_at_close_3d",
+      "true_handle_error_at_close_local_y",
+      "tcp_pose_at_close",
+      "true_handle_pose_at_close"
+    ],
+    "gripper_at_close": [
+      "gripper_width_at_close",
+      "gripper_command_at_close"
+    ],
+    "collision": [
+      "max_unintended_contact_force_N",
+      "unintended_contact_frame_count",
+      "first_unintended_contact_phase",
+      "contact_force_by_phase",
+      "contact_sensor_available"
+    ]
+  },
+  "secret_bias_fields": [
+    "nominal_bias_y",
+    "residual_bias_y",
+    "actual_bias_y"
+  ],
+  "collision_sensor_plan": {
+    "mechanism": "Isaac Lab / PhysX ContactSensor (or equivalent contact-report API)",
+    "monitored_pairs": [
+      "Franka non-gripper arm links vs cabinet bodies",
+      "Franka hand body vs cabinet bodies"
+    ],
+    "excluded_pairs": [
+      "Franka finger vs handle (intended grasp contact)"
+    ],
+    "raw_quantities": [
+      "max_unintended_contact_force_N",
+      "unintended_contact_frame_count",
+      "first_unintended_contact_phase",
+      "contact_force_by_phase",
+      "contact_sensor_available"
+    ],
+    "sensor_validation_smoke": {
+      "step_1_clean_baseline": "run a known collision-free trajectory -> expect max force ~0",
+      "step_2_intentional_contact_positive_control": "drive the arm into the cabinet -> expect large force",
+      "step_3_discrimination": "confirm the sensor separates step_1 from step_2 (force gap >> noise)",
+      "must_pass_before": "the 306-episode band-edge run"
+    },
+    "threshold_selection_rule": "the numeric unintended-contact force threshold is chosen from the band-edge data distribution (e.g. above the clean-baseline noise floor from step_1) AFTER the band run, and frozen BEFORE confirmatory v4. It must NOT use any confirmatory data."
+  },
+  "exit_criteria": {
+    "PASS_TO_V4_all_of": [
+      "|eff| in 0.025-0.035 has BOTH success and failure",
+      "residual produces real block-level success-label variation",
+      "edge center and scale estimable (finite CI)",
+      "no severe unexplained +/- asymmetry",
+      "collision sensor available",
+      "six instrumentation groups complete",
+      "main edge result not driven by collision-confounded episodes"
+    ],
+    "MODIFY_RESIDUAL_OR_DESIGN_any_of": [
+      "success still a fully hard threshold (edge scale ~0)",
+      "residual causes no edge variation",
+      "|eff|=0.03 all one label",
+      "collision dominates the edge result",
+      "instrumentation unavailable"
+    ]
+  }
+}
