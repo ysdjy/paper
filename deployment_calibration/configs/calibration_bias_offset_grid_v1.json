@@ -1,0 +1,21 @@
+{
+  "grid_version": "calibration_bias_offset_grid_v1",
+  "drawer": "middle_drawer",
+  "hidden_axis": "handle_local_y",
+  "decision_axis": "grasp_offset_local_y",
+  "note": "Exploratory grid to locate a usable bias range and candidate-offset window; NOT frozen confirmatory values. candidate_id -> grasp_offset_local_y is a pure function, identical across all bias levels and all replicate sessions (matched). Ideal compensation offset for a session is approx -bias_y.",
+  "bias_levels_y": [-0.04, -0.02, 0.00, 0.02, 0.04],
+  "candidate_offsets": [
+    {"candidate_id": "off_m060", "grasp_offset_local_y": -0.06},
+    {"candidate_id": "off_m040", "grasp_offset_local_y": -0.04},
+    {"candidate_id": "off_m020", "grasp_offset_local_y": -0.02},
+    {"candidate_id": "off_z000", "grasp_offset_local_y":  0.00},
+    {"candidate_id": "off_p020", "grasp_offset_local_y":  0.02},
+    {"candidate_id": "off_p040", "grasp_offset_local_y":  0.04},
+    {"candidate_id": "off_p060", "grasp_offset_local_y":  0.06}
+  ],
+  "probe_offsets": [
+    {"probe_id": "probe_m040", "grasp_offset_local_y": -0.04},
+    {"probe_id": "probe_p040", "grasp_offset_local_y":  0.04}
+  ]
+}

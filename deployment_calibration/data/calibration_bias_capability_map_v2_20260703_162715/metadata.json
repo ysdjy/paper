@@ -1,0 +1,377 @@
+{
+ "run_id": "calibration_bias_capability_map_v2_20260703_162715",
+ "contract_version": "open_drawer_v2",
+ "scene_version": "paper_scene_v2",
+ "experiment": "calibration_bias_capability_map_v2",
+ "config": {
+  "run_prefix": "calibration_bias_capability_map",
+  "drawer": "middle_drawer",
+  "offset_grid": "configs/calibration_bias_offset_grid_v1.json",
+  "bias_levels_y": [
+   -0.04,
+   -0.02,
+   0.0,
+   0.02,
+   0.04
+  ],
+  "sessions_per_bias": 3,
+  "run_probes": true,
+  "target_open_position": 0.2,
+  "damping": 3.0,
+  "robust_theta": {
+   "max_pos_step": 0.02,
+   "pull_lead": 0.08
+  },
+  "nuisance": {
+   "robot_joint_sigma": 0.015,
+   "robot_joint_cap": 0.03,
+   "target_jitter": 0.005
+  },
+  "master_seed": 20260703,
+  "max_steps": 1800
+ },
+ "offset_grid_version": "calibration_bias_offset_grid_v1",
+ "offset_grid_sha256": "b3e14ff8c00d3f360901eebb8c0fda58ea46eec50f48aa3e98dff30f6d8733fe",
+ "offset_grid": {
+  "grid_version": "calibration_bias_offset_grid_v1",
+  "drawer": "middle_drawer",
+  "hidden_axis": "handle_local_y",
+  "decision_axis": "grasp_offset_local_y",
+  "note": "Exploratory grid to locate a usable bias range and candidate-offset window; NOT frozen confirmatory values. candidate_id -> grasp_offset_local_y is a pure function, identical across all bias levels and all replicate sessions (matched). Ideal compensation offset for a session is approx -bias_y.",
+  "bias_levels_y": [
+   -0.04,
+   -0.02,
+   0.0,
+   0.02,
+   0.04
+  ],
+  "candidate_offsets": [
+   {
+    "candidate_id": "off_m060",
+    "grasp_offset_local_y": -0.06
+   },
+   {
+    "candidate_id": "off_m040",
+    "grasp_offset_local_y": -0.04
+   },
+   {
+    "candidate_id": "off_m020",
+    "grasp_offset_local_y": -0.02
+   },
+   {
+    "candidate_id": "off_z000",
+    "grasp_offset_local_y": 0.0
+   },
+   {
+    "candidate_id": "off_p020",
+    "grasp_offset_local_y": 0.02
+   },
+   {
+    "candidate_id": "off_p040",
+    "grasp_offset_local_y": 0.04
+   },
+   {
+    "candidate_id": "off_p060",
+    "grasp_offset_local_y": 0.06
+   }
+  ],
+  "probe_offsets": [
+   {
+    "probe_id": "probe_m040",
+    "grasp_offset_local_y": -0.04
+   },
+   {
+    "probe_id": "probe_p040",
+    "grasp_offset_local_y": 0.04
+   }
+  ]
+ },
+ "bias_levels_y": [
+  -0.04,
+  -0.02,
+  0.0,
+  0.02,
+  0.04
+ ],
+ "sessions_per_bias": 3,
+ "n_probes": 2,
+ "candidate_offsets": [
+  -0.06,
+  -0.04,
+  -0.02,
+  0.0,
+  0.02,
+  0.04,
+  0.06
+ ],
+ "candidate_ids": [
+  "off_m060",
+  "off_m040",
+  "off_m020",
+  "off_z000",
+  "off_p020",
+  "off_p040",
+  "off_p060"
+ ],
+ "nuisance_level": "replicate_block",
+ "master_seed": 20260703,
+ "nuisance_contexts": {
+  "0": {
+   "block_id": 0,
+   "block_seed": 1915192388,
+   "robot_joint_delta": [
+    0.009272340255279428,
+    0.015495599886766187,
+    -0.011054732040734963,
+    0.0002884679469477013,
+    -0.008342516597686778,
+    -0.0056028055400545035,
+    0.016081158527322482
+   ],
+   "target_jitter": -0.0006298956778356376
+  },
+  "1": {
+   "block_id": 1,
+   "block_seed": 1400311287,
+   "robot_joint_delta": [
+    0.002827609230879056,
+    -0.010552074623983623,
+    -0.026447780942663337,
+    0.0008020844884407835,
+    -0.0288359947532946,
+    0.006107554558636237,
+    0.018472728593138612
+   ],
+   "target_jitter": 0.004438920628740046
+  },
+  "2": {
+   "block_id": 2,
+   "block_seed": 655936674,
+   "robot_joint_delta": [
+    -0.021889248201869674,
+    0.0030874852106604037,
+    0.0001485729725220852,
+    0.012113932944034227,
+    -0.01070254233959393,
+    -0.01593690837644742,
+    0.00585941044393625
+   ],
+   "target_jitter": 0.0021398609415347377
+  }
+ },
+ "nuisance_distribution": {
+  "robot_joint_sigma": 0.015,
+  "robot_joint_cap": 0.03,
+  "robot_joints": "panda_joint.* (7)",
+  "target_jitter_uniform": 0.005,
+  "scheme": "one draw per replicate block; shared by all 9 eps in a session and by the same replicate across all bias levels",
+  "block_seeds_from": "master RNG (independent of bias)"
+ },
+ "canonical_session_order": [
+  "sess_000",
+  "sess_001",
+  "sess_002",
+  "sess_003",
+  "sess_004",
+  "sess_005",
+  "sess_006",
+  "sess_007",
+  "sess_008",
+  "sess_009",
+  "sess_010",
+  "sess_011",
+  "sess_012",
+  "sess_013",
+  "sess_014"
+ ],
+ "execution_order_session_ids": [
+  "sess_009",
+  "sess_006",
+  "sess_003",
+  "sess_000",
+  "sess_002",
+  "sess_008",
+  "sess_005",
+  "sess_011",
+  "sess_001",
+  "sess_010",
+  "sess_013",
+  "sess_007",
+  "sess_014",
+  "sess_004",
+  "sess_012"
+ ],
+ "execution_order_indices": [
+  9,
+  6,
+  3,
+  0,
+  2,
+  8,
+  5,
+  11,
+  1,
+  10,
+  13,
+  7,
+  14,
+  4,
+  12
+ ],
+ "sessions": [
+  {
+   "session_id": "sess_000",
+   "drawer": "middle_drawer",
+   "bias_y": -0.04,
+   "hidden_state_id": "bias_m040",
+   "replicate_id": 0,
+   "block_id": 0,
+   "block_seed": 1915192388
+  },
+  {
+   "session_id": "sess_001",
+   "drawer": "middle_drawer",
+   "bias_y": -0.04,
+   "hidden_state_id": "bias_m040",
+   "replicate_id": 1,
+   "block_id": 1,
+   "block_seed": 1400311287
+  },
+  {
+   "session_id": "sess_002",
+   "drawer": "middle_drawer",
+   "bias_y": -0.04,
+   "hidden_state_id": "bias_m040",
+   "replicate_id": 2,
+   "block_id": 2,
+   "block_seed": 655936674
+  },
+  {
+   "session_id": "sess_003",
+   "drawer": "middle_drawer",
+   "bias_y": -0.02,
+   "hidden_state_id": "bias_m020",
+   "replicate_id": 0,
+   "block_id": 0,
+   "block_seed": 1915192388
+  },
+  {
+   "session_id": "sess_004",
+   "drawer": "middle_drawer",
+   "bias_y": -0.02,
+   "hidden_state_id": "bias_m020",
+   "replicate_id": 1,
+   "block_id": 1,
+   "block_seed": 1400311287
+  },
+  {
+   "session_id": "sess_005",
+   "drawer": "middle_drawer",
+   "bias_y": -0.02,
+   "hidden_state_id": "bias_m020",
+   "replicate_id": 2,
+   "block_id": 2,
+   "block_seed": 655936674
+  },
+  {
+   "session_id": "sess_006",
+   "drawer": "middle_drawer",
+   "bias_y": 0.0,
+   "hidden_state_id": "bias_z000",
+   "replicate_id": 0,
+   "block_id": 0,
+   "block_seed": 1915192388
+  },
+  {
+   "session_id": "sess_007",
+   "drawer": "middle_drawer",
+   "bias_y": 0.0,
+   "hidden_state_id": "bias_z000",
+   "replicate_id": 1,
+   "block_id": 1,
+   "block_seed": 1400311287
+  },
+  {
+   "session_id": "sess_008",
+   "drawer": "middle_drawer",
+   "bias_y": 0.0,
+   "hidden_state_id": "bias_z000",
+   "replicate_id": 2,
+   "block_id": 2,
+   "block_seed": 655936674
+  },
+  {
+   "session_id": "sess_009",
+   "drawer": "middle_drawer",
+   "bias_y": 0.02,
+   "hidden_state_id": "bias_p020",
+   "replicate_id": 0,
+   "block_id": 0,
+   "block_seed": 1915192388
+  },
+  {
+   "session_id": "sess_010",
+   "drawer": "middle_drawer",
+   "bias_y": 0.02,
+   "hidden_state_id": "bias_p020",
+   "replicate_id": 1,
+   "block_id": 1,
+   "block_seed": 1400311287
+  },
+  {
+   "session_id": "sess_011",
+   "drawer": "middle_drawer",
+   "bias_y": 0.02,
+   "hidden_state_id": "bias_p020",
+   "replicate_id": 2,
+   "block_id": 2,
+   "block_seed": 655936674
+  },
+  {
+   "session_id": "sess_012",
+   "drawer": "middle_drawer",
+   "bias_y": 0.04,
+   "hidden_state_id": "bias_p040",
+   "replicate_id": 0,
+   "block_id": 0,
+   "block_seed": 1915192388
+  },
+  {
+   "session_id": "sess_013",
+   "drawer": "middle_drawer",
+   "bias_y": 0.04,
+   "hidden_state_id": "bias_p040",
+   "replicate_id": 1,
+   "block_id": 1,
+   "block_seed": 1400311287
+  },
+  {
+   "session_id": "sess_014",
+   "drawer": "middle_drawer",
+   "bias_y": 0.04,
+   "hidden_state_id": "bias_p040",
+   "replicate_id": 2,
+   "block_id": 2,
+   "block_seed": 655936674
+  }
+ ],
+ "n_sessions": 15,
+ "n_episodes": 135,
+ "damping": 3.0,
+ "damping_set_maxerr": 0.0,
+ "damping_verified": true,
+ "full_reset_all_verified": true,
+ "n_reset_verify_fail": 0,
+ "runtime_design_commit": "4fcfeba6ffabfb2043aaabc082989a0883fc5487",
+ "run_command": "projects/paper_calibration_bias_runtime_v1/deployment_calibration/data_generation/generate_calibration_bias_capability_map_v2.py --headless --config projects/paper_calibration_bias_runtime_v1/deployment_calibration/configs/calibration_bias_capability_map_v2.yaml",
+ "captured_at": "2026-07-03 17:18:35",
+ "wall_clock_minutes": 51.34,
+ "env": {
+  "python": "3.11.15",
+  "platform": "Linux-6.8.1-1052-realtime-x86_64-with-glibc2.35",
+  "torch": "2.7.0+cu128"
+ },
+ "git_commit": "4fcfeba6ffabfb2043aaabc082989a0883fc5487",
+ "branch": "experiment/runtime-calibration-bias-v1",
+ "dirty_worktree": false
+}

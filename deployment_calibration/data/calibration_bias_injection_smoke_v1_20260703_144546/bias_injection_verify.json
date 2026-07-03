@@ -1,0 +1,352 @@
+{
+ "experiment": "calibration_bias_injection_smoke_v1",
+ "drawer": "middle_drawer",
+ "bias_levels_y": [
+  -0.04,
+  0.0,
+  0.04
+ ],
+ "candidate_offsets_y": [
+  -0.04,
+  0.0,
+  0.04
+ ],
+ "damping": 3.0,
+ "robust_theta": {
+  "max_pos_step": 0.02,
+  "pull_lead": 0.08
+ },
+ "target_open_position": 0.2,
+ "bias_injection_version": "handle_calibration_bias_v1",
+ "run_command": "projects/paper_calibration_bias_runtime_v1/deployment_calibration/data_generation/verify_calibration_bias_injection_v1.py --headless --config projects/paper_calibration_bias_runtime_v1/deployment_calibration/configs/calibration_bias_injection_smoke_v1.yaml",
+ "captured_at": "2026-07-03 14:51:04",
+ "records": [
+  {
+   "bias_y": -0.04,
+   "bias_level_id": "bias_m040",
+   "offset_y": -0.04,
+   "spec_shift_ok": true,
+   "spec_measured_dy": -0.04,
+   "perceived_local_dy": -0.04000000096857548,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.07999992370605469,
+   "expected_local_shift": 0.08,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    -0.015313112975697055,
+    0.6570276140232217
+   ],
+   "success": false,
+   "final_joint_position": 1.9368651919648983e-05,
+   "failure_reason": "HANDLE_DETACHED",
+   "task_outcome_error": 0.19998063134808036,
+   "handle_relative_error": 0.0811966670382964,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": -0.04,
+   "bias_level_id": "bias_m040",
+   "offset_y": 0.0,
+   "spec_shift_ok": true,
+   "spec_measured_dy": -0.04,
+   "perceived_local_dy": -0.04000000096857548,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.03999996185320498,
+   "expected_local_shift": 0.04,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    -0.015313112975697055,
+    0.6570276140232217
+   ],
+   "success": false,
+   "final_joint_position": 0.0,
+   "failure_reason": "POSITION_TIMEOUT",
+   "task_outcome_error": 0.2,
+   "handle_relative_error": 0.0,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": -0.04,
+   "bias_level_id": "bias_m040",
+   "offset_y": 0.04,
+   "spec_shift_ok": true,
+   "spec_measured_dy": -0.04,
+   "perceived_local_dy": -0.04000000096857548,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.0,
+   "expected_local_shift": 0.0,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    -0.015313112975697055,
+    0.6570276140232217
+   ],
+   "success": true,
+   "final_joint_position": 0.19627706706523895,
+   "failure_reason": "NONE",
+   "task_outcome_error": 0.0037229329347610585,
+   "handle_relative_error": 0.04229956982391221,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": 0.0,
+   "bias_level_id": "bias_z000",
+   "offset_y": -0.04,
+   "spec_shift_ok": true,
+   "spec_measured_dy": 0.0,
+   "perceived_local_dy": 0.0,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.03999996185320498,
+   "expected_local_shift": 0.04,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "success": false,
+   "final_joint_position": 0.0,
+   "failure_reason": "POSITION_TIMEOUT",
+   "task_outcome_error": 0.2,
+   "handle_relative_error": 0.0,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": 0.0,
+   "bias_level_id": "bias_z000",
+   "offset_y": 0.0,
+   "spec_shift_ok": true,
+   "spec_measured_dy": 0.0,
+   "perceived_local_dy": 0.0,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.0,
+   "expected_local_shift": 0.0,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "success": true,
+   "final_joint_position": 0.1964205503463745,
+   "failure_reason": "NONE",
+   "task_outcome_error": 0.0035794496536254994,
+   "handle_relative_error": 0.014249216711946896,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": 0.0,
+   "bias_level_id": "bias_z000",
+   "offset_y": 0.04,
+   "spec_shift_ok": true,
+   "spec_measured_dy": 0.0,
+   "perceived_local_dy": 0.0,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.03999996185320498,
+   "expected_local_shift": 0.04,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "success": false,
+   "final_joint_position": 0.0,
+   "failure_reason": "POSITION_TIMEOUT",
+   "task_outcome_error": 0.2,
+   "handle_relative_error": 0.0,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": 0.04,
+   "bias_level_id": "bias_p040",
+   "offset_y": -0.04,
+   "spec_shift_ok": true,
+   "spec_measured_dy": 0.04,
+   "perceived_local_dy": 0.03999999910593033,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.0,
+   "expected_local_shift": 0.0,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    0.06468688702430295,
+    0.6570276140232217
+   ],
+   "success": true,
+   "final_joint_position": 0.19630879163742065,
+   "failure_reason": "NONE",
+   "task_outcome_error": 0.003691208362579357,
+   "handle_relative_error": 0.04273240832345826,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": 0.04,
+   "bias_level_id": "bias_p040",
+   "offset_y": 0.0,
+   "spec_shift_ok": true,
+   "spec_measured_dy": 0.04,
+   "perceived_local_dy": 0.03999999910593033,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.03999996185320498,
+   "expected_local_shift": 0.04,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    0.06468688702430295,
+    0.6570276140232217
+   ],
+   "success": false,
+   "final_joint_position": 0.0,
+   "failure_reason": "POSITION_TIMEOUT",
+   "task_outcome_error": 0.2,
+   "handle_relative_error": 0.0,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  },
+  {
+   "bias_y": 0.04,
+   "bias_level_id": "bias_p040",
+   "offset_y": 0.04,
+   "spec_shift_ok": true,
+   "spec_measured_dy": 0.04,
+   "perceived_local_dy": 0.03999999910593033,
+   "true_link_drift": 0.0,
+   "grasp_world_shift_vs_base": 0.08000004291543306,
+   "expected_local_shift": 0.08,
+   "true_handle_local": [
+    0.024617006489267734,
+    0.024686887024302946,
+    0.6570276140232217
+   ],
+   "perceived_handle_local": [
+    0.024617006489267734,
+    0.06468688702430295,
+    0.6570276140232217
+   ],
+   "success": false,
+   "final_joint_position": 1.7548403775435872e-05,
+   "failure_reason": "HANDLE_DETACHED",
+   "task_outcome_error": 0.19998245159622458,
+   "handle_relative_error": 0.08047606860597928,
+   "x_keys": [
+    "drawer_name",
+    "gripper_width",
+    "initial_mechanism_joint_pos",
+    "mechanism_id",
+    "member",
+    "robot_joint_pos",
+    "tcp_pos",
+    "tcp_quat"
+   ]
+  }
+ ],
+ "git_commit": "c2fd546cb86ab9cf3c2a1abed60782b28b932c8e",
+ "branch": "experiment/runtime-calibration-bias-v1",
+ "dirty_worktree": true
+}

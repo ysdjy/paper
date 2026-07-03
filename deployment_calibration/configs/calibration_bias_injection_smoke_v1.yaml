@@ -1,0 +1,14 @@
+# Calibration-bias injection smoke (v1) -- SMALL end-to-end injection verification (not a capability map).
+# 3 bias x 3 offset = 9 episodes. Confirms: bias enters the PERCEIVED handle only (true link unchanged),
+# world grasp shifts by (bias+offset) along handle local-Y, bias=0 == old behaviour, and mis-compensated
+# grasp (offset != -bias) physically degrades. Dynamics held at robust fixed theta + baseline damping.
+
+drawer: middle_drawer
+target_open_position: 0.20
+damping: 3.0                       # fixed baseline; isolate the calibration-bias effect from dynamics
+robust_theta:                     # verified-robust dynamics from the damping capability map (c1_steady-like)
+  max_pos_step: 0.020
+  pull_lead: 0.080
+bias_levels_y:  [-0.04, 0.00, 0.04]
+candidate_offsets_y: [-0.04, 0.00, 0.04]
+max_steps: 1800

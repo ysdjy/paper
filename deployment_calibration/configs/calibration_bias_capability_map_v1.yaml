@@ -1,0 +1,32 @@
+# Exploratory calibration-bias capability map (v1). NOT confirmatory paper values.
+# Purpose: locate a usable bias range + candidate-offset window; check best-offset movement with bias,
+# robust-generalist existence, and REPLICATE INDEPENDENCE (fix the damping stage's technical-repeat flaw).
+#
+#   5 bias x 7 candidate offsets x 3 independent-seed sessions = 105 candidate episodes
+#   + 2 fixed probes/session x 15 sessions = 30 probes  ->  135 episodes total (<150).
+# Dynamics held at a robust fixed theta + baseline damping so the ONLY structured driver is bias x offset.
+# Nuisance (per-episode, seed independent of bias): small robot arm-joint perturbation (recorded in x) +
+# target jitter (recorded in g) -> replicates are genuine independent draws, not re-runs.
+
+run_prefix: calibration_bias_capability_map
+
+drawer: middle_drawer
+offset_grid: configs/calibration_bias_offset_grid_v1.json   # relative to deployment_calibration/
+bias_levels_y: [-0.04, -0.02, 0.00, 0.02, 0.04]             # exploratory (from the grid); not frozen
+sessions_per_bias: 3
+
+target_open_position: 0.20
+damping: 3.0                          # fixed baseline; isolate bias from dynamics
+robust_theta:                         # verified-robust dynamics (c1_steady-like from damping cap map)
+  max_pos_step: 0.020
+  pull_lead: 0.080
+
+nuisance:                             # replicate-independence source; SAFE small ranges
+  robot_joint_sigma: 0.015            # rad, per arm joint, Gaussian
+  robot_joint_cap: 0.030              # rad, clip
+  target_jitter: 0.005                # m, uniform +/- on target_open_position
+  # per-episode seed = session_seed*100000 + order_in_session ; session_seed is a running counter,
+  # independent of the bias level (never derived from bias_y).
+
+base_session_seed: 74010
+max_steps: 1800
