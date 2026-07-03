@@ -1,0 +1,59 @@
+{
+  "candidate_bank_version": "selection_interaction_v1",
+  "drawer": "middle_drawer",
+  "theta_keys": ["grasp_offset_local_y", "max_pos_step", "pull_lead"],
+  "frozen_theta_ranges": {
+    "grasp_offset_local_y": [-0.06, 0.06],
+    "max_pos_step": [0.008, 0.035],
+    "pull_lead": [0.03, 0.14]
+  },
+  "grasp_offset_reliable_zone": [-0.02, 0.02],
+  "source_capability_map": "capability_map_v2_20260702_231522",
+  "design_principle": "Fixed MATCHED candidates: the same candidate_id maps to exactly the same theta across all damping levels and all repeat sessions (theta is NEVER redrawn from a session seed or the hidden state). grasp_offset_local_y is confined to the reliable-grasp zone [-0.02,0.02] (capability map: this band = 1.00 success) so grasp offset is NOT the failure driver and does NOT dominate the candidates; differentiation is along max_pos_step x pull_lead so the hidden damping can change which candidate is best. Archetypes span conservative -> aggressive. c4_aggressive (large step + large pull carrot) is expected to be fastest at low damping but most likely to detach/timeout at high damping; c0_conservative (small step + short carrot) is expected to be slower but most robust at high damping. grasp_offset values are jittered symmetrically and are deliberately NOT correlated with the aggressiveness ordering, so no single grasp offset explains the candidate ranking. These archetypes are frozen from capability-map / micro-sweep priors BEFORE any outcome is observed; they are not tuned to produce a result.",
+  "archetypes": {
+    "c0_conservative": {"grasp_offset_local_y": 0.0,    "max_pos_step": 0.010, "pull_lead": 0.040, "note": "small step, short pull carrot -> slow but gentle; expected most robust at high damping"},
+    "c1_steady":       {"grasp_offset_local_y": -0.015, "max_pos_step": 0.015, "pull_lead": 0.060, "note": "modest step and carrot"},
+    "c2_balanced":     {"grasp_offset_local_y": 0.015,  "max_pos_step": 0.020, "pull_lead": 0.080, "note": "nominal / balanced"},
+    "c3_brisk":        {"grasp_offset_local_y": -0.010, "max_pos_step": 0.028, "pull_lead": 0.110, "note": "brisk step and carrot"},
+    "c4_aggressive":   {"grasp_offset_local_y": 0.010,  "max_pos_step": 0.034, "pull_lead": 0.140, "note": "large step, long pull carrot -> fast at low damping, expected to detach/timeout at high damping"}
+  },
+  "target_tolerance": 0.02,
+  "targets": {
+    "T012": {
+      "target_id": "T012",
+      "target_open_position": 0.12,
+      "target_tolerance": 0.02,
+      "candidates": [
+        {"candidate_id": "T012_c0_conservative", "archetype": "c0_conservative", "theta": {"grasp_offset_local_y": 0.0,    "max_pos_step": 0.010, "pull_lead": 0.040}},
+        {"candidate_id": "T012_c1_steady",       "archetype": "c1_steady",       "theta": {"grasp_offset_local_y": -0.015, "max_pos_step": 0.015, "pull_lead": 0.060}},
+        {"candidate_id": "T012_c2_balanced",     "archetype": "c2_balanced",     "theta": {"grasp_offset_local_y": 0.015,  "max_pos_step": 0.020, "pull_lead": 0.080}},
+        {"candidate_id": "T012_c3_brisk",        "archetype": "c3_brisk",        "theta": {"grasp_offset_local_y": -0.010, "max_pos_step": 0.028, "pull_lead": 0.110}},
+        {"candidate_id": "T012_c4_aggressive",   "archetype": "c4_aggressive",   "theta": {"grasp_offset_local_y": 0.010,  "max_pos_step": 0.034, "pull_lead": 0.140}}
+      ]
+    },
+    "T020": {
+      "target_id": "T020",
+      "target_open_position": 0.20,
+      "target_tolerance": 0.02,
+      "candidates": [
+        {"candidate_id": "T020_c0_conservative", "archetype": "c0_conservative", "theta": {"grasp_offset_local_y": 0.0,    "max_pos_step": 0.010, "pull_lead": 0.040}},
+        {"candidate_id": "T020_c1_steady",       "archetype": "c1_steady",       "theta": {"grasp_offset_local_y": -0.015, "max_pos_step": 0.015, "pull_lead": 0.060}},
+        {"candidate_id": "T020_c2_balanced",     "archetype": "c2_balanced",     "theta": {"grasp_offset_local_y": 0.015,  "max_pos_step": 0.020, "pull_lead": 0.080}},
+        {"candidate_id": "T020_c3_brisk",        "archetype": "c3_brisk",        "theta": {"grasp_offset_local_y": -0.010, "max_pos_step": 0.028, "pull_lead": 0.110}},
+        {"candidate_id": "T020_c4_aggressive",   "archetype": "c4_aggressive",   "theta": {"grasp_offset_local_y": 0.010,  "max_pos_step": 0.034, "pull_lead": 0.140}}
+      ]
+    },
+    "T028": {
+      "target_id": "T028",
+      "target_open_position": 0.28,
+      "target_tolerance": 0.02,
+      "candidates": [
+        {"candidate_id": "T028_c0_conservative", "archetype": "c0_conservative", "theta": {"grasp_offset_local_y": 0.0,    "max_pos_step": 0.010, "pull_lead": 0.040}},
+        {"candidate_id": "T028_c1_steady",       "archetype": "c1_steady",       "theta": {"grasp_offset_local_y": -0.015, "max_pos_step": 0.015, "pull_lead": 0.060}},
+        {"candidate_id": "T028_c2_balanced",     "archetype": "c2_balanced",     "theta": {"grasp_offset_local_y": 0.015,  "max_pos_step": 0.020, "pull_lead": 0.080}},
+        {"candidate_id": "T028_c3_brisk",        "archetype": "c3_brisk",        "theta": {"grasp_offset_local_y": -0.010, "max_pos_step": 0.028, "pull_lead": 0.110}},
+        {"candidate_id": "T028_c4_aggressive",   "archetype": "c4_aggressive",   "theta": {"grasp_offset_local_y": 0.010,  "max_pos_step": 0.034, "pull_lead": 0.140}}
+      ]
+    }
+  }
+}

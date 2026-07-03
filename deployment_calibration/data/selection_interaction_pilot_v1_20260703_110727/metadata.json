@@ -1,0 +1,399 @@
+{
+ "run_id": "selection_interaction_pilot_v1_20260703_110727",
+ "contract_version": "open_drawer_v2",
+ "scene_version": "paper_scene_v2",
+ "experiment": "selection_interaction_pilot_v1",
+ "config": {
+  "run_prefix": "selection_interaction_pilot",
+  "drawer": "middle_drawer",
+  "candidate_bank": "configs/selection_interaction_candidate_bank_v1.json",
+  "damping_levels": [
+   {
+    "id": "L1_low",
+    "value": 3.0
+   },
+   {
+    "id": "L2_mid",
+    "value": 20.0
+   },
+   {
+    "id": "L3_high",
+    "value": 40.0
+   }
+  ],
+  "replicates_per_level": 3,
+  "targets_order": [
+   "T012",
+   "T020",
+   "T028"
+  ],
+  "candidate_order": [
+   "c0_conservative",
+   "c1_steady",
+   "c2_balanced",
+   "c3_brisk",
+   "c4_aggressive"
+  ],
+  "n_probes": 3,
+  "max_steps": 1800
+ },
+ "candidate_bank_version": "selection_interaction_v1",
+ "candidate_bank_sha256": "d1d80d9646aae536f72dd3a7edb0bec764c1304b9ced6df5bd81f093256d7516",
+ "candidate_bank_path": "deployment_calibration/configs/selection_interaction_candidate_bank_v1.json",
+ "candidate_bank": {
+  "candidate_bank_version": "selection_interaction_v1",
+  "drawer": "middle_drawer",
+  "theta_keys": [
+   "grasp_offset_local_y",
+   "max_pos_step",
+   "pull_lead"
+  ],
+  "frozen_theta_ranges": {
+   "grasp_offset_local_y": [
+    -0.06,
+    0.06
+   ],
+   "max_pos_step": [
+    0.008,
+    0.035
+   ],
+   "pull_lead": [
+    0.03,
+    0.14
+   ]
+  },
+  "grasp_offset_reliable_zone": [
+   -0.02,
+   0.02
+  ],
+  "source_capability_map": "capability_map_v2_20260702_231522",
+  "design_principle": "Fixed MATCHED candidates: the same candidate_id maps to exactly the same theta across all damping levels and all repeat sessions (theta is NEVER redrawn from a session seed or the hidden state). grasp_offset_local_y is confined to the reliable-grasp zone [-0.02,0.02] (capability map: this band = 1.00 success) so grasp offset is NOT the failure driver and does NOT dominate the candidates; differentiation is along max_pos_step x pull_lead so the hidden damping can change which candidate is best. Archetypes span conservative -> aggressive. c4_aggressive (large step + large pull carrot) is expected to be fastest at low damping but most likely to detach/timeout at high damping; c0_conservative (small step + short carrot) is expected to be slower but most robust at high damping. grasp_offset values are jittered symmetrically and are deliberately NOT correlated with the aggressiveness ordering, so no single grasp offset explains the candidate ranking. These archetypes are frozen from capability-map / micro-sweep priors BEFORE any outcome is observed; they are not tuned to produce a result.",
+  "archetypes": {
+   "c0_conservative": {
+    "grasp_offset_local_y": 0.0,
+    "max_pos_step": 0.01,
+    "pull_lead": 0.04,
+    "note": "small step, short pull carrot -> slow but gentle; expected most robust at high damping"
+   },
+   "c1_steady": {
+    "grasp_offset_local_y": -0.015,
+    "max_pos_step": 0.015,
+    "pull_lead": 0.06,
+    "note": "modest step and carrot"
+   },
+   "c2_balanced": {
+    "grasp_offset_local_y": 0.015,
+    "max_pos_step": 0.02,
+    "pull_lead": 0.08,
+    "note": "nominal / balanced"
+   },
+   "c3_brisk": {
+    "grasp_offset_local_y": -0.01,
+    "max_pos_step": 0.028,
+    "pull_lead": 0.11,
+    "note": "brisk step and carrot"
+   },
+   "c4_aggressive": {
+    "grasp_offset_local_y": 0.01,
+    "max_pos_step": 0.034,
+    "pull_lead": 0.14,
+    "note": "large step, long pull carrot -> fast at low damping, expected to detach/timeout at high damping"
+   }
+  },
+  "target_tolerance": 0.02,
+  "targets": {
+   "T012": {
+    "target_id": "T012",
+    "target_open_position": 0.12,
+    "target_tolerance": 0.02,
+    "candidates": [
+     {
+      "candidate_id": "T012_c0_conservative",
+      "archetype": "c0_conservative",
+      "theta": {
+       "grasp_offset_local_y": 0.0,
+       "max_pos_step": 0.01,
+       "pull_lead": 0.04
+      }
+     },
+     {
+      "candidate_id": "T012_c1_steady",
+      "archetype": "c1_steady",
+      "theta": {
+       "grasp_offset_local_y": -0.015,
+       "max_pos_step": 0.015,
+       "pull_lead": 0.06
+      }
+     },
+     {
+      "candidate_id": "T012_c2_balanced",
+      "archetype": "c2_balanced",
+      "theta": {
+       "grasp_offset_local_y": 0.015,
+       "max_pos_step": 0.02,
+       "pull_lead": 0.08
+      }
+     },
+     {
+      "candidate_id": "T012_c3_brisk",
+      "archetype": "c3_brisk",
+      "theta": {
+       "grasp_offset_local_y": -0.01,
+       "max_pos_step": 0.028,
+       "pull_lead": 0.11
+      }
+     },
+     {
+      "candidate_id": "T012_c4_aggressive",
+      "archetype": "c4_aggressive",
+      "theta": {
+       "grasp_offset_local_y": 0.01,
+       "max_pos_step": 0.034,
+       "pull_lead": 0.14
+      }
+     }
+    ]
+   },
+   "T020": {
+    "target_id": "T020",
+    "target_open_position": 0.2,
+    "target_tolerance": 0.02,
+    "candidates": [
+     {
+      "candidate_id": "T020_c0_conservative",
+      "archetype": "c0_conservative",
+      "theta": {
+       "grasp_offset_local_y": 0.0,
+       "max_pos_step": 0.01,
+       "pull_lead": 0.04
+      }
+     },
+     {
+      "candidate_id": "T020_c1_steady",
+      "archetype": "c1_steady",
+      "theta": {
+       "grasp_offset_local_y": -0.015,
+       "max_pos_step": 0.015,
+       "pull_lead": 0.06
+      }
+     },
+     {
+      "candidate_id": "T020_c2_balanced",
+      "archetype": "c2_balanced",
+      "theta": {
+       "grasp_offset_local_y": 0.015,
+       "max_pos_step": 0.02,
+       "pull_lead": 0.08
+      }
+     },
+     {
+      "candidate_id": "T020_c3_brisk",
+      "archetype": "c3_brisk",
+      "theta": {
+       "grasp_offset_local_y": -0.01,
+       "max_pos_step": 0.028,
+       "pull_lead": 0.11
+      }
+     },
+     {
+      "candidate_id": "T020_c4_aggressive",
+      "archetype": "c4_aggressive",
+      "theta": {
+       "grasp_offset_local_y": 0.01,
+       "max_pos_step": 0.034,
+       "pull_lead": 0.14
+      }
+     }
+    ]
+   },
+   "T028": {
+    "target_id": "T028",
+    "target_open_position": 0.28,
+    "target_tolerance": 0.02,
+    "candidates": [
+     {
+      "candidate_id": "T028_c0_conservative",
+      "archetype": "c0_conservative",
+      "theta": {
+       "grasp_offset_local_y": 0.0,
+       "max_pos_step": 0.01,
+       "pull_lead": 0.04
+      }
+     },
+     {
+      "candidate_id": "T028_c1_steady",
+      "archetype": "c1_steady",
+      "theta": {
+       "grasp_offset_local_y": -0.015,
+       "max_pos_step": 0.015,
+       "pull_lead": 0.06
+      }
+     },
+     {
+      "candidate_id": "T028_c2_balanced",
+      "archetype": "c2_balanced",
+      "theta": {
+       "grasp_offset_local_y": 0.015,
+       "max_pos_step": 0.02,
+       "pull_lead": 0.08
+      }
+     },
+     {
+      "candidate_id": "T028_c3_brisk",
+      "archetype": "c3_brisk",
+      "theta": {
+       "grasp_offset_local_y": -0.01,
+       "max_pos_step": 0.028,
+       "pull_lead": 0.11
+      }
+     },
+     {
+      "candidate_id": "T028_c4_aggressive",
+      "archetype": "c4_aggressive",
+      "theta": {
+       "grasp_offset_local_y": 0.01,
+       "max_pos_step": 0.034,
+       "pull_lead": 0.14
+      }
+     }
+    ]
+   }
+  }
+ },
+ "targets_and_candidate_ids": {
+  "T012": [
+   "T012_c0_conservative",
+   "T012_c1_steady",
+   "T012_c2_balanced",
+   "T012_c3_brisk",
+   "T012_c4_aggressive"
+  ],
+  "T020": [
+   "T020_c0_conservative",
+   "T020_c1_steady",
+   "T020_c2_balanced",
+   "T020_c3_brisk",
+   "T020_c4_aggressive"
+  ],
+  "T028": [
+   "T028_c0_conservative",
+   "T028_c1_steady",
+   "T028_c2_balanced",
+   "T028_c3_brisk",
+   "T028_c4_aggressive"
+  ]
+ },
+ "n_sessions": 9,
+ "n_episodes": 162,
+ "damping_levels": [
+  {
+   "id": "L1_low",
+   "value": 3.0
+  },
+  {
+   "id": "L2_mid",
+   "value": 20.0
+  },
+  {
+   "id": "L3_high",
+   "value": 40.0
+  }
+ ],
+ "replicates_per_level": 3,
+ "n_probes": 3,
+ "targets_order": [
+  "T012",
+  "T020",
+  "T028"
+ ],
+ "damping_set_maxerr": 0.0,
+ "damping_verified": true,
+ "full_reset_all_verified": true,
+ "n_reset_verify_fail": 0,
+ "sessions": [
+  {
+   "session_id": "sess_000",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L1_low",
+   "damping": 3.0,
+   "damping_level_id": "L1_low",
+   "replicate_id": 0
+  },
+  {
+   "session_id": "sess_001",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L1_low",
+   "damping": 3.0,
+   "damping_level_id": "L1_low",
+   "replicate_id": 1
+  },
+  {
+   "session_id": "sess_002",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L1_low",
+   "damping": 3.0,
+   "damping_level_id": "L1_low",
+   "replicate_id": 2
+  },
+  {
+   "session_id": "sess_003",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L2_mid",
+   "damping": 20.0,
+   "damping_level_id": "L2_mid",
+   "replicate_id": 0
+  },
+  {
+   "session_id": "sess_004",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L2_mid",
+   "damping": 20.0,
+   "damping_level_id": "L2_mid",
+   "replicate_id": 1
+  },
+  {
+   "session_id": "sess_005",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L2_mid",
+   "damping": 20.0,
+   "damping_level_id": "L2_mid",
+   "replicate_id": 2
+  },
+  {
+   "session_id": "sess_006",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L3_high",
+   "damping": 40.0,
+   "damping_level_id": "L3_high",
+   "replicate_id": 0
+  },
+  {
+   "session_id": "sess_007",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L3_high",
+   "damping": 40.0,
+   "damping_level_id": "L3_high",
+   "replicate_id": 1
+  },
+  {
+   "session_id": "sess_008",
+   "drawer": "middle_drawer",
+   "hidden_state_id": "L3_high",
+   "damping": 40.0,
+   "damping_level_id": "L3_high",
+   "replicate_id": 2
+  }
+ ],
+ "runtime_design_commit": "1921641acec5a7e153f45f909c69613ed6036a12",
+ "run_command": "projects/paper/deployment_calibration/data_generation/generate_selection_interaction_pilot_v1.py --headless --config projects/paper/deployment_calibration/configs/selection_interaction_pilot_v1.yaml",
+ "captured_at": "2026-07-03 11:56:13",
+ "wall_clock_minutes": 48.76,
+ "env": {
+  "python": "3.11.15",
+  "platform": "Linux-6.8.1-1052-realtime-x86_64-with-glibc2.35",
+  "torch": "2.7.0+cu128"
+ },
+ "git_commit": "1921641acec5a7e153f45f909c69613ed6036a12",
+ "branch": "experiment/runtime-selection-v2",
+ "dirty_worktree": false
+}

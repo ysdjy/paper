@@ -1,0 +1,43 @@
+# Selection-interaction pilot config (v1).
+#
+# GOAL: test whether the hidden drawer-joint DAMPING not only shifts outcome probabilities but changes
+# WHICH candidate theta is optimal (state-aware vs state-agnostic selection). To measure this cleanly we
+# use a FIXED, MATCHED candidate bank: the SAME candidate_id -> SAME theta across every damping level and
+# every repeat session (no per-session Sobol redraw). See selection_interaction_candidate_bank_v1.json.
+#
+# Design (fixes the three pilot problems: unmatched candidates, grasp-offset dominance, too few groups):
+#   drawer            = middle_drawer (only baseline-mixed drawer)
+#   damping levels    = 3 / 20 / 40 (frozen monotonic band from damping_micro_sweep_v2)
+#   replicates/level  = 3 sessions  -> 9 sessions
+#   probes/session    = 3 fixed probes (probe_library_v2: P0/P1/P2)
+#   targets           = 0.12 / 0.20 / 0.28 (3 candidate GROUPS per session)
+#   candidates/group  = 5 matched candidates (from the bank)
+#   per session       = 3 probes + 3 targets x 5 = 18 episodes
+#   total             = 9 sessions x 18 = 162 episodes
+#   candidate groups  = 9 sessions x 3 targets = 27 within-session groups (vs 3 in the damping pilot)
+#   matched groups    = 3 targets x 3 replicates = 9 groups, each appearing at all 3 damping levels.
+
+run_prefix: selection_interaction_pilot
+
+drawer: middle_drawer
+
+# candidate bank path is relative to the deployment_calibration/ directory.
+candidate_bank: configs/selection_interaction_candidate_bank_v1.json
+
+damping_levels:                       # frozen from damping_micro_sweep_v2 (non-degenerate band).
+  - {id: L1_low,  value: 3.0}         # easy / baseline
+  - {id: L2_mid,  value: 20.0}        # moderate resistance
+  - {id: L3_high, value: 40.0}        # near detach threshold
+
+replicates_per_level: 3               # 3 sessions per damping level -> 9 sessions
+
+targets_order: [T012, T020, T028]     # order candidate groups are executed within a session
+candidate_order:                      # order candidates are executed within a group (must match the bank)
+  - c0_conservative
+  - c1_steady
+  - c2_balanced
+  - c3_brisk
+  - c4_aggressive
+
+n_probes: 3                           # fixed probes from probe_library_v2 (P0/P1/P2)
+max_steps: 1800
