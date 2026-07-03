@@ -1,2 +1,3 @@
 # regenerable model weights (reports/JSON are kept for reproducibility)
+**/models/*.pt
 models/*.pt

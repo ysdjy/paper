@@ -38,88 +38,141 @@ def _init_signature(e: dict, ndigits: int = 4) -> tuple:
     )
 
 
+def _matched_key(e: dict):
+    """Key that identifies a matched group across damping levels.
+
+    Prefer explicit (drawer, target_id, replicate_id) when the run carries them (v1 selection-
+    interaction bank). This holds target + initial-condition semantics fixed while damping varies.
+    Fall back to (init_signature, theta-SET) clustering for runs that predate those fields.
+    """
+    if e.get("target_id") is not None and e.get("replicate_id") is not None:
+        return ("tr", e.get("drawer_name"), e.get("target_id"), e.get("replicate_id"))
+    return ("legacy", _init_signature(e))
+
+
+def _candidate_key(e: dict):
+    """Comparable candidate identity within a matched group across damping."""
+    return e.get("candidate_id") or theta_signature(e)
+
+
 def build_matched_bank(episodes) -> dict:
     """Construct + validate the matched candidate bank. Returns a dict consumed by oracle.py.
 
     Structure on success:
       {"matched": True,
        "matched_groups": [
-          {"matched_group_id": str,
-           "target": float, "init_signature": tuple,
-           "candidate_keys": [theta_sig,...],
-           "dampings": [float,...],
-           "by_damping": {damping_value: {candidate_key: episode}}}, ...],
+          {"matched_group_id": str, "target": float,
+           "candidate_keys": [candidate_id,...], "dampings": [float,...],
+           "by_damping": {damping_value: {candidate_key: episode}},
+           "n_replicate_sessions_per_damping": {damping: n}}, ...],
        "excluded": [...], "reason": None}
     """
     cands = [e for e in episodes if e.get("episode_role") == "candidate"]
-    # bucket by (init_signature, theta SET)
+    legacy = any(_matched_key(e)[0] == "legacy" for e in cands)
+
+    if legacy:
+        return _build_legacy(cands)
+
+    # explicit (target, replicate) keying
     buckets = defaultdict(list)
     for e in cands:
-        buckets_key = (_init_signature(e),)
-        buckets[buckets_key].append(e)
+        buckets[_matched_key(e)].append(e)
 
     matched_groups, excluded = [], []
-    # Within each init-signature bucket, group sessions by their theta-set; a matched group
-    # needs >=2 damping levels sharing the SAME theta set.
+    for key, eps in sorted(buckets.items()):
+        # by_damping[d] = {candidate_key: episode}; a legal matched cell has ONE episode per
+        # (damping, candidate_key). A duplicate would mean the same candidate ran twice in the
+        # same session-damping -> flag it rather than silently overwrite.
+        by_damping = defaultdict(dict)
+        dup = False
+        for e in eps:
+            d = float((e.get("secret_deployment_state") or {}).get("damping"))
+            ck = _candidate_key(e)
+            if ck in by_damping[d]:
+                dup = True
+            by_damping[d][ck] = e
+        dampings = sorted(by_damping)
+        if len(dampings) < 2:
+            excluded.append({"matched_key": list(key), "reason": "spans <2 damping levels"})
+            continue
+        key_sets = [set(by_damping[d]) for d in dampings]
+        ok, detail = True, None
+        if dup:
+            ok, detail = False, "duplicate candidate within a (damping) cell"
+        if ok and not all(ks == key_sets[0] for ks in key_sets):
+            ok, detail = False, "candidate_id set differs across damping"
+        if ok:  # theta identical per candidate across damping
+            for ck in key_sets[0]:
+                sigs = {theta_signature(by_damping[d][ck]) for d in dampings}
+                if len(sigs) != 1:
+                    ok, detail = False, f"theta differs across damping for {ck}"
+                    break
+        if ok:  # single target across the group
+            tgs = {round(float(by_damping[d][next(iter(key_sets[0]))]["g"]["target_open_position"]), 6)
+                   for d in dampings}
+            if len(tgs) != 1:
+                ok, detail = False, "target differs across damping"
+        if not ok:
+            excluded.append({"matched_key": list(key), "reason": detail})
+            continue
+        target = round(float(by_damping[dampings[0]][next(iter(key_sets[0]))]["g"]["target_open_position"]), 6)
+        matched_groups.append({
+            "matched_group_id": eps[0].get("matched_group_id") or "__".join(str(x) for x in key[1:]),
+            "target": target,
+            "target_id": eps[0].get("target_id"),
+            "replicate_id": eps[0].get("replicate_id"),
+            "candidate_keys": sorted(key_sets[0]),
+            "dampings": dampings,
+            "by_damping": {d: dict(by_damping[d]) for d in dampings},
+        })
+
+    matched = len(matched_groups) > 0
+    reason = None if matched else "no matched candidate group spans >=2 damping levels"
+    return {"matched": matched, "matched_groups": matched_groups, "excluded": excluded,
+            "reason": reason, "n_matched_groups": len(matched_groups)}
+
+
+def _build_legacy(cands) -> dict:
+    """Theta-set clustering for runs without target_id/replicate_id (e.g. damping_pilot_v2)."""
+    buckets = defaultdict(list)
+    for e in cands:
+        buckets[(_init_signature(e),)] = buckets[(_init_signature(e),)] + [e]
+    matched_groups, excluded = [], []
     for init_sig_key, eps in buckets.items():
-        # organize by session -> theta set
         by_session = defaultdict(list)
         for e in eps:
             by_session[e["session_id"]].append(e)
-        # theta set per session
         session_theta_set = {sid: frozenset(theta_signature(x) for x in ceps)
                              for sid, ceps in by_session.items()}
-        # cluster sessions by identical theta set
         clusters = defaultdict(list)
         for sid, tset in session_theta_set.items():
             clusters[tset].append(sid)
-
         for tset, sids in clusters.items():
-            damping_of = {}
-            for sid in sids:
-                d = (by_session[sid][0].get("secret_deployment_state") or {}).get("damping")
-                damping_of[sid] = d
-            distinct_dampings = sorted(set(damping_of.values()))
-            if len(distinct_dampings) < 2:
-                excluded.append({"init_signature": init_sig_key[0], "n_sessions": len(sids),
+            damping_of = {sid: (by_session[sid][0].get("secret_deployment_state") or {}).get("damping")
+                          for sid in sids}
+            distinct = sorted(set(damping_of.values()))
+            if len(distinct) < 2:
+                excluded.append({"init_signature": init_sig_key[0],
                                  "reason": "candidate theta-set spans <2 damping levels (not matched)"})
                 continue
-            # Build by_damping: for each damping choose ONE session (first) — validate identity.
             by_damping = {}
-            ok = True
-            detail = None
-            for d in distinct_dampings:
-                d_sids = [s for s in sids if damping_of[s] == d]
-                sid = sorted(d_sids)[0]
-                cand_map = {theta_signature(x): x for x in by_session[sid]}
-                by_damping[d] = cand_map
-            # identity checks across damping
+            for d in distinct:
+                sid = sorted(s for s in sids if damping_of[s] == d)[0]
+                by_damping[d] = {theta_signature(x): x for x in by_session[sid]}
             key_sets = [set(cm) for cm in by_damping.values()]
             if not all(ks == key_sets[0] for ks in key_sets):
-                ok, detail = False, "candidate_key set differs across damping"
-            targets = {round(float(list(cm.values())[0]["g"]["target_open_position"]), 6)
-                       for cm in by_damping.values()}
-            if ok and len(targets) != 1:
-                ok, detail = False, "target differs across damping"
-            if ok:
-                matched_groups.append({
-                    "matched_group_id": f"mg_{len(matched_groups):03d}",
-                    "target": next(iter(targets)),
-                    "init_signature": list(init_sig_key[0]),
-                    "candidate_keys": sorted(key_sets[0]),
-                    "dampings": distinct_dampings,
-                    "by_damping": by_damping,
-                })
-            else:
-                excluded.append({"init_signature": init_sig_key[0], "reason": detail})
-
+                excluded.append({"init_signature": init_sig_key[0], "reason": "key set differs"})
+                continue
+            matched_groups.append({
+                "matched_group_id": f"mg_{len(matched_groups):03d}",
+                "target": round(float(list(by_damping[distinct[0]].values())[0]["g"]["target_open_position"]), 6),
+                "candidate_keys": sorted(key_sets[0]), "dampings": distinct, "by_damping": by_damping})
     matched = len(matched_groups) > 0
     reason = None if matched else (
         "no candidate theta-set is shared across >=2 damping levels; this run is NOT a matched "
         "candidate bank, so switch-rate / rank-reversal / VSI are not computable")
-    return {"matched": matched, "matched_groups": matched_groups,
-            "excluded": excluded, "reason": reason,
-            "n_matched_groups": len(matched_groups)}
+    return {"matched": matched, "matched_groups": matched_groups, "excluded": excluded,
+            "reason": reason, "n_matched_groups": len(matched_groups)}
 
 
 def validate_bank_report(episodes) -> dict:
@@ -137,3 +190,83 @@ def validate_bank_report(episodes) -> dict:
             for mg in bank["matched_groups"][:10]
         ],
     }
+
+
+def full_pairing_validation(episodes, *, expect_n_episodes=None, expect_n_groups=None,
+                            expect_dampings=None) -> dict:
+    """Strict gate for Phase-2 (returns ok=False if any check fails).
+
+    Checks: episode completeness, matched-group count, per-group candidate-id set identical
+    across all dampings, theta identical per candidate-id, target/replicate consistency, no
+    candidate outcome leaking into any candidate's decision-legal history, and no secret/hidden
+    key inside any x. Purely read-only.
+    """
+    from .history import assert_history_legal, build_history
+
+    checks = []
+
+    def add(name, ok, detail=""):
+        checks.append({"check": name, "ok": bool(ok), "detail": detail})
+
+    cands = [e for e in episodes if e.get("episode_role") == "candidate"]
+    probes = [e for e in episodes if e.get("episode_role") == "probe"]
+    add("episode_count", expect_n_episodes is None or len(episodes) == expect_n_episodes,
+        f"n_episodes={len(episodes)} (expected {expect_n_episodes})")
+
+    bank = build_matched_bank(episodes)
+    add("is_matched_bank", bank["matched"], bank["reason"] or "matched")
+    add("n_matched_groups", expect_n_groups is None or bank["n_matched_groups"] == expect_n_groups,
+        f"n_matched_groups={bank['n_matched_groups']} (expected {expect_n_groups})")
+
+    # each group spans expected dampings with identical candidate-id set + identical theta
+    per_group_ok = True
+    per_group_detail = []
+    for mg in bank["matched_groups"]:
+        dset = set(mg["dampings"])
+        exp = set(expect_dampings) if expect_dampings else dset
+        key_sets_ok = all(set(mg["by_damping"][d]) == set(mg["candidate_keys"]) for d in mg["dampings"])
+        theta_ok = True
+        for ck in mg["candidate_keys"]:
+            sigs = {theta_signature(mg["by_damping"][d][ck]) for d in mg["dampings"]}
+            if len(sigs) != 1:
+                theta_ok = False
+        g_ok = (dset == exp) and key_sets_ok and theta_ok
+        if not g_ok:
+            per_group_ok = False
+            per_group_detail.append({"mg": mg["matched_group_id"], "dampings_ok": dset == exp,
+                                     "candset_ok": key_sets_ok, "theta_ok": theta_ok})
+    add("matched_groups_damping_candset_theta_consistent", per_group_ok,
+        per_group_detail[:5] if per_group_detail else "all groups consistent")
+
+    # no candidate outcome in any candidate's history (build + assert legal)
+    hist_ok, hist_detail = True, ""
+    for e in cands:
+        try:
+            H = build_history(episodes, e, k=e.get("history_cutoff"))
+            assert_history_legal(e, H, all_episodes=episodes, k=e.get("history_cutoff"))
+        except ValueError as ex:
+            hist_ok = False
+            hist_detail = f"{e.get('episode_id')}: {ex}"
+            break
+    add("no_candidate_outcome_in_history", hist_ok, hist_detail or "all candidate histories legal")
+
+    # no secret/hidden key inside any x
+    x_ok, x_detail = True, ""
+    for e in episodes:
+        for k in e.get("x", {}):
+            if any(p in k.lower() for p in ("damping", "secret", "hidden")):
+                x_ok, x_detail = False, f"{e.get('episode_id')} x has {k}"
+                break
+        if not x_ok:
+            break
+    add("no_secret_in_x", x_ok, x_detail or "x clean in all episodes")
+
+    # selection-group structure
+    sel_groups = {e.get("candidate_group") for e in cands}
+    add("selection_groups_present", len(sel_groups) > 0, f"n_selection_groups={len(sel_groups)}")
+
+    ok = all(c["ok"] for c in checks)
+    return {"ok": ok, "checks": checks, "n_episodes": len(episodes),
+            "n_candidates": len(cands), "n_probes": len(probes),
+            "n_matched_groups": bank["n_matched_groups"],
+            "n_selection_groups": len(sel_groups)}

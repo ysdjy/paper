@@ -81,6 +81,94 @@ def selection_regret(groups: dict, chosen_index_by_group: dict, cfg: UtilityConf
             "selected_time": float(np.mean([r["selected_time"] for r in rows])) if rows else float("nan")}
 
 
+# ---------------------------------------------------------------- fixed-policy baselines
+def _archetype(e: dict) -> str:
+    """Archetype label ('c1_steady' ...) from the episode, robust to field naming."""
+    a = e.get("candidate_archetype") or e.get("archetype")
+    if a:
+        return a
+    cid = e.get("candidate_id") or ""
+    # candidate_id like 'T012_c1_steady' -> 'c1_steady'
+    parts = cid.split("_", 1)
+    return parts[1] if len(parts) == 2 else cid
+
+
+def policy_regret(groups: dict, choose_fn, cfg: UtilityConfig, label: str = "policy") -> dict:
+    """Regret of an arbitrary selection policy. choose_fn(list_of_episodes) -> chosen episode.
+
+    A fixed policy (e.g. always pick the c1_steady archetype) is scored per selection group vs
+    the Oracle-Candidate. Used for the robust-generalist and best-single baselines.
+    """
+    oc = oracle_candidate_per_group(groups, cfg)
+    rows = []
+    for gid, eps in groups.items():
+        pick = choose_fn(eps)
+        if pick is None:
+            pick = eps[0]
+        u = true_utility(pick, cfg)
+        best = oc[gid]["best_true_utility"]
+        rows.append({"group_id": gid, "session_id": eps[0]["session_id"], "regret": best - u,
+                     "top1": 1.0 if u >= best - 1e-9 else 0.0,
+                     "selected_success": 1.0 if pick["y"]["success"] else 0.0,
+                     "selected_true_utility": u,
+                     "selected_archetype": _archetype(pick)})
+    return {"label": label, "rows": rows,
+            "mean_regret": float(np.mean([r["regret"] for r in rows])) if rows else float("nan"),
+            "median_regret": float(np.median([r["regret"] for r in rows])) if rows else float("nan"),
+            "top1_acc": float(np.mean([r["top1"] for r in rows])) if rows else float("nan"),
+            "selected_success_rate": float(np.mean([r["selected_success"] for r in rows])) if rows else float("nan"),
+            "mean_true_utility": float(np.mean([r["selected_true_utility"] for r in rows])) if rows else float("nan")}
+
+
+def robust_generalist(groups: dict, archetype: str, cfg: UtilityConfig) -> dict:
+    """Always pick a fixed archetype (default: the robust c1_steady) regardless of state."""
+    def choose(eps):
+        cand = [e for e in eps if _archetype(e) == archetype]
+        return cand[0] if cand else None
+    return policy_regret(groups, choose, cfg, label=f"robust_generalist[{archetype}]")
+
+
+def best_single_archetype(train_groups: dict, test_groups: dict, cfg: UtilityConfig) -> dict:
+    """Choose ONE archetype on train (max mean true utility), evaluate it on test.
+
+    A deployable state-agnostic policy that does not peek at test outcomes.
+    """
+    # mean true utility per archetype on train
+    by_arch = {}
+    for gid, eps in train_groups.items():
+        for e in eps:
+            by_arch.setdefault(_archetype(e), []).append(true_utility(e, cfg))
+    if not by_arch:
+        return {"available": False, "reason": "no train groups"}
+    means = {a: float(np.mean(v)) for a, v in by_arch.items()}
+    best_arch = max(means, key=means.get)
+    res = robust_generalist(test_groups, best_arch, cfg)
+    res["label"] = f"best_single_archetype(train-selected={best_arch})"
+    res["train_archetype_means"] = means
+    res["selected_archetype"] = best_arch
+    return res
+
+
+def gross_net_voi(groups_by_k: dict, baseline_policy: dict, cfg: UtilityConfig,
+                  probe_time_by_k: dict) -> dict:
+    """Gross/Net Value of Information of using K probes.
+
+    groups_by_k: {K: selection_regret-like result whose rows carry 'selected_true_utility'} for a
+                 history model that uses K probes.
+    baseline_policy: a policy_regret result (the best no-history/state-agnostic selector).
+    Gross VOI(K) = mean selected true utility with K probes - baseline mean selected true utility.
+    Net VOI(K)   = Gross VOI(K) - lambda_time * (cumulative real probe time for K probes).
+    """
+    base_u = baseline_policy["mean_true_utility"]
+    out = {}
+    for k, res in groups_by_k.items():
+        gross = res["mean_true_utility"] - base_u
+        probe_cost = cfg.lambda_time * float(probe_time_by_k.get(k, 0.0))
+        out[k] = {"gross_voi": gross, "probe_time_cumulative": float(probe_time_by_k.get(k, 0.0)),
+                  "probe_time_cost": probe_cost, "net_voi": gross - probe_cost}
+    return out
+
+
 # ---------------------------------------------------------------- matched-bank oracles
 def _state_aware(matched_bank, cfg: UtilityConfig):
     """For each (matched group, damping): best true utility achievable knowing damping."""
