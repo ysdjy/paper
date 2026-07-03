@@ -1,0 +1,108 @@
+{
+  "frozen_utility": {
+    "lambda_error": 1.0,
+    "lambda_time": 0.02,
+    "error_clip": [
+      0.0,
+      0.3
+    ],
+    "time_clip": [
+      0.0,
+      60.0
+    ],
+    "selected_on": "validation",
+    "note": "weights frozen from validation before touching test"
+  },
+  "n_selection_groups": 15,
+  "n_matched_groups": 3,
+  "oracle_candidate_mean_true_utility": 0.8049287581227266,
+  "state_agnostic_oracle_mean_true_utility": 0.28086479288985106,
+  "state_aware_oracle_mean_true_utility": 0.8049287581227266,
+  "VSI_frozen": 0.5240639652328756,
+  "optimal_candidate_switch_rate": 1.0,
+  "pairwise_rank_reversal_rate": 0.580952380952381,
+  "best_single_offset": {
+    "offset": "off_p020",
+    "mean_regret": 0.5240639652328757,
+    "mean_true_utility": 0.28086479288985106,
+    "selected_success_rate": 0.6
+  },
+  "gap_best_single_to_state_aware": 0.5240639652328756,
+  "robust_offset": {
+    "available": true,
+    "most_robust_offset": "off_p020",
+    "worst_case_gap_of_most_robust": 1.4223713616131626,
+    "robust_generalist_exists": false,
+    "per_offset_worst_case_gap": {
+      "off_m060": 1.429171361613262,
+      "off_m040": 1.4298225477693358,
+      "off_m020": 1.4283968724010265,
+      "off_z000": 1.4298060968873778,
+      "off_p020": 1.4223713616131626,
+      "off_p040": 1.4226225477693424,
+      "off_p060": 1.4681496313744447
+    }
+  },
+  "best_offset_per_bias": {
+    "per_group_best_by_bias": {
+      "middle_drawer__r0": {
+        "bias_m020": "off_p020",
+        "bias_m040": "off_p060",
+        "bias_p020": "off_m020",
+        "bias_p040": "off_m040",
+        "bias_z000": "off_z000"
+      },
+      "middle_drawer__r2": {
+        "bias_m020": "off_p040",
+        "bias_m040": "off_p060",
+        "bias_p020": "off_m020",
+        "bias_p040": "off_m020",
+        "bias_z000": "off_z000"
+      },
+      "middle_drawer__r1": {
+        "bias_m020": "off_p020",
+        "bias_m040": "off_p040",
+        "bias_p020": "off_m020",
+        "bias_p040": "off_m040",
+        "bias_z000": "off_z000"
+      }
+    },
+    "groups_with_best_offset_differing_across_bias": 3,
+    "n_groups": 3
+  },
+  "success_only": {
+    "VSI_success_only": 0.4,
+    "state_aware_mean": 1.0,
+    "state_agnostic_mean": 0.6,
+    "best_single_offset_success_rate": 0.6,
+    "state_aware_selected_success_gain": 0.4
+  },
+  "block_wise_best_single_cv": {
+    "folds": [
+      {
+        "held_block": 0,
+        "best_single_offset": "off_m020",
+        "state_aware_success": 1.0,
+        "best_single_success": 0.6,
+        "success_gain": 0.4
+      },
+      {
+        "held_block": 1,
+        "best_single_offset": "off_m020",
+        "state_aware_success": 1.0,
+        "best_single_success": 0.6,
+        "success_gain": 0.4
+      },
+      {
+        "held_block": 2,
+        "best_single_offset": "off_m020",
+        "state_aware_success": 1.0,
+        "best_single_success": 0.6,
+        "success_gain": 0.4
+      }
+    ],
+    "mean_success_gain": 0.4000000000000001,
+    "min_success_gain": 0.4,
+    "method": "leave-one-block-out: select best-single offset on 2 blocks, evaluate success gain vs state-aware on the held-out block; 3-fold rotation"
+  }
+}

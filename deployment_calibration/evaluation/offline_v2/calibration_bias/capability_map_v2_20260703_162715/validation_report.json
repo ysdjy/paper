@@ -1,0 +1,53 @@
+{
+  "counts": {
+    "episodes": 135,
+    "candidates": 105,
+    "probes": 30,
+    "expected": {
+      "episodes": 135,
+      "candidates": 105,
+      "probes": 30
+    }
+  },
+  "counts_ok": true,
+  "candidate_id_to_offset_pure_function": true,
+  "matched_bank_consistent": true,
+  "n_matched_groups": 3,
+  "n_bias_levels": 5,
+  "within_session_xg_identical": true,
+  "matched_block_xg_identical_across_bias": true,
+  "validator_ok": true,
+  "validator_checks": [
+    {
+      "check": "no_bias_or_seed_in_x",
+      "ok": true,
+      "detail": "x clean"
+    },
+    {
+      "check": "probes_have_no_candidate_fields",
+      "ok": true,
+      "detail": "probes carry no candidate fields"
+    },
+    {
+      "check": "leakage_safe_history",
+      "ok": true,
+      "detail": "all candidate histories legal"
+    },
+    {
+      "check": "nuisance_seed_independent_of_bias",
+      "ok": true,
+      "detail": "key=block_id n_ids=3 n_bias=5 deterministic_map=False paired_reuse_across_bias=True"
+    },
+    {
+      "check": "matched_offset_bank_consistent",
+      "ok": true,
+      "detail": "matched bank consistent"
+    },
+    {
+      "check": "bias_level_count",
+      "ok": true,
+      "detail": "n_bias_levels=5 (expected 5)"
+    }
+  ],
+  "all_ok": true
+}

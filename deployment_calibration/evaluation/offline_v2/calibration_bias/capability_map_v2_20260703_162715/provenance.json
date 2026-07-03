@@ -1,0 +1,13 @@
+{
+  "source_run_path": "/home1/banghai/Documents/IsaacLab/projects/paper_calibration_bias_runtime_v1/deployment_calibration/data/calibration_bias_capability_map_v2_20260703_162715",
+  "episodes_sha256": "de21417390a80b5b71a2c593d810fdd35553d008124db9ea7739d69a1365a030",
+  "source_git_commit": "4fcfeba6ffabfb2043aaabc082989a0883fc5487",
+  "runtime_design_commit": "4fcfeba6ffabfb2043aaabc082989a0883fc5487",
+  "branch": "experiment/runtime-calibration-bias-v1",
+  "dirty_worktree": false,
+  "damping_verified": true,
+  "full_reset_all_verified": true,
+  "n_reset_verify_fail": 0,
+  "offset_grid_sha256": "b3e14ff8c00d3f360901eebb8c0fda58ea46eec50f48aa3e98dff30f6d8733fe",
+  "contract_version": "open_drawer_v2"
+}

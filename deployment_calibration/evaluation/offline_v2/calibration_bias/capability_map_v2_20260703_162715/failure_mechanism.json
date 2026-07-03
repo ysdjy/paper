@@ -1,0 +1,103 @@
+{
+  "success_rate_by_abs_bias_plus_offset": {
+    "0.0": {
+      "n": 15,
+      "success_rate": 1.0,
+      "failures": {}
+    },
+    "0.02": {
+      "n": 30,
+      "success_rate": 1.0,
+      "failures": {}
+    },
+    "0.04": {
+      "n": 24,
+      "success_rate": 0.0,
+      "failures": {
+        "POSITION_TIMEOUT": 24
+      }
+    },
+    "0.06": {
+      "n": 18,
+      "success_rate": 0.0,
+      "failures": {
+        "HANDLE_DETACHED": 18
+      }
+    },
+    "0.08": {
+      "n": 12,
+      "success_rate": 0.0,
+      "failures": {
+        "HANDLE_DETACHED": 12
+      }
+    },
+    "0.1": {
+      "n": 6,
+      "success_rate": 0.0,
+      "failures": {
+        "HANDLE_DETACHED": 5,
+        "POSITION_TIMEOUT": 1
+      }
+    }
+  },
+  "failure_modes": {
+    "POSITION_TIMEOUT": {
+      "n": 25,
+      "last_phase": {
+        "APPROACH": 25
+      },
+      "mean_handle_rel_err": 0.0,
+      "mean_time": 20.78639999998484,
+      "mean_final_pos": 1.9780127331614494e-06,
+      "detached_frac": 0.0,
+      "mean_cmd_tracking_error": 0.05516213731006521
+    },
+    "HANDLE_DETACHED": {
+      "n": 35,
+      "last_phase": {
+        "PULL": 35
+      },
+      "mean_handle_rel_err": 0.08521355499046152,
+      "mean_time": 10.02171428570633,
+      "mean_final_pos": 4.1259911917482634e-05,
+      "detached_frac": 1.0,
+      "mean_cmd_tracking_error": 0.07913108653793868
+    }
+  },
+  "exclusion": {
+    "success_band_driven_by_abs_bias_plus_offset": true,
+    "band_half_width": 0.02,
+    "can_exclude": {
+      "joint_limit_failure": false,
+      "ik_local_unreachability": false,
+      "collision": false,
+      "gripper_slip": "partial"
+    },
+    "why": {
+      "POSITION_TIMEOUT@|eff|=0.04": "last phase APPROACH, no grasp (handle_rel_err 0), 20.8s timeout -> consistent with approach infeasibility, but no joint-limit margin / IK-clamp / collision fields to distinguish IK-unreachable from controller stall or joint limit.",
+      "HANDLE_DETACHED@|eff|>=0.06": "last phase PULL, handle_detached, handle_rel_err ~0.085 -> grasp far off-centre -> handle slips during pull (gripper slip); but no collision/contact field to exclude a collision cause."
+    },
+    "available_y_fields": [
+      "command_tracking_error",
+      "failure_reason",
+      "final_joint_position",
+      "handle_detached",
+      "handle_relative_error",
+      "overshoot",
+      "phase_durations",
+      "phase_goal_error",
+      "skill_elapsed_time",
+      "success",
+      "task_outcome_error",
+      "wall_clock_time"
+    ],
+    "required_confirmatory_instrumentation": [
+      "minimum joint-limit margin (per episode)",
+      "IK failure / clamp count",
+      "explicit failure_phase field",
+      "true handle error at CLOSE_GRIPPER end (not only final)",
+      "gripper width at close",
+      "collision / contact availability, or explicit no-collision verification"
+    ]
+  }
+}

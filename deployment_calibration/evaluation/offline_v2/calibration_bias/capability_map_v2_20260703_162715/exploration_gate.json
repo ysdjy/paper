@@ -1,0 +1,35 @@
+{
+  "verdict": "PASS",
+  "gate_passed": true,
+  "thresholds": {
+    "min_distinct_best_offsets": 3,
+    "robust_offset_tol": 0.02,
+    "min_success_gain": 0.15,
+    "min_frozen_vsi": 0.05
+  },
+  "criteria": {
+    "1_distinct_best_offsets>=3": {
+      "ok": true,
+      "value": 5
+    },
+    "2_no_robust_generalist": {
+      "ok": true,
+      "worst_gap": 1.4223713616131626
+    },
+    "3_success_gain>=0.15_AND_vsi>=0.05": {
+      "ok": true,
+      "success_only_gain_ok(>=0.15)": true,
+      "block_wise_min_success_gain": 0.4,
+      "frozen_vsi_ok(>=0.05)": true,
+      "vsi_frozen": 0.5240639652328756
+    },
+    "4_replicate_independence_no_blocker": {
+      "ok": true,
+      "frozen_blocker": false
+    },
+    "5_integrity_pairing_leakage_provenance": {
+      "ok": true
+    }
+  },
+  "note": "Gate PASSES per frozen rules; data is EXPLORATORY-only (see independence adjudication). Net VOI is a diagnostic here but MUST be positive in the final confirmatory GO."
+}

@@ -1,0 +1,46 @@
+{
+  "frozen_blocker": false,
+  "frozen_blocker_reason": null,
+  "discrete_deterministic": false,
+  "near_deterministic": false,
+  "adjudication": {
+    "independent_random_sampling": {
+      "verdict": true,
+      "evidence": "3 distinct nuisance blocks, distinct block_seeds drawn from a master RNG independent of bias, distinct robot_joint_delta/target_jitter; the SAME block gives identical x across all bias levels (paired). Correctly applied."
+    },
+    "label_flips": {
+      "success_cells_with_flip": 0,
+      "failure_reason_cells_with_flip": 1,
+      "verdict": "success label is deterministic across replicates (0 flips)"
+    },
+    "continuous_outcomes_change": {
+      "final_pos_max_sd": 0.007208103234173194,
+      "task_error_max_sd": 0.005219108208416511,
+      "time_max_sd": 1.2021092573739036,
+      "verdict": "continuous outcomes DO vary across blocks (not byte-identical clones)"
+    },
+    "technical_repeats": {
+      "verdict": "near-deterministic in the SUCCESS LABEL but not clones; independent draws whose discrete response is robust to <=0.03 rad joint / 0.005 m target jitter"
+    }
+  },
+  "vs_runtime_A": {
+    "A_replicates_independent": false,
+    "A_criterion": "success-cell median SD < 0.003 and 0 flips -> A flagged NOT independent",
+    "B_frozen_blocker": false,
+    "B_criterion": "blocker fires only if near-deterministic AND blocks unapplied/unvaried; here blocks ARE applied+varied and continuous SD exceeds the near-det threshold -> blocker=False. B does NOT add a success-label-flip requirement (frozen rule).",
+    "reconciliation": "Both agree the discrete label is near-deterministic. They differ on whether that blocks the exploration gate: A's CI-oriented bar says not-independent; B's frozen bug-guard does not fire (no implementation bug). Per the frozen protocol the gate is not blocked, but the data is EXPLORATORY-ONLY."
+  },
+  "three_blocks_as_independent_samples": "Yes for DESCRIPTIVE statistics of the compensation landscape (3 correctly-applied independent draws), but n=3 with ~0 success-label variance is insufficient for formal success-rate CIs.",
+  "sufficiency": "Exploratory description + gate evaluation: SUFFICIENT. Formal CIs on success rate: NOT supported (needs genuine outcome variance in the confirmatory pilot).",
+  "effective_sample_sizes": {
+    "n_bias_levels": 5,
+    "n_unique_cells": 35,
+    "n_sessions": 15,
+    "n_technical_repeats_per_cell": [
+      3
+    ],
+    "n_independent_sessions_estimate": 3
+  },
+  "no_nuisance_redesign_mandated": true,
+  "note": "Blocks are correctly applied, so NO nuisance redesign is mandated as a blocker. Genuine outcome variance for confirmatory CIs is a POWER consideration, not a bug fix; we do NOT recommend fabricating label flips."
+}

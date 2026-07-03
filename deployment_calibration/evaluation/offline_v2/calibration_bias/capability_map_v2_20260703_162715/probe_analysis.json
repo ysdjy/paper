@@ -1,0 +1,99 @@
+{
+  "probe_success_pattern_by_bias": {
+    "probe_m040": {
+      "0.02": 1,
+      "0.0": 0,
+      "-0.02": 0,
+      "-0.04": 0,
+      "0.04": 1
+    },
+    "probe_p040": {
+      "0.02": 0,
+      "0.0": 0,
+      "-0.02": 1,
+      "-0.04": 1,
+      "0.04": 0
+    }
+  },
+  "K_curve": {
+    "0": {
+      "probes": [],
+      "n_distinguishable_classes": 1,
+      "classes": {
+        "()": [
+          -0.04,
+          -0.02,
+          0.0,
+          0.02,
+          0.04
+        ]
+      },
+      "selected_success": 0.6
+    },
+    "1": {
+      "probes": [
+        "probe_m040"
+      ],
+      "n_distinguishable_classes": 2,
+      "classes": {
+        "(0,)": [
+          -0.04,
+          -0.02,
+          0.0
+        ],
+        "(1,)": [
+          0.02,
+          0.04
+        ]
+      },
+      "selected_success": 1.0
+    },
+    "2": {
+      "probes": [
+        "probe_m040",
+        "probe_p040"
+      ],
+      "n_distinguishable_classes": 3,
+      "classes": {
+        "(0, 1)": [
+          -0.04,
+          -0.02
+        ],
+        "(0, 0)": [
+          0.0
+        ],
+        "(1, 0)": [
+          0.02,
+          0.04
+        ]
+      },
+      "selected_success": 1.0
+    }
+  },
+  "single_probe_selected_success": {
+    "probe_m040": 1.0,
+    "probe_p040": 1.0
+  },
+  "probe_order_matters_for_selected_success": false,
+  "voi": {
+    "0": {
+      "gross_success_voi": 0.0,
+      "probe_time_cumulative": 0.0,
+      "probe_time_cost": 0.0,
+      "net_voi": 0.0
+    },
+    "1": {
+      "gross_success_voi": 0.4,
+      "probe_time_cumulative": 11.777333333325084,
+      "probe_time_cost": 0.23554666666650168,
+      "net_voi": 0.16445333333349835
+    },
+    "2": {
+      "gross_success_voi": 0.4,
+      "probe_time_cumulative": 23.218666666651337,
+      "probe_time_cost": 0.46437333333302677,
+      "net_voi": -0.06437333333302675
+    }
+  },
+  "note": "Only 2 probes exist -> K=3 is NOT computed or interpolated. K=1 already saturates selected success (each single probe partitions into 2 classes each with a compensating offset); the 2nd probe adds identifiability (3 classes) but no selected-success gain and makes Net VOI negative under the frozen utility."
+}
