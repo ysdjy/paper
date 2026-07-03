@@ -86,6 +86,82 @@ def power_at(n_test_blocks, *, test_biases=(-0.03, 0.03), train_biases=(-0.04, -
             "threshold": threshold}
 
 
+# ---------------------------------------------------------------- v3: runtime-aligned residual model
+def _truncnorm(rng, sigma, lo, hi):
+    for _ in range(1000):
+        x = rng.normal(0.0, sigma)
+        if lo <= x <= hi:
+            return x
+    return min(max(0.0, lo), hi)
+
+
+def simulate_once_residual(rng, test_biases, train_biases, n_test_blocks, offsets,
+                           c=BAND_CENTER, s=EDGE_SCALE, res_sigma=0.005, res_lo=-0.01, res_hi=0.01):
+    """One simulated TEST set under the RUNTIME-ALIGNED nuisance: a per-block residual on the
+    calibration bias (actual_bias = nominal + residual). Residual enters |nominal + residual + offset|,
+    exactly the success quantity the runtime injects. Returns per-block gain array."""
+    # best-single offset selected on train in the large-sample limit (expected success over residual)
+    def train_success(o):
+        tot = 0.0
+        n = 0
+        for b in train_biases:
+            for r in np.linspace(res_lo, res_hi, 21):
+                tot += p_succ(b + r + o, c, s)
+                n += 1
+        return tot / n
+    bs_off = max(offsets, key=train_success)
+    per_block = []
+    for _ in range(n_test_blocks):
+        r = _truncnorm(rng, res_sigma, res_lo, res_hi)     # one residual per block (paired across biases)
+        gains = []
+        for b in test_biases:
+            sa_p = max(p_succ(b + r + o, c, s) for o in offsets)   # state-aware knows bias -> best offset
+            sa = rng.random() < sa_p
+            bs = rng.random() < p_succ(b + r + bs_off, c, s)
+            gains.append(float(sa) - float(bs))
+        per_block.append(float(np.mean(gains)))
+    return np.array(per_block), bs_off
+
+
+def power_at_residual(n_test_blocks, *, test_biases=(-0.03, 0.03),
+                      train_biases=(-0.04, -0.02, 0.0, 0.02, 0.04), offsets=DEFAULT_OFFSETS,
+                      threshold=0.15, c=BAND_CENTER, s=EDGE_SCALE, res_sigma=0.005, res_lo=-0.01,
+                      res_hi=0.01, n_sims=400, n_boot=800, seed=0):
+    rng = np.random.default_rng(seed)
+    hits, halfw, points = 0, [], []
+    bs_off = None
+    for _ in range(n_sims):
+        pb, bs_off = simulate_once_residual(rng, list(test_biases), list(train_biases), n_test_blocks,
+                                            list(offsets), c, s, res_sigma, res_lo, res_hi)
+        pt, lo, hi = block_bootstrap_ci(pb, rng, n_boot=n_boot)
+        points.append(pt)
+        halfw.append((hi - lo) / 2)
+        if lo >= threshold:
+            hits += 1
+    return {"n_test_blocks": n_test_blocks, "power": hits / n_sims,
+            "mean_gain": float(np.mean(points)), "mean_ci_halfwidth": float(np.mean(halfw)),
+            "threshold": threshold, "best_single_offset": bs_off}
+
+
+def power_curve_residual(candidates=(6, 9, 12, 15, 18), min_test_blocks=9, target_power=0.8,
+                         max_halfwidth=0.20, **kw):
+    rows = [power_at_residual(n, **kw) for n in candidates]
+    chosen = None
+    for r in rows:
+        if r["n_test_blocks"] >= min_test_blocks and r["power"] >= target_power \
+                and r["mean_ci_halfwidth"] <= max_halfwidth:
+            chosen = r["n_test_blocks"]
+            break
+    if chosen is None:
+        chosen = max(min_test_blocks, max(c for c in candidates))
+    return {"curve": rows, "chosen_test_blocks": chosen, "min_test_blocks_floor": min_test_blocks,
+            "target_power": target_power, "max_ci_halfwidth": max_halfwidth,
+            "model": {"kind": "runtime_aligned_residual_bias", "band_center": kw.get("c", BAND_CENTER),
+                      "edge_scale": kw.get("s", EDGE_SCALE),
+                      "residual_sigma": kw.get("res_sigma", 0.005),
+                      "residual_range": [kw.get("res_lo", -0.01), kw.get("res_hi", 0.01)]}}
+
+
 def power_curve(candidates=(6, 9, 12, 15, 18), min_test_blocks=9, target_power=0.8,
                 max_halfwidth=0.10, **kw):
     rows = [power_at(n, **kw) for n in candidates]
