@@ -27,7 +27,7 @@ LAMBDA_ERR, LAMBDA_TIME = 1.0, 0.02
 GATE_MIN_SUCCESS_GAP = 0.15
 GATE_MIN_VSI = 0.05
 GENERALIST_EPS = 0.05
-REPLICATE_DET_SD = 5e-3
+REPLICATE_DET_SD = 3e-3   # success-cell within-block final-pos SD must exceed ~5x the damping float noise (6e-4)
 TOL_X = 5e-3
 
 
@@ -166,12 +166,30 @@ def main() -> int:
                 rev += 1
     rank_reversal = round(rev / tot, 4) if tot else 0.0
 
-    within_sd = [c["final_pos_sd"] for c in per_cell.values()]
-    med_sd = float(np.median(within_sd))
+    # Replicate independence, two layers (the all-cells median is polluted by clean-fail cells whose
+    # final==0 gives SD==0, so evaluate the CONTINUOUS outcome variance on cells that actually grasp):
+    #  (1) continuous: within-cell final-pos SD on success-bearing cells -> is there a REAL, nuisance-driven
+    #      spread across the 3 blocks, well above the damping-stage float noise (~6e-4)?
+    #  (2) label: do any cells flip success across blocks?
+    FLOAT_NOISE = 6e-4                                   # damping-stage pure-float-noise reference
+    all_sd = [c["final_pos_sd"] for c in per_cell.values()]
+    succ_sd = [c["final_pos_sd"] for c in per_cell.values() if c["p_succ"] > 0.0]   # non-degenerate cells
+    med_sd_all = float(np.median(all_sd))
+    med_sd_succ = float(np.median(succ_sd)) if succ_sd else 0.0
+    max_sd_succ = float(max(succ_sd)) if succ_sd else 0.0
     any_flips = sum(c["success_flips"] for c in per_cell.values())
-    replicate_ok = med_sd > REPLICATE_DET_SD or any_flips > 0
+    # non-technical-repeat = a real continuous replicate spread (>= REPLICATE_DET_SD, ~5x float noise)
+    # on success-bearing cells, OR any success-label flip.
+    replicate_continuous_ok = med_sd_succ >= REPLICATE_DET_SD
+    replicate_ok = replicate_continuous_ok or any_flips > 0
     if not replicate_ok:
-        warns.append(f"replicates ~deterministic across blocks (median within-cell SD {med_sd:.2e}, flips {any_flips})")
+        warns.append(f"replicates ~deterministic (success-cell median SD {med_sd_succ:.2e} < {REPLICATE_DET_SD}, flips {any_flips})")
+    elif any_flips == 0:
+        warns.append(f"replicate spread is CONTINUOUS-only: success-cell median SD {med_sd_succ:.2e} "
+                     f"(max {max_sd_succ:.2e}) >> float noise {FLOAT_NOISE}, but 0 success-label flips "
+                     f"(nuisance moves final pos/time but is below the grasp-tolerance boundary, so it "
+                     f"never flips a success label). Diagnosis: nuisance amplitude vs a sharp success edge.")
+    med_sd = med_sd_succ   # keep the downstream summary key meaningful (success-cell continuous spread)
 
     cs = sum(int(e["y"]["success"]) for e in cand)
     if cs == 0 or cs == len(cand):
@@ -208,7 +226,8 @@ def main() -> int:
     print(f"  distinct best offsets={len(set(bo))} monotone={mono} corr={corr:+.3f} comp_err={comp_err:.4f}")
     print(f"  robust generalist offset(s): {generalists if generalists else 'NONE'}")
     print(f"  best-single(full)={bs_u:+.2f}  VSI_full={vsi_full:+.4f}  VSI_succ={vsi_succ:+.4f}  rank_reversal={rank_reversal}")
-    print(f"  replicate median within-cell SD={med_sd:.2e} flips={any_flips}; candidate success {cs}/{len(cand)}")
+    print(f"  replicate: success-cell median SD={med_sd_succ:.2e} (max {max_sd_succ:.2e}, all-cell median {med_sd_all:.2e}) "
+          f"label-flips={any_flips}; continuous_indep={replicate_continuous_ok}; candidate success {cs}/{len(cand)}")
     print("\n  GO-to-preregistration gate:")
     for k, v in gate.items():
         print(f"    [{'PASS' if v else 'FAIL'}] {k}")
@@ -228,7 +247,13 @@ def main() -> int:
         "corr_bias_bestoffset": round(corr, 4), "n_distinct_best_offsets": len(set(bo)),
         "compensation_error": round(comp_err, 4), "robust_generalist_offsets": generalists,
         "best_single_offset_full": bs_u, "vsi_full": round(vsi_full, 5), "vsi_success_only": round(vsi_succ, 5),
-        "rank_reversal": rank_reversal, "replicate_median_within_sd": round(med_sd, 6),
+        "rank_reversal": rank_reversal,
+        "replicate_success_cell_median_sd": round(med_sd_succ, 6),
+        "replicate_success_cell_max_sd": round(max_sd_succ, 6),
+        "replicate_all_cell_median_sd": round(med_sd_all, 6),
+        "replicate_continuous_independent": replicate_continuous_ok,
+        "replicate_success_label_flips": any_flips, "float_noise_reference": FLOAT_NOISE,
+        "replicate_median_within_sd": round(med_sd, 6),
         "replicate_success_flips": any_flips, "replicates_independent": replicate_ok,
         "probe_final_pos_signal": probe_signal, "per_cell": per_cell,
         "gate": gate, "gate_pass": gate_pass, "fails": fails, "warns": warns,
