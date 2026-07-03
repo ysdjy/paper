@@ -1,0 +1,31 @@
+# Exploratory calibration-bias capability map (v2). NOT confirmatory paper values.
+# v2 = BLOCK-LEVEL (replicate/session) nuisance so a candidate group differs ONLY in theta and a matched
+# group differs ONLY in the hidden bias (fixes v1's per-episode nuisance confound).
+#
+#   5 bias x 7 candidate offsets x 3 replicate blocks = 105 candidate episodes
+#   + 2 fixed probes/session x 15 sessions = 30 probes  ->  135 episodes total (<150).
+# One nuisance context per replicate block (robot arm-joint perturbation + target jitter), reused by all 9
+# episodes in a session and by the same replicate across all 5 bias levels. 3 block seeds from a master
+# RNG (bias-independent). The 15 sessions run in a randomized order (recorded in metadata).
+
+run_prefix: calibration_bias_capability_map
+
+drawer: middle_drawer
+offset_grid: configs/calibration_bias_offset_grid_v1.json   # grid unchanged from v1 (offsets are fine)
+bias_levels_y: [-0.04, -0.02, 0.00, 0.02, 0.04]
+sessions_per_bias: 3                 # 3 replicate blocks
+run_probes: true
+
+target_open_position: 0.20
+damping: 3.0                         # fixed baseline; isolate bias from dynamics
+robust_theta:
+  max_pos_step: 0.020
+  pull_lead: 0.080
+
+nuisance:                            # ONE draw per replicate block; SAFE small ranges
+  robot_joint_sigma: 0.015           # rad, per arm joint, Gaussian
+  robot_joint_cap: 0.030             # rad, clip
+  target_jitter: 0.005               # m, uniform +/- on target_open_position
+
+master_seed: 20260703                # master RNG -> 3 block seeds + execution-order shuffle (bias-independent)
+max_steps: 1800

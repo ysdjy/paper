@@ -1,0 +1,31 @@
+# Stratified SAFETY smoke (v2) -- runs BEFORE the full capability map.
+# Covers negative / zero / positive bias AND two different replicate blocks (r0, r1) so nuisance
+# application + reset + no-collision safety is exercised across strata. Reduced candidate offsets
+# (extremes + center) keep it small. Same generator, same BLOCK-level nuisance scheme + master_seed as the
+# full v2 map, so the safety behaviour matches what the full run will do.
+#
+#   bias {-0.04, 0.00, +0.04} x sessions_per_bias 2 (blocks r0,r1) = 6 sessions
+#   x (2 probes + 3 candidate offsets) = 6 x 5 = 30 episodes.
+
+run_prefix: calibration_bias_stratified_smoke
+
+drawer: middle_drawer
+offset_grid: configs/calibration_bias_offset_grid_v1.json
+bias_levels_y: [-0.04, 0.00, 0.04]                 # negative, zero, positive
+sessions_per_bias: 2                               # two replicate blocks (r0, r1)
+run_probes: true
+candidate_offset_ids: [off_m060, off_z000, off_p060]   # extremes + center (worst case for reach/collision)
+
+target_open_position: 0.20
+damping: 3.0
+robust_theta:
+  max_pos_step: 0.020
+  pull_lead: 0.080
+
+nuisance:
+  robot_joint_sigma: 0.015
+  robot_joint_cap: 0.030
+  target_jitter: 0.005
+
+master_seed: 20260703                              # SAME master seed as the full v2 map -> same block nuisance
+max_steps: 1800
