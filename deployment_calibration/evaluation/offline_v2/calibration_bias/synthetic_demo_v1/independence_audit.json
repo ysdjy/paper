@@ -1,0 +1,37 @@
+{
+  "synthetic_only": true,
+  "n_cells": 49,
+  "replicates_per_cell": [
+    3
+  ],
+  "success_identical_cells": 45,
+  "failure_reason_identical_cells": 45,
+  "continuous_within_cell_max_std": {
+    "final_joint_position": 0.09428090415820635,
+    "task_outcome_error": 0.005113663065343881,
+    "skill_elapsed_time": 0.08540614985290282
+  },
+  "nuisance_provenance": {
+    "seeds_present": true,
+    "distinct_session_seeds": 21,
+    "seeds_varied_within_bias_level": true
+  },
+  "near_duplicate_sessions": {
+    "n_cell_fingerprints": 146,
+    "n_fingerprints_shared_by_multiple_sessions": 1
+  },
+  "effective_sample_sizes": {
+    "n_bias_levels": 7,
+    "n_unique_cells": 49,
+    "n_sessions": 21,
+    "n_technical_repeats_per_cell": [
+      3
+    ],
+    "n_independent_sessions_estimate": 21
+  },
+  "discrete_deterministic": false,
+  "near_deterministic": false,
+  "blocker": false,
+  "blocker_reason": null,
+  "resampling_recommendation": "Session-level bootstrap defensible; still report per-cell descriptive stats."
+}

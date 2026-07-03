@@ -1,0 +1,32 @@
+{
+  "synthetic_only": true,
+  "gate_passed": true,
+  "thresholds": {
+    "min_bias_levels_with_distinct_best_offset": 3,
+    "robust_offset_tol": 0.02,
+    "min_success_gain": 0.15,
+    "min_frozen_vsi": 0.05
+  },
+  "criteria": {
+    "1_distinct_best_offsets>=3": {
+      "ok": true,
+      "value": 5
+    },
+    "2_no_robust_generalist": {
+      "ok": true,
+      "worst_gap": 1.0414810230404685
+    },
+    "3_success_gain>=0.15_or_vsi>=0.05": {
+      "ok": true,
+      "success_gain": 0.6190476190476191,
+      "vsi_frozen": 0.5898935376289933
+    },
+    "4_replicate_independence": {
+      "ok": true,
+      "blocker": false
+    },
+    "5_pairing_leakage_provenance": {
+      "ok": true
+    }
+  }
+}

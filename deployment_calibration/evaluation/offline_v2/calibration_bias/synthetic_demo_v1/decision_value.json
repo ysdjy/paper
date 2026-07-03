@@ -1,0 +1,97 @@
+{
+  "synthetic_only": true,
+  "frozen_utility": {
+    "lambda_error": 1.0,
+    "lambda_time": 0.02,
+    "error_clip": [
+      0.0,
+      0.3
+    ],
+    "time_clip": [
+      0.0,
+      60.0
+    ],
+    "selected_on": "validation",
+    "note": "weights frozen from validation before touching test"
+  },
+  "n_selection_groups": 21,
+  "n_matched_groups": 3,
+  "oracle_candidate_mean_true_utility": 0.7912950234270482,
+  "state_agnostic_oracle_mean_true_utility": 0.2014014857980549,
+  "state_aware_oracle_mean_true_utility": 0.7912950234270482,
+  "VSI_frozen": 0.5898935376289933,
+  "optimal_candidate_switch_rate": 1.0,
+  "pairwise_rank_reversal_rate": 0.41723356009070295,
+  "best_single_offset": {
+    "offset": "op3",
+    "mean_regret": 0.6364573049985479,
+    "mean_true_utility": 0.15483771842850025,
+    "selected_success_rate": 0.38095238095238093
+  },
+  "gap_best_single_to_state_aware": 0.6364573049985479,
+  "robust_offset": {
+    "available": true,
+    "most_robust_offset": "op3",
+    "worst_case_gap_of_most_robust": 1.0414810230404685,
+    "robust_generalist_exists": false,
+    "per_offset_worst_case_gap": {
+      "op0": 1.1058115312172911,
+      "op1": 1.0867357568966851,
+      "op2": 1.0645459977338851,
+      "op3": 1.0414810230404685,
+      "op4": 1.061291798868095,
+      "op5": 1.088939253181513,
+      "op6": 1.103912838293816
+    }
+  },
+  "best_offset_per_bias": {
+    "per_group_best_by_bias": {
+      "T020__r0": {
+        "B0": "op5",
+        "B1": "op4",
+        "B2": "op4",
+        "B3": "op3",
+        "B4": "op2",
+        "B5": "op2",
+        "B6": "op1"
+      },
+      "T020__r1": {
+        "B0": "op5",
+        "B1": "op4",
+        "B2": "op3",
+        "B3": "op3",
+        "B4": "op3",
+        "B5": "op2",
+        "B6": "op1"
+      },
+      "T020__r2": {
+        "B0": "op5",
+        "B1": "op4",
+        "B2": "op4",
+        "B3": "op3",
+        "B4": "op2",
+        "B5": "op2",
+        "B6": "op1"
+      }
+    },
+    "groups_with_best_offset_differing_across_bias": 3,
+    "n_groups": 3
+  },
+  "success_only": {
+    "VSI_success_only": 0.5714285714285714,
+    "state_aware_mean": 1.0,
+    "state_agnostic_mean": 0.42857142857142855,
+    "best_single_offset_success_rate": 0.38095238095238093,
+    "state_aware_selected_success_gain": 0.6190476190476191
+  },
+  "n_distinct_best_offsets_across_bias": 5,
+  "marginal_best_offset_per_bias": {
+    "B0": "op5",
+    "B1": "op4",
+    "B2": "op4",
+    "B3": "op3",
+    "B4": "op2",
+    "B5": "op2",
+    "B6": "op1"
+  }
+}
