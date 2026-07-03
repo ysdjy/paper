@@ -1,0 +1,312 @@
+{
+  "pre_data_only": true,
+  "band": 0.02,
+  "offsets": [
+    -0.06,
+    -0.04,
+    -0.02,
+    0.0,
+    0.02,
+    0.04,
+    0.06
+  ],
+  "confirmatory_biases": [
+    -0.04,
+    -0.03,
+    -0.02,
+    -0.01,
+    0.0,
+    0.01,
+    0.02,
+    0.03,
+    0.04
+  ],
+  "split_v1_flawed": {
+    "test": [
+      -0.01,
+      0.01
+    ],
+    "validation": {
+      "ok": false,
+      "band": 0.02,
+      "splits": {
+        "train": [
+          -0.04,
+          -0.02,
+          0.0,
+          0.02,
+          0.04
+        ],
+        "val": [
+          -0.03,
+          0.03
+        ],
+        "test": [
+          -0.01,
+          0.01
+        ]
+      },
+      "bias_levels_disjoint": true,
+      "test_bracketed_by_train": {
+        "-0.01": true,
+        "0.01": true
+      },
+      "all_test_bracketed": true,
+      "test_success_offset_sets": {
+        "-0.01": [
+          0.0,
+          0.02
+        ],
+        "0.01": [
+          -0.02,
+          0.0
+        ]
+      },
+      "common_success_offset_across_test": [
+        0.0
+      ],
+      "empty_intersection": false,
+      "best_single_max_test_success": 1.0,
+      "state_aware_max_test_success": 1.0,
+      "max_achievable_success_only_gain": 0.0,
+      "reason": "offset(s) [0.0] satisfy the success band for EVERY test bias -> a fixed best-single offset attains full test success -> success-only H3 gain is 0 by construction"
+    }
+  },
+  "split_v2_fixed": {
+    "train": [
+      -0.04,
+      -0.02,
+      0.0,
+      0.02,
+      0.04
+    ],
+    "validation": [
+      -0.01,
+      0.01
+    ],
+    "test": [
+      -0.03,
+      0.03
+    ],
+    "validation_report": {
+      "ok": true,
+      "band": 0.02,
+      "splits": {
+        "train": [
+          -0.04,
+          -0.02,
+          0.0,
+          0.02,
+          0.04
+        ],
+        "val": [
+          -0.01,
+          0.01
+        ],
+        "test": [
+          -0.03,
+          0.03
+        ]
+      },
+      "bias_levels_disjoint": true,
+      "test_bracketed_by_train": {
+        "-0.03": true,
+        "0.03": true
+      },
+      "all_test_bracketed": true,
+      "test_success_offset_sets": {
+        "-0.03": [
+          0.02,
+          0.04
+        ],
+        "0.03": [
+          -0.04,
+          -0.02
+        ]
+      },
+      "common_success_offset_across_test": [],
+      "empty_intersection": true,
+      "best_single_max_test_success": 0.5,
+      "state_aware_max_test_success": 1.0,
+      "max_achievable_success_only_gain": 0.5,
+      "reason": null
+    }
+  },
+  "predicted_K_curve_full_grid": {
+    "0": {
+      "probes": [],
+      "n_classes": 1,
+      "selected_success": 0.5555555555555556
+    },
+    "1": {
+      "probes": [
+        "probe_m040"
+      ],
+      "n_classes": 2,
+      "selected_success": 0.8888888888888888
+    },
+    "2": {
+      "probes": [
+        "probe_m040",
+        "probe_p040"
+      ],
+      "n_classes": 3,
+      "selected_success": 1.0
+    }
+  },
+  "predicted_K_curve_test_biases": {
+    "0": {
+      "probes": [],
+      "n_classes": 1,
+      "selected_success": 0.5
+    },
+    "1": {
+      "probes": [
+        "probe_m040"
+      ],
+      "n_classes": 2,
+      "selected_success": 1.0
+    },
+    "2": {
+      "probes": [
+        "probe_m040",
+        "probe_p040"
+      ],
+      "n_classes": 2,
+      "selected_success": 1.0
+    }
+  },
+  "net_voi_full_grid": {
+    "0": {
+      "gross_success_voi": 0.0,
+      "probe_time_cumulative": 0.0,
+      "probe_time_cost": 0.0,
+      "net_voi": 0.0
+    },
+    "1": {
+      "gross_success_voi": 0.33333333333333326,
+      "probe_time_cumulative": 11.78,
+      "probe_time_cost": 0.2356,
+      "net_voi": 0.09773333333333326
+    },
+    "2": {
+      "gross_success_voi": 0.4444444444444444,
+      "probe_time_cumulative": 23.22,
+      "probe_time_cost": 0.4644,
+      "net_voi": -0.01995555555555556
+    }
+  },
+  "k1_note": "K=1 uses ONLY the fixed first probe (probe_m040). On the 9-bias confirmatory grid a single probe does NOT saturate (fail-class spans biases needing different offsets): full-grid selected success K0=0.556 -> K1=0.889 -> K2=1.000. On the TEST biases {-0.03,+0.03} the first probe already separates them, so K>=1 reaches 1.000. The exploration-grid K1=1.0 was the fixed-first-probe in-class ceiling on 5 biases, NOT best-of-two.",
+  "power_baseline": {
+    "curve": [
+      {
+        "n_test_blocks": 6,
+        "power": 0.945,
+        "mean_gain": 0.5054166666666666,
+        "mean_ci_halfwidth": 0.16698697916666666,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 9,
+        "power": 0.97,
+        "mean_gain": 0.5009722222222223,
+        "mean_ci_halfwidth": 0.1554548611111111,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 12,
+        "power": 0.9875,
+        "mean_gain": 0.5046875,
+        "mean_ci_halfwidth": 0.1400716145833333,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 15,
+        "power": 1.0,
+        "mean_gain": 0.5069166666666667,
+        "mean_ci_halfwidth": 0.13103854166666662,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 18,
+        "power": 1.0,
+        "mean_gain": 0.5013888888888889,
+        "mean_ci_halfwidth": 0.11884982638888886,
+        "threshold": 0.15
+      }
+    ],
+    "chosen_test_blocks": 9,
+    "min_test_blocks_floor": 9,
+    "target_power": 0.8,
+    "max_ci_halfwidth": 0.2,
+    "model": {
+      "band_center": 0.03,
+      "edge_scale": 0.0025,
+      "sigma_nuisance": 0.005
+    }
+  },
+  "power_sensitivity": {
+    "curve": [
+      {
+        "n_test_blocks": 6,
+        "power": 0.9025,
+        "mean_gain": 0.4908333333333333,
+        "mean_ci_halfwidth": 0.19034635416666665,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 9,
+        "power": 0.93,
+        "mean_gain": 0.4904166666666667,
+        "mean_ci_halfwidth": 0.17204513888888887,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 12,
+        "power": 0.9825,
+        "mean_gain": 0.5016666666666667,
+        "mean_ci_halfwidth": 0.15389192708333332,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 15,
+        "power": 0.9925,
+        "mean_gain": 0.4915833333333333,
+        "mean_ci_halfwidth": 0.14396666666666663,
+        "threshold": 0.15
+      },
+      {
+        "n_test_blocks": 18,
+        "power": 0.9975,
+        "mean_gain": 0.49173611111111115,
+        "mean_ci_halfwidth": 0.12907291666666662,
+        "threshold": 0.15
+      }
+    ],
+    "chosen_test_blocks": 9,
+    "min_test_blocks_floor": 9,
+    "target_power": 0.8,
+    "max_ci_halfwidth": 0.2,
+    "model": {
+      "band_center": 0.03,
+      "edge_scale": 0.005,
+      "sigma_nuisance": 0.008
+    }
+  },
+  "frozen_block_counts": {
+    "train_blocks": 9,
+    "validation_blocks": 6,
+    "test_blocks": 9,
+    "min_test_blocks_floor": 9,
+    "rationale": "smallest N>=9 with power>=0.8 under the conservative softer-edge model; train mirrors test, val halved (threshold selection only)"
+  },
+  "total_sessions": 75,
+  "total_episodes": 675,
+  "block_bootstrap_ci_scheme": {
+    "resample_unit": "independent nuisance BLOCK within the evaluated split",
+    "n_boot": 2000,
+    "ci": 0.95,
+    "note": "each resampled block contributes all its (bias,offset) rows; blocks are disjoint across train/val/test; CI is over TEST blocks for the held-out H3 gain."
+  },
+  "overall_ok": true
+}
