@@ -95,6 +95,28 @@ Driver: `evaluation/offline_v2/calibration_bias/run_capability_map.py`; artifact
 - Docs: capability_map_analysis / independence_adjudication / failure_mechanism_audit /
   exploration_gate_result / preregistration_v1 / confirmatory_freeze_proposal (all _v1).
 
+## Preregistration v2 (pre-data split-flaw fix) — DONE
+Found BEFORE any confirmatory data: v1 test={−0.01,+0.01} + success⇔|bias+offset|≤0.02 → offset 0 covers
+BOTH test biases → success-only H3 gain 0 by construction (H3 unprovable). **v2 supersedes v1** (pre-data,
+not post-hoc tuning). Driver `evaluation/offline_v2/calibration_bias/run_confirmatory_design_v2.py`;
+artifact `.../confirmatory_design_v2/confirmatory_design_validation_v2.json`.
+
+- **Split fixed**: train{−0.04,−0.02,0,+0.02,+0.04} / val{−0.01,+0.01} / **test{−0.03,+0.03}** (unseen
+  interior, bracketed; success-offset intersection ∅; max achievable success-only gain 0.5). New module
+  `design_validation.py` (predicted_success_offsets + validate_confirmatory_split: bracket + empty-
+  intersection; v1 rejected, v2 accepted).
+- **Probe order/K frozen**: first=probe_m040(−0.04,idx0), second=probe_p040(+0.04,idx1); K=1 = fixed first
+  probe only (verified NOT best-of-two); K=2=both; report K=0/1/2; no 3rd probe; **stop rule = K=1**.
+  Predicted confirmatory K-curve (geometry): full grid K0 0.556→K1 0.889→K2 1.0 (2nd probe adds value on
+  finer grid); test biases K0 0.5→K1 1.0. Net VOI full grid K1 +0.098, K2 −0.020.
+- **Nuisance blocks frozen via pre-data power sim** (`power.py`, exploration-calibrated + conservative
+  sensitivity): train 9 / val 6 / **test 9** (≥9 floor; power ≥0.94 at N=9; effect ~0.5). Total 75
+  sessions, **675 episodes**. Block-bootstrap CI (2000 reps, over blocks disjoint by split).
+- Docs: `preregistration_v2.md`, `confirmatory_freeze_proposal_v2.md`, `power_analysis_v2.md` (v1 retained).
+  Retained unchanged: 7-offset bank, frozen U, success-only co-primary, AND gate, 6 instrumentation fields,
+  K=0/1/2, Net VOI(K=1)>0 GO condition.
+- Tests 54→63 (+design_validation +power). Confirmatory run NOT requested.
+
 ## (original) Waiting on Claude A capability map — ingestion plan
 1. Read A's exploratory capability map **read-only** by absolute path; record source_run_path /
    source_git_commit / candidate_bank_sha256 / dirty_worktree / reset flags.
