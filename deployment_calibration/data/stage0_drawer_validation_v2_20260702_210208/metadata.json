@@ -1,0 +1,49 @@
+{
+ "run_id": "stage0_drawer_validation_v2_20260702_210208",
+ "contract_version": "open_drawer_v2",
+ "scene_version": "paper_scene_v2",
+ "git_commit": "96299451f6da176a8420201f965d0de245f49dec",
+ "dirty_worktree": true,
+ "reps": 1,
+ "default_theta": {
+  "grasp_offset_local_y": 0.0,
+  "max_pos_step": 0.02,
+  "pull_lead": 0.08
+ },
+ "default_g": {
+  "target_open_position": 0.2,
+  "target_tolerance": 0.02
+ },
+ "thresholds": {
+  "robot_joint": 0.001,
+  "tcp": 0.002,
+  "drawer": 0.0001,
+  "handle": 0.002
+ },
+ "drawers": [
+  "top_drawer"
+ ],
+ "per_drawer": {
+  "top_drawer": {
+   "member": "cabinet",
+   "reps": 1,
+   "n_success": 1,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.233
+   ],
+   "elapsed_mean": 9.46,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": false
+  }
+ },
+ "control_dt": 0.02,
+ "run_command": "projects/paper/deployment_calibration/data_generation/generate_stage0_validation_v2.py --headless --reps 1 --drawers top_drawer",
+ "captured_at": "2026-07-02 21:02:27"
+}

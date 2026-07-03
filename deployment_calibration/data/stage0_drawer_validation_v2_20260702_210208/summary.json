@@ -1,0 +1,23 @@
+{
+ "run_id": "stage0_drawer_validation_v2_20260702_210208",
+ "per_drawer": {
+  "top_drawer": {
+   "member": "cabinet",
+   "reps": 1,
+   "n_success": 1,
+   "success_rate": 1.0,
+   "reset_robot_joint_maxdiff": 0.0,
+   "reset_tcp_maxdiff": 0.0,
+   "reset_drawer_maxdiff": 0.0,
+   "reset_robot_vel_absmax": 0.0,
+   "reset_drawer_vel_absmax": 0.0,
+   "label_consistent": true,
+   "final_positions": [
+    0.233
+   ],
+   "elapsed_mean": 9.46,
+   "reset_stable": true,
+   "STABLE_FOR_EXPERIMENT": false
+  }
+ }
+}

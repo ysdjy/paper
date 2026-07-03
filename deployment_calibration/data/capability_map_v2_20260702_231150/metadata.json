@@ -1,0 +1,63 @@
+{
+ "run_id": "capability_map_v2_20260702_231150",
+ "contract_version": "open_drawer_v2",
+ "scene_version": "paper_scene_v2",
+ "config": {
+  "drawers": [
+   "middle_drawer",
+   "sektion_top_drawer"
+  ],
+  "theta_ranges": {
+   "grasp_offset_local_y": [
+    -0.06,
+    0.06
+   ],
+   "max_pos_step": [
+    0.008,
+    0.035
+   ],
+   "pull_lead": [
+    0.03,
+    0.14
+   ]
+  },
+  "targets": [
+   0.12,
+   0.2,
+   0.28
+  ],
+  "n_params_per_drawer": 50,
+  "reps": 1,
+  "sampler": "sobol",
+  "seed": 7,
+  "max_steps": 1800
+ },
+ "n_params_per_drawer": 2,
+ "reps": 1,
+ "per_drawer": {
+  "middle_drawer": {
+   "n": 2,
+   "success_rate": 0.5,
+   "final_min": 0.0,
+   "final_max": 0.1745,
+   "n_fail_reasons": {
+    "NONE": 1,
+    "POSITION_TIMEOUT": 1
+   }
+  },
+  "sektion_top_drawer": {
+   "n": 2,
+   "success_rate": 1.0,
+   "final_min": 0.1188,
+   "final_max": 0.2301,
+   "n_fail_reasons": {
+    "NONE": 2
+   }
+  }
+ },
+ "run_command": "projects/paper/deployment_calibration/data_generation/generate_capability_map_v2.py --headless --n 2",
+ "captured_at": "2026-07-02 23:13:29",
+ "git_commit": "873c75c4e3c0f2ff5f8c07c606d5e90f4e5f1e58",
+ "branch": "main",
+ "dirty_worktree": true
+}
