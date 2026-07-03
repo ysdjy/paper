@@ -1,0 +1,133 @@
+{
+  "frozen_utility": {
+    "lambda_error": 1.0,
+    "lambda_time": 0.02,
+    "error_clip": [
+      0.0,
+      0.3
+    ],
+    "time_clip": [
+      0.0,
+      60.0
+    ],
+    "selected_on": "validation",
+    "note": "weights frozen from validation before touching test"
+  },
+  "n_selection_groups": 27,
+  "oracle_candidate_mean_true_utility": 0.7957624270268392,
+  "robust_generalist": {
+    "archetype": "c1_steady",
+    "mean_true_utility": 0.7951739746920831,
+    "mean_regret": 0.0005884523347561001,
+    "top1_acc": 0.7777777777777778,
+    "selected_success_rate": 1.0
+  },
+  "best_single_archetype_full": {
+    "archetype": "c1_steady",
+    "mean_true_utility": 0.7951739746920831,
+    "mean_regret": 0.0005884523347561001,
+    "train_archetype_means": {
+      "c0_conservative": 0.7693430852410368,
+      "c1_steady": 0.7951739746920831,
+      "c2_balanced": 0.1599652930660755,
+      "c3_brisk": 0.018791525259436552,
+      "c4_aggressive": 0.010909548288960532
+    }
+  },
+  "state_agnostic_oracle_mean_true_utility": 0.7951739746920831,
+  "state_aware_oracle_mean_true_utility": 0.7957624270268392,
+  "VSI_frozen": 0.0005884523347561288,
+  "optimal_candidate_switch_rate": 0.6666666666666666,
+  "switch_detail": [
+    {
+      "matched_group_id": "middle_drawer__T012__r0",
+      "best_by_damping": {
+        "3.0": "T012_c1_steady",
+        "20.0": "T012_c1_steady",
+        "40.0": "T012_c1_steady"
+      },
+      "switched": false
+    },
+    {
+      "matched_group_id": "middle_drawer__T012__r1",
+      "best_by_damping": {
+        "3.0": "T012_c1_steady",
+        "20.0": "T012_c1_steady",
+        "40.0": "T012_c1_steady"
+      },
+      "switched": false
+    },
+    {
+      "matched_group_id": "middle_drawer__T012__r2",
+      "best_by_damping": {
+        "3.0": "T012_c1_steady",
+        "20.0": "T012_c1_steady",
+        "40.0": "T012_c1_steady"
+      },
+      "switched": false
+    },
+    {
+      "matched_group_id": "middle_drawer__T020__r0",
+      "best_by_damping": {
+        "3.0": "T020_c2_balanced",
+        "20.0": "T020_c1_steady",
+        "40.0": "T020_c1_steady"
+      },
+      "switched": true
+    },
+    {
+      "matched_group_id": "middle_drawer__T020__r1",
+      "best_by_damping": {
+        "3.0": "T020_c2_balanced",
+        "20.0": "T020_c1_steady",
+        "40.0": "T020_c1_steady"
+      },
+      "switched": true
+    },
+    {
+      "matched_group_id": "middle_drawer__T020__r2",
+      "best_by_damping": {
+        "3.0": "T020_c2_balanced",
+        "20.0": "T020_c1_steady",
+        "40.0": "T020_c1_steady"
+      },
+      "switched": true
+    },
+    {
+      "matched_group_id": "middle_drawer__T028__r0",
+      "best_by_damping": {
+        "3.0": "T028_c2_balanced",
+        "20.0": "T028_c1_steady",
+        "40.0": "T028_c1_steady"
+      },
+      "switched": true
+    },
+    {
+      "matched_group_id": "middle_drawer__T028__r1",
+      "best_by_damping": {
+        "3.0": "T028_c2_balanced",
+        "20.0": "T028_c1_steady",
+        "40.0": "T028_c1_steady"
+      },
+      "switched": true
+    },
+    {
+      "matched_group_id": "middle_drawer__T028__r2",
+      "best_by_damping": {
+        "3.0": "T028_c2_balanced",
+        "20.0": "T028_c1_steady",
+        "40.0": "T028_c1_steady"
+      },
+      "switched": true
+    }
+  ],
+  "pairwise_rank_reversal_rate": 0.17037037037037037,
+  "n_rank_comparisons": 270,
+  "gap_robust_generalist_to_state_aware": 0.0005884523347561288,
+  "gap_oracle_candidate_to_state_aware": 0.0,
+  "VSI_frozen_target_block_ci": {
+    "ci_low": 0.0,
+    "ci_high": 0.0016232485267831942,
+    "exploratory": true
+  }
+}

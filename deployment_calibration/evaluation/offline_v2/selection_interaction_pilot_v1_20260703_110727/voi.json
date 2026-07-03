@@ -1,0 +1,56 @@
+{
+  "baseline_policy": "robust_generalist[c1_steady]",
+  "baseline_mean_true_utility": 0.7951739746920831,
+  "probe_time_by_k": {
+    "0": 0.0,
+    "1": 9.608888888882555,
+    "2": 19.879999999986865,
+    "3": 29.88444444442477
+  },
+  "selected_utility_by_k": {
+    "0": {
+      "mean_true_utility": 0.7957150575343441,
+      "mean_regret": 4.7369492495006494e-05
+    },
+    "1": {
+      "mean_true_utility": 0.7957624270268392,
+      "mean_regret": 0.0
+    },
+    "2": {
+      "mean_true_utility": 0.7956351882737324,
+      "mean_regret": 0.00012723875310693145
+    },
+    "3": {
+      "mean_true_utility": 0.7956351882737324,
+      "mean_regret": 0.00012723875310693145
+    }
+  },
+  "voi_by_k": {
+    "0": {
+      "gross_voi": 0.0005410828422610647,
+      "probe_time_cumulative": 0.0,
+      "probe_time_cost": 0.0,
+      "net_voi": 0.0005410828422610647
+    },
+    "1": {
+      "gross_voi": 0.0005884523347561288,
+      "probe_time_cumulative": 9.608888888882555,
+      "probe_time_cost": 0.1921777777776511,
+      "net_voi": -0.19158932544289498
+    },
+    "2": {
+      "gross_voi": 0.00046121358164930015,
+      "probe_time_cumulative": 19.879999999986865,
+      "probe_time_cost": 0.3975999999997373,
+      "net_voi": -0.397138786418088
+    },
+    "3": {
+      "gross_voi": 0.00046121358164930015,
+      "probe_time_cumulative": 29.88444444442477,
+      "probe_time_cost": 0.5976888888884954,
+      "net_voi": -0.5972276753068461
+    }
+  },
+  "exploratory": true,
+  "note": "Descriptive VOI ceiling (train=test on deterministic cells). Net VOI subtracts real probe time at lambda_time=0.02."
+}

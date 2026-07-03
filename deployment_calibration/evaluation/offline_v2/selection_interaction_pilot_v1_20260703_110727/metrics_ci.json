@@ -1,0 +1,194 @@
+{
+  "B0_baserate": {
+    "mean_regret": {
+      "point": 0.02632942792837425,
+      "ci_low": 0.024952024332663674,
+      "ci_high": 0.02830798147914378,
+      "boot_mean": 0.026322027312283437,
+      "boot_std": 0.0008255385660908342,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    },
+    "auroc": {
+      "point": 0.5,
+      "ci_low": 0.5,
+      "ci_high": 0.5,
+      "boot_mean": 0.5,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 1932,
+      "ci_level": 0.95
+    },
+    "selected_success_rate": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    }
+  },
+  "B1_static": {
+    "mean_regret": {
+      "point": 0.02632942792837425,
+      "ci_low": 0.024952024332663674,
+      "ci_high": 0.02830798147914378,
+      "boot_mean": 0.026322027312283437,
+      "boot_std": 0.0008255385660908342,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    },
+    "auroc": {
+      "point": 0.8718487394957983,
+      "ci_low": 0.7962962962962963,
+      "ci_high": 1.0,
+      "boot_mean": 0.895646543303807,
+      "boot_std": 0.0750304034564697,
+      "n_boot": 2000,
+      "n_valid": 1932,
+      "ci_level": 0.95
+    },
+    "selected_success_rate": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    }
+  },
+  "B2_mean": {
+    "mean_regret": {
+      "point": 0.02114376458192852,
+      "ci_low": 0.012750991439806588,
+      "ci_high": 0.0257282779733153,
+      "boot_mean": 0.0211700707775896,
+      "boot_std": 0.0034138309028923443,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    },
+    "auroc": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 1932,
+      "ci_level": 0.95
+    },
+    "selected_success_rate": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    }
+  },
+  "B2_deepsets": {
+    "mean_regret": {
+      "point": 4.5063675773405874e-05,
+      "ci_low": 0.0,
+      "ci_high": 0.00013519102732021762,
+      "boot_mean": 4.477076188087874e-05,
+      "boot_std": 3.6622596656541126e-05,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    },
+    "auroc": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 1932,
+      "ci_level": 0.95
+    },
+    "selected_success_rate": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    }
+  },
+  "B2_gru": {
+    "mean_regret": {
+      "point": 4.5063675773405874e-05,
+      "ci_low": 0.0,
+      "ci_high": 0.00013519102732021762,
+      "boot_mean": 4.477076188087874e-05,
+      "boot_std": 3.6622596656541126e-05,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    },
+    "auroc": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 1932,
+      "ci_level": 0.95
+    },
+    "selected_success_rate": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    }
+  },
+  "OracleZ": {
+    "mean_regret": {
+      "point": 0.02114376458192852,
+      "ci_low": 0.012750991439806588,
+      "ci_high": 0.0257282779733153,
+      "boot_mean": 0.0211700707775896,
+      "boot_std": 0.0034138309028923443,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    },
+    "auroc": {
+      "point": 0.9684873949579831,
+      "ci_low": 0.9054054054054054,
+      "ci_high": 1.0,
+      "boot_mean": 0.9738282582658453,
+      "boot_std": 0.031888326375266396,
+      "n_boot": 2000,
+      "n_valid": 1932,
+      "ci_level": 0.95
+    },
+    "selected_success_rate": {
+      "point": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "boot_mean": 1.0,
+      "boot_std": 0.0,
+      "n_boot": 2000,
+      "n_valid": 2000,
+      "ci_level": 0.95
+    }
+  }
+}

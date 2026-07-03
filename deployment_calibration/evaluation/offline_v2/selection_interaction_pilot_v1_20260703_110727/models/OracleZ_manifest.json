@@ -1,0 +1,13 @@
+{
+  "model_name": "OracleZ",
+  "n_members": 1,
+  "members": [
+    {
+      "config": {
+        "name": "OracleZ",
+        "reads_history": false,
+        "reads_secret": true
+      }
+    }
+  ]
+}

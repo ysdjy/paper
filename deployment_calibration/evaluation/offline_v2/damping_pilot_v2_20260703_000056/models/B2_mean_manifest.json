@@ -1,0 +1,13 @@
+{
+  "model_name": "B2_mean",
+  "n_members": 1,
+  "members": [
+    {
+      "config": {
+        "name": "B2_mean",
+        "reads_history": true,
+        "reads_secret": false
+      }
+    }
+  ]
+}

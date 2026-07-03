@@ -1,0 +1,14 @@
+{
+  "lambda_error": 1.0,
+  "lambda_time": 0.02,
+  "error_clip": [
+    0.0,
+    0.3
+  ],
+  "time_clip": [
+    0.0,
+    60.0
+  ],
+  "selected_on": "validation",
+  "note": "weights frozen from validation before touching test"
+}

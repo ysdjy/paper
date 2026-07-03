@@ -1,0 +1,113 @@
+{
+  "provenance": {
+    "source_run_path": "/home1/banghai/Documents/IsaacLab/projects/paper_offline_v2/deployment_calibration/data/damping_pilot_v2_20260703_000056",
+    "source_git_commit": "ec18e4cdd347a64cc5e5cb0f2a7950de7f0c87fa",
+    "source_branch": "main",
+    "contract_version": "open_drawer_v2",
+    "episodes_sha256": "a732b2dc66bb45b712464023ee20b1323f76fc6b234e9d751c8f734f57610301",
+    "n_episodes": 72,
+    "damping_verified": true
+  },
+  "split_audit": {
+    "ok": true,
+    "pairwise_disjoint": {
+      "train_val": [],
+      "train_test": [],
+      "val_test": [],
+      "all_empty": true
+    },
+    "partition": {
+      "missing_sessions": [],
+      "duplicate_sessions": [],
+      "n_total": 9,
+      "n_assigned": 9
+    },
+    "candidate_groups": {
+      "crossing_split": [],
+      "all_within_one_split": true
+    },
+    "coverage": {
+      "train": {
+        "n_sessions": 3,
+        "hidden_states": [
+          "L1_low",
+          "L2_mid",
+          "L3_high"
+        ]
+      },
+      "val": {
+        "n_sessions": 3,
+        "hidden_states": [
+          "L1_low",
+          "L2_mid",
+          "L3_high"
+        ]
+      },
+      "test": {
+        "n_sessions": 3,
+        "hidden_states": [
+          "L1_low",
+          "L2_mid",
+          "L3_high"
+        ]
+      }
+    }
+  },
+  "matched_bank": {
+    "is_matched_bank": false,
+    "n_matched_groups": 0,
+    "n_excluded_clusters": 9,
+    "reason": "no candidate theta-set is shared across >=2 damping levels; this run is NOT a matched candidate bank, so switch-rate / rank-reversal / VSI are not computable",
+    "excluded_sample": [
+      {
+        "init_signature": [
+          "middle_drawer",
+          0.2,
+          0.0
+        ],
+        "n_sessions": 1,
+        "reason": "candidate theta-set spans <2 damping levels (not matched)"
+      },
+      {
+        "init_signature": [
+          "middle_drawer",
+          0.2,
+          0.0
+        ],
+        "n_sessions": 1,
+        "reason": "candidate theta-set spans <2 damping levels (not matched)"
+      },
+      {
+        "init_signature": [
+          "middle_drawer",
+          0.2,
+          0.0
+        ],
+        "n_sessions": 1,
+        "reason": "candidate theta-set spans <2 damping levels (not matched)"
+      },
+      {
+        "init_signature": [
+          "middle_drawer",
+          0.2,
+          0.0
+        ],
+        "n_sessions": 1,
+        "reason": "candidate theta-set spans <2 damping levels (not matched)"
+      },
+      {
+        "init_signature": [
+          "middle_drawer",
+          0.2,
+          0.0
+        ],
+        "n_sessions": 1,
+        "reason": "candidate theta-set spans <2 damping levels (not matched)"
+      }
+    ],
+    "matched_group_summ": []
+  },
+  "n_candidates": 45,
+  "n_probes": 27,
+  "n_sessions": 9
+}

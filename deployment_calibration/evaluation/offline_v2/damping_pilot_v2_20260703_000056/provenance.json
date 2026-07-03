@@ -1,0 +1,9 @@
+{
+  "source_run_path": "/home1/banghai/Documents/IsaacLab/projects/paper_offline_v2/deployment_calibration/data/damping_pilot_v2_20260703_000056",
+  "source_git_commit": "ec18e4cdd347a64cc5e5cb0f2a7950de7f0c87fa",
+  "source_branch": "main",
+  "contract_version": "open_drawer_v2",
+  "episodes_sha256": "a732b2dc66bb45b712464023ee20b1323f76fc6b234e9d751c8f734f57610301",
+  "n_episodes": 72,
+  "damping_verified": true
+}

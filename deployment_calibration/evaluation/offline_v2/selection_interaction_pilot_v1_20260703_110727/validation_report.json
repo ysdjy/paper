@@ -1,0 +1,149 @@
+{
+  "provenance": {
+    "source_run_path": "/home1/banghai/Documents/IsaacLab/projects/paper/deployment_calibration/data/selection_interaction_pilot_v1_20260703_110727",
+    "source_git_commit": "1921641acec5a7e153f45f909c69613ed6036a12",
+    "source_branch": "experiment/runtime-selection-v2",
+    "contract_version": "open_drawer_v2",
+    "episodes_sha256": "8f88cb79063a73bd2f3eb8ebf09a93b5a4c19998d72f8e56af60307efba9e953",
+    "n_episodes": 162,
+    "damping_verified": true
+  },
+  "split_audit": {
+    "ok": true,
+    "pairwise_disjoint": {
+      "train_val": [],
+      "train_test": [],
+      "val_test": [],
+      "all_empty": true
+    },
+    "partition": {
+      "missing_sessions": [],
+      "duplicate_sessions": [],
+      "n_total": 9,
+      "n_assigned": 9
+    },
+    "candidate_groups": {
+      "crossing_split": [],
+      "all_within_one_split": true
+    },
+    "coverage": {
+      "train": {
+        "n_sessions": 3,
+        "hidden_states": [
+          "L1_low",
+          "L2_mid",
+          "L3_high"
+        ]
+      },
+      "val": {
+        "n_sessions": 3,
+        "hidden_states": [
+          "L1_low",
+          "L2_mid",
+          "L3_high"
+        ]
+      },
+      "test": {
+        "n_sessions": 3,
+        "hidden_states": [
+          "L1_low",
+          "L2_mid",
+          "L3_high"
+        ]
+      }
+    }
+  },
+  "matched_bank": {
+    "is_matched_bank": true,
+    "n_matched_groups": 9,
+    "n_excluded_clusters": 0,
+    "reason": null,
+    "excluded_sample": [],
+    "matched_group_summ": [
+      {
+        "matched_group_id": "middle_drawer__T012__r0",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T012__r1",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T012__r2",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T020__r0",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T020__r1",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T020__r2",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T028__r0",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T028__r1",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      },
+      {
+        "matched_group_id": "middle_drawer__T028__r2",
+        "dampings": [
+          3.0,
+          20.0,
+          40.0
+        ],
+        "n_candidate_keys": 5
+      }
+    ]
+  },
+  "n_candidates": 135,
+  "n_probes": 27,
+  "n_sessions": 9
+}

@@ -1,0 +1,311 @@
+{
+  "oracle_candidate_test_groups": {
+    "sess_002__T012": {
+      "best_true_utility": 0.8028357676030919,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.008764232397079463,
+      "best_time": 9.419999999991433
+    },
+    "sess_002__T020": {
+      "best_true_utility": 0.8000660300971777,
+      "best_candidate_index": 2,
+      "best_success": true,
+      "best_task_error": 0.01313396990299226,
+      "best_time": 9.339999999991505
+    },
+    "sess_002__T028": {
+      "best_true_utility": 0.791647324657614,
+      "best_candidate_index": 2,
+      "best_success": true,
+      "best_task_error": 0.01595267534255984,
+      "best_time": 9.619999999991308
+    },
+    "sess_005__T012": {
+      "best_true_utility": 0.8007611385347173,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.010838861465454097,
+      "best_time": 9.419999999991433
+    },
+    "sess_005__T020": {
+      "best_true_utility": 0.7935903511525977,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.011209648847579967,
+      "best_time": 9.759999999991123
+    },
+    "sess_005__T028": {
+      "best_true_utility": 0.7891466618539743,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.008453338146209743,
+      "best_time": 10.119999999990796
+    },
+    "sess_008__T012": {
+      "best_true_utility": 0.8005974038960266,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.010602596104145046,
+      "best_time": 9.439999999991414
+    },
+    "sess_008__T020": {
+      "best_true_utility": 0.7930912950040693,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.01090870499610902,
+      "best_time": 9.799999999991087
+    },
+    "sess_008__T028": {
+      "best_true_utility": 0.7878777751447614,
+      "best_candidate_index": 1,
+      "best_success": true,
+      "best_task_error": 0.009322224855423,
+      "best_time": 10.139999999990778
+    }
+  },
+  "oracle_candidate_mean_true_utility": 0.7955126386604479,
+  "matched_bank_available": true,
+  "matched_bank_reason": null,
+  "value_of_state_information": {
+    "available": true,
+    "state_aware_mean_true_utility": 0.7957624270268392,
+    "state_agnostic_mean_true_utility": 0.7951739746920831,
+    "vsi": 0.0005884523347561288,
+    "state_aware_picks": {
+      "middle_drawer__T012__r0": {
+        "3.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8051889833688444
+        },
+        "20.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8007611385347173
+        },
+        "40.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8005974038960266
+        }
+      },
+      "middle_drawer__T012__r1": {
+        "3.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8051889833687779
+        },
+        "20.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8007611385347173
+        },
+        "40.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.799418543231659
+        }
+      },
+      "middle_drawer__T012__r2": {
+        "3.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8028357676030919
+        },
+        "20.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8007611385347173
+        },
+        "40.0": {
+          "candidate_key": "T012_c1_steady",
+          "true_utility": 0.8005974038960266
+        }
+      },
+      "middle_drawer__T020__r0": {
+        "3.0": {
+          "candidate_key": "T020_c2_balanced",
+          "true_utility": 0.800066030097045
+        },
+        "20.0": {
+          "candidate_key": "T020_c1_steady",
+          "true_utility": 0.7955731511356225
+        },
+        "40.0": {
+          "candidate_key": "T020_c1_steady",
+          "true_utility": 0.7930912950040693
+        }
+      },
+      "middle_drawer__T020__r1": {
+        "3.0": {
+          "candidate_key": "T020_c2_balanced",
+          "true_utility": 0.8000660300971777
+        },
+        "20.0": {
+          "candidate_key": "T020_c1_steady",
+          "true_utility": 0.7935903511525977
+        },
+        "40.0": {
+          "candidate_key": "T020_c1_steady",
+          "true_utility": 0.7930912950040693
+        }
+      },
+      "middle_drawer__T020__r2": {
+        "3.0": {
+          "candidate_key": "T020_c2_balanced",
+          "true_utility": 0.8000660300971777
+        },
+        "20.0": {
+          "candidate_key": "T020_c1_steady",
+          "true_utility": 0.7935903511525977
+        },
+        "40.0": {
+          "candidate_key": "T020_c1_steady",
+          "true_utility": 0.7930912950040693
+        }
+      },
+      "middle_drawer__T028__r0": {
+        "3.0": {
+          "candidate_key": "T028_c2_balanced",
+          "true_utility": 0.7928812397002195
+        },
+        "20.0": {
+          "candidate_key": "T028_c1_steady",
+          "true_utility": 0.7891466618539743
+        },
+        "40.0": {
+          "candidate_key": "T028_c1_steady",
+          "true_utility": 0.7878777751447614
+        }
+      },
+      "middle_drawer__T028__r1": {
+        "3.0": {
+          "candidate_key": "T028_c2_balanced",
+          "true_utility": 0.7916473246576151
+        },
+        "20.0": {
+          "candidate_key": "T028_c1_steady",
+          "true_utility": 0.7891466618539743
+        },
+        "40.0": {
+          "candidate_key": "T028_c1_steady",
+          "true_utility": 0.7878777751447614
+        }
+      },
+      "middle_drawer__T028__r2": {
+        "3.0": {
+          "candidate_key": "T028_c2_balanced",
+          "true_utility": 0.791647324657614
+        },
+        "20.0": {
+          "candidate_key": "T028_c1_steady",
+          "true_utility": 0.7891466618539743
+        },
+        "40.0": {
+          "candidate_key": "T028_c1_steady",
+          "true_utility": 0.7878777751447614
+        }
+      }
+    },
+    "state_agnostic_picks": {
+      "middle_drawer__T012__r0": "T012_c1_steady",
+      "middle_drawer__T012__r1": "T012_c1_steady",
+      "middle_drawer__T012__r2": "T012_c1_steady",
+      "middle_drawer__T020__r0": "T020_c1_steady",
+      "middle_drawer__T020__r1": "T020_c1_steady",
+      "middle_drawer__T020__r2": "T020_c1_steady",
+      "middle_drawer__T028__r0": "T028_c1_steady",
+      "middle_drawer__T028__r1": "T028_c1_steady",
+      "middle_drawer__T028__r2": "T028_c1_steady"
+    },
+    "n_matched_groups": 9
+  },
+  "optimal_candidate_switch_rate": {
+    "available": true,
+    "switch_rate": 0.6666666666666666,
+    "n_switched": 6,
+    "n_groups": 9,
+    "details": [
+      {
+        "matched_group_id": "middle_drawer__T012__r0",
+        "best_by_damping": {
+          "3.0": "T012_c1_steady",
+          "20.0": "T012_c1_steady",
+          "40.0": "T012_c1_steady"
+        },
+        "switched": false
+      },
+      {
+        "matched_group_id": "middle_drawer__T012__r1",
+        "best_by_damping": {
+          "3.0": "T012_c1_steady",
+          "20.0": "T012_c1_steady",
+          "40.0": "T012_c1_steady"
+        },
+        "switched": false
+      },
+      {
+        "matched_group_id": "middle_drawer__T012__r2",
+        "best_by_damping": {
+          "3.0": "T012_c1_steady",
+          "20.0": "T012_c1_steady",
+          "40.0": "T012_c1_steady"
+        },
+        "switched": false
+      },
+      {
+        "matched_group_id": "middle_drawer__T020__r0",
+        "best_by_damping": {
+          "3.0": "T020_c2_balanced",
+          "20.0": "T020_c1_steady",
+          "40.0": "T020_c1_steady"
+        },
+        "switched": true
+      },
+      {
+        "matched_group_id": "middle_drawer__T020__r1",
+        "best_by_damping": {
+          "3.0": "T020_c2_balanced",
+          "20.0": "T020_c1_steady",
+          "40.0": "T020_c1_steady"
+        },
+        "switched": true
+      },
+      {
+        "matched_group_id": "middle_drawer__T020__r2",
+        "best_by_damping": {
+          "3.0": "T020_c2_balanced",
+          "20.0": "T020_c1_steady",
+          "40.0": "T020_c1_steady"
+        },
+        "switched": true
+      },
+      {
+        "matched_group_id": "middle_drawer__T028__r0",
+        "best_by_damping": {
+          "3.0": "T028_c2_balanced",
+          "20.0": "T028_c1_steady",
+          "40.0": "T028_c1_steady"
+        },
+        "switched": true
+      },
+      {
+        "matched_group_id": "middle_drawer__T028__r1",
+        "best_by_damping": {
+          "3.0": "T028_c2_balanced",
+          "20.0": "T028_c1_steady",
+          "40.0": "T028_c1_steady"
+        },
+        "switched": true
+      },
+      {
+        "matched_group_id": "middle_drawer__T028__r2",
+        "best_by_damping": {
+          "3.0": "T028_c2_balanced",
+          "20.0": "T028_c1_steady",
+          "40.0": "T028_c1_steady"
+        },
+        "switched": true
+      }
+    ]
+  },
+  "pairwise_rank_reversal_rate": {
+    "available": true,
+    "reversal_rate": 0.17037037037037037,
+    "n_reversed": 46,
+    "n_comparisons": 270
+  }
+}

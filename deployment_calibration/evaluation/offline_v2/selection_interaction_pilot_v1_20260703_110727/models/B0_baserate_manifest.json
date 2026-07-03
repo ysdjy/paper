@@ -1,0 +1,13 @@
+{
+  "model_name": "B0_baserate",
+  "n_members": 1,
+  "members": [
+    {
+      "config": {
+        "name": "B0_baserate",
+        "reads_history": false,
+        "reads_secret": false
+      }
+    }
+  ]
+}

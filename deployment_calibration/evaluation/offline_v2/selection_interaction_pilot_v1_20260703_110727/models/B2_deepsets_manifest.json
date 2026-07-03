@@ -1,0 +1,91 @@
+{
+  "model_name": "B2_deepsets",
+  "n_members": 5,
+  "members": [
+    {
+      "config": {
+        "name": "B2_deepsets",
+        "reads_history": true,
+        "reads_secret": false,
+        "encoder": "deepsets",
+        "hp": {
+          "d_hid": 32,
+          "d_emb": 16,
+          "lr": 0.01,
+          "max_epochs": 300,
+          "patience": 30,
+          "l2": 0.0001
+        }
+      },
+      "weights": "B2_deepsets_seed0.pt"
+    },
+    {
+      "config": {
+        "name": "B2_deepsets",
+        "reads_history": true,
+        "reads_secret": false,
+        "encoder": "deepsets",
+        "hp": {
+          "d_hid": 32,
+          "d_emb": 16,
+          "lr": 0.01,
+          "max_epochs": 300,
+          "patience": 30,
+          "l2": 0.0001
+        }
+      },
+      "weights": "B2_deepsets_seed1.pt"
+    },
+    {
+      "config": {
+        "name": "B2_deepsets",
+        "reads_history": true,
+        "reads_secret": false,
+        "encoder": "deepsets",
+        "hp": {
+          "d_hid": 32,
+          "d_emb": 16,
+          "lr": 0.01,
+          "max_epochs": 300,
+          "patience": 30,
+          "l2": 0.0001
+        }
+      },
+      "weights": "B2_deepsets_seed2.pt"
+    },
+    {
+      "config": {
+        "name": "B2_deepsets",
+        "reads_history": true,
+        "reads_secret": false,
+        "encoder": "deepsets",
+        "hp": {
+          "d_hid": 32,
+          "d_emb": 16,
+          "lr": 0.01,
+          "max_epochs": 300,
+          "patience": 30,
+          "l2": 0.0001
+        }
+      },
+      "weights": "B2_deepsets_seed3.pt"
+    },
+    {
+      "config": {
+        "name": "B2_deepsets",
+        "reads_history": true,
+        "reads_secret": false,
+        "encoder": "deepsets",
+        "hp": {
+          "d_hid": 32,
+          "d_emb": 16,
+          "lr": 0.01,
+          "max_epochs": 300,
+          "patience": 30,
+          "l2": 0.0001
+        }
+      },
+      "weights": "B2_deepsets_seed4.pt"
+    }
+  ]
+}

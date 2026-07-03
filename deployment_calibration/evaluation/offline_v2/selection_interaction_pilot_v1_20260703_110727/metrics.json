@@ -1,0 +1,220 @@
+{
+  "metrics": {
+    "B0_baserate": {
+      "auroc": 0.5,
+      "auprc": 0.6222222222222222,
+      "brier": 0.23506172839506173,
+      "calibration_error": 1.1102230246251565e-16,
+      "success_accuracy": 0.6222222222222222,
+      "failure_macro_f1": 0.3835616438356164,
+      "task_error_mae": 0.06014920172021713,
+      "exec_time_mae": 0.470177777777735,
+      "n": 45,
+      "mean_regret": 0.02632942792837425,
+      "median_regret": 0.025085938358288318,
+      "top1_acc": 0.0,
+      "selected_success_rate": 1.0,
+      "selected_task_error": 0.014950122601456124,
+      "selected_time": 10.793333333323517,
+      "n_groups": 9
+    },
+    "B1_static": {
+      "auroc": 0.8718487394957983,
+      "auprc": 0.9388294137182646,
+      "brier": 0.15180329533319137,
+      "calibration_error": 0.1368842402054596,
+      "success_accuracy": 0.7111111111111111,
+      "failure_macro_f1": 0.6693046919163369,
+      "task_error_mae": 0.038292074336946355,
+      "exec_time_mae": 0.4358664727928185,
+      "n": 45,
+      "mean_regret": 0.02632942792837425,
+      "median_regret": 0.025085938358288318,
+      "top1_acc": 0.0,
+      "selected_success_rate": 1.0,
+      "selected_task_error": 0.014950122601456124,
+      "selected_time": 10.793333333323517,
+      "n_groups": 9
+    },
+    "B2_mean": {
+      "auroc": 1.0,
+      "auprc": 0.9999999999999999,
+      "brier": 0.022025161943145275,
+      "calibration_error": 0.08840874412936298,
+      "success_accuracy": 0.9777777777777777,
+      "failure_macro_f1": 0.9766233766233766,
+      "task_error_mae": 0.03156977426171421,
+      "exec_time_mae": 0.3779847165813215,
+      "n": 45,
+      "mean_regret": 0.02114376458192852,
+      "median_regret": 0.02438597121236863,
+      "top1_acc": 0.1111111111111111,
+      "selected_success_rate": 1.0,
+      "selected_task_error": 0.013942237032784367,
+      "selected_time": 10.584444444434817,
+      "n_groups": 9
+    },
+    "B2_deepsets": {
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "brier": 6.209507946099029e-06,
+      "calibration_error": 0.0008393002265088216,
+      "success_accuracy": 1.0,
+      "failure_macro_f1": 1.0,
+      "task_error_mae": 0.001992347859095738,
+      "exec_time_mae": 0.029936443954035417,
+      "n": 45,
+      "mean_regret": 4.5063675773405874e-05,
+      "median_regret": 0.0,
+      "top1_acc": 0.8888888888888888,
+      "selected_success_rate": 1.0,
+      "selected_task_error": 0.010043536126613628,
+      "selected_time": 9.7244444444356,
+      "n_groups": 9
+    },
+    "B2_gru": {
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "brier": 8.973907786206049e-06,
+      "calibration_error": 0.0009676491333774673,
+      "success_accuracy": 1.0,
+      "failure_macro_f1": 1.0,
+      "task_error_mae": 0.001617183699662029,
+      "exec_time_mae": 0.019903239365644313,
+      "n": 45,
+      "mean_regret": 4.5063675773405874e-05,
+      "median_regret": 0.0,
+      "top1_acc": 0.8888888888888888,
+      "selected_success_rate": 1.0,
+      "selected_task_error": 0.010043536126613628,
+      "selected_time": 9.7244444444356,
+      "n_groups": 9
+    },
+    "OracleZ": {
+      "auroc": 0.9684873949579831,
+      "auprc": 0.9828728563103563,
+      "brier": 0.071966761623058,
+      "calibration_error": 0.11257560361324989,
+      "success_accuracy": 0.8666666666666667,
+      "failure_macro_f1": 0.8545258620689655,
+      "task_error_mae": 0.031339833149581116,
+      "exec_time_mae": 0.4354499670611337,
+      "n": 45,
+      "mean_regret": 0.02114376458192852,
+      "median_regret": 0.02438597121236863,
+      "top1_acc": 0.1111111111111111,
+      "selected_success_rate": 1.0,
+      "selected_task_error": 0.013942237032784367,
+      "selected_time": 10.584444444434817,
+      "n_groups": 9
+    }
+  },
+  "d3": {
+    "leave_one_session_out": {
+      "available": true,
+      "protocol": "leave_one_session_out",
+      "accuracy": 1.0,
+      "accuracy_ci": {
+        "ci_low": 1.0,
+        "ci_high": 1.0,
+        "n_boot": 2000
+      },
+      "balanced_accuracy": 1.0,
+      "macro_f1": 1.0,
+      "chance": 0.3333333333333333,
+      "n_sessions": 9,
+      "n_classes": 3,
+      "confusion_labels": [
+        "L1_low",
+        "L2_mid",
+        "L3_high"
+      ],
+      "confusion_matrix": [
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ],
+        [
+          0,
+          0,
+          3
+        ]
+      ],
+      "per_session": {
+        "sess_000": {
+          "true": "L1_low",
+          "pred": "L1_low"
+        },
+        "sess_001": {
+          "true": "L1_low",
+          "pred": "L1_low"
+        },
+        "sess_002": {
+          "true": "L1_low",
+          "pred": "L1_low"
+        },
+        "sess_003": {
+          "true": "L2_mid",
+          "pred": "L2_mid"
+        },
+        "sess_004": {
+          "true": "L2_mid",
+          "pred": "L2_mid"
+        },
+        "sess_005": {
+          "true": "L2_mid",
+          "pred": "L2_mid"
+        },
+        "sess_006": {
+          "true": "L3_high",
+          "pred": "L3_high"
+        },
+        "sess_007": {
+          "true": "L3_high",
+          "pred": "L3_high"
+        },
+        "sess_008": {
+          "true": "L3_high",
+          "pred": "L3_high"
+        }
+      }
+    },
+    "train_test": {
+      "available": true,
+      "protocol": "train_centroid_test_eval",
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "macro_f1": 1.0,
+      "chance": 0.3333333333333333,
+      "n_test_sessions": 3,
+      "confusion_labels": [
+        "L1_low",
+        "L2_mid",
+        "L3_high"
+      ],
+      "confusion_matrix": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ]
+    }
+  }
+}
