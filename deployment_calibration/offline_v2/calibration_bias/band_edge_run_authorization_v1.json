@@ -1,0 +1,92 @@
+{
+  "audit": "band_edge_runtime_compliance_pre_run_v1",
+  "auditor": "Claude B (independent, read-only)",
+  "runtime_branch": "experiment/runtime-calibration-band-edge-v1",
+  "runtime_commit": "2ac0c9f0fe1a6c029205599a40743661377e7d2d",
+  "frozen_config_sha256": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+  "config_sha256_matches_frozen": true,
+  "isaac_launched": false,
+  "new_runtime_data_generated": false,
+  "ran_306": false,
+
+  "verdict": "MODIFY_RUNTIME",
+  "authorizes_306_exploratory_run": false,
+  "scope_if_authorized": "306-episode exploratory band-edge characterization ONLY",
+  "does_not_authorize": ["confirmatory_generator", "confirmatory_data", "learned_selector_power",
+                         "preregistration_v4", "675_confirmatory_run"],
+
+  "section_verdicts": {
+    "s3_plan_config_consistency": "PASS",
+    "s4_residual_consistency": "PASS",
+    "s5_joint_margin_semantics": "ACCEPT_ADDITIVE_SIGNED_DIAGNOSTIC",
+    "s6_instrumentation_six_groups": "PASS",
+    "s7_contact_sensor_smoke": "PASS",
+    "s8_clear_zone_smoke": "PASS",
+    "s9_leakage_data_contract": "PASS",
+    "s10_run_reliability": "FAIL",
+    "s11_freeze_integrity": "PASS"
+  },
+
+  "plan_config": {
+    "planned_episodes": 306, "n_blocks": 18, "n_offsets_per_block": 17, "no_probes": true,
+    "nominal_bias_zero": true, "offsets_match_frozen_grid": true, "unique_block_offset": true,
+    "no_hidden_offset_or_bias_correction": true, "manifest_reproduces_from_master_seed": true,
+    "duplicate_rejection": true, "smoke_vs_formal_separated": true
+  },
+  "residual": {
+    "reuses_frozen_draw_block_residuals": true, "one_per_block_shared_by_17_offsets": true,
+    "actual_equals_nominal_plus_residual": true, "blocks_independent": true,
+    "secret_only": true, "no_second_algorithm": true
+  },
+  "joint_margin": {
+    "rad_signed_present": true, "negative_flag_present": true, "signed_preserved_before_clip": true,
+    "frozen_field_clamped_nonneg_passes_validator": true,
+    "additive_schema_v1_1_clarification_published": true
+  },
+  "instrumentation": {
+    "joint_margin": "PASS", "ik_failure_timeout_not_counted": true, "two_separate_clamp_counters": true,
+    "failure_phase_from_history": true, "close_snapshot_uses_true_handle": true,
+    "close_snapshot_null_reason_when_unreached": true, "gripper_at_close": true,
+    "collision_contactsensor_nonfinger": true, "all_groups_on_every_smoke_record": true
+  },
+  "contact_smoke": {
+    "sensor_available": true, "clean_baseline_N": 0.0, "positive_control_N": 240.083786,
+    "force_gap_N": 240.0838, "discriminates": true, "smoke_only": true,
+    "separate_config_not_formal_params": true, "excluded_from_formal": true,
+    "freezes_formal_threshold": false
+  },
+  "clear_zone_smoke": {
+    "n_episodes": 6, "blocks": 2, "offsets": [-0.05, 0.0, 0.05],
+    "edge_points_excluded": true, "no_edge_fit": true, "smoke_only": true,
+    "matched_block_ok": true, "all_records_valid": true, "excluded_from_formal": true,
+    "residual_offset_blockcount_unchanged": true
+  },
+  "leakage": {
+    "secret_not_in_model_channels": true, "observable_nuisance_gate_disabled": true,
+    "no_probes": true, "record_validator_runs_per_episode": true, "smoke_excluded": true,
+    "verified_first_hand_on_6_records": true
+  },
+  "run_reliability_blockers": [
+    "no resume/skip-completed on the full path (episodes.jsonl opened 'w' truncate; loops all 306)",
+    "no fail-fast: an invalid record is printed and WRITTEN, the loop continues (frozen protocol requires abort + not-written)",
+    "dirty-worktree not refused for the full run (recorded but not gated)",
+    "end-of-run self-check (matched-block/duplicate/no-probes/schema) does not fail/abort the run"
+  ],
+  "required_runtime_changes": [
+    "resume: load completed (block,offset) keys, verify vs manifest, append-mode, skip completed (no re-exec, no resample)",
+    "fail-fast: a validate_record_full failure aborts the run (non-zero exit) and is not written as formal data",
+    "dirty-worktree: full run refuses (or explicit override) unless the worktree is clean",
+    "hard self-check: any matched-block/duplicate/no-probes/schema failure makes the run exit non-zero and marks it invalid",
+    "minor: make test_band_edge_plan_v1 / test_band_edge_instrumentation_core_v1 pytest-discoverable"
+  ],
+  "freeze_integrity_for_306": {
+    "unchanged": ["18_blocks", "17_offsets", "residual_sigma_support", "master_seed", "nuisance_pairing",
+                  "skill_params", "damping", "target", "collision_backend", "instrumentation_fields",
+                  "success_definition"],
+    "collision_threshold_frozen": false,
+    "collision_threshold_rule": "raw quantities recorded in the 306 run; B selects the threshold post-run by the pre-frozen rule (not from confirmatory data) and reports full + collision-sensitivity",
+    "no_mid_run_threshold_or_stop_adjustment_possible": true
+  },
+  "re_audit_path": "after the four run-reliability fixes land, re-verify with a fresh manifest + a 6-ep smoke exercising resume + a forced-invalid-record fail-fast; if clean, re-issue AUTHORIZE_306_EXPLORATORY_RUN",
+  "remaining_blockers": ["run reliability: resume + fail-fast + dirty-refusal + run-failing self-check (all in generate_calibration_bias_band_edge_v1._run_isaac full path)"]
+}
