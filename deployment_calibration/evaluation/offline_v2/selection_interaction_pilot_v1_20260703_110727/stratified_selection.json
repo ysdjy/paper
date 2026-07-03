@@ -1,0 +1,48 @@
+{
+  "by_target": {
+    "T012": {
+      "n_groups": 9,
+      "oracle_candidate_mean_utility": 0.8017900556631754,
+      "robust_generalist_mean_utility": 0.8017900556631754,
+      "robust_generalist_regret": 0.0,
+      "robust_generalist_success": 1.0
+    },
+    "T020": {
+      "n_groups": 9,
+      "oracle_candidate_mean_utility": 0.7958028698604918,
+      "robust_generalist_mean_utility": 0.7941796213337086,
+      "robust_generalist_regret": 0.0016232485267832805,
+      "robust_generalist_success": 1.0
+    },
+    "T028": {
+      "n_groups": 9,
+      "oracle_candidate_mean_utility": 0.7896943555568506,
+      "robust_generalist_mean_utility": 0.7895522470793657,
+      "robust_generalist_regret": 0.00014210847748501946,
+      "robust_generalist_success": 1.0
+    }
+  },
+  "by_damping": {
+    "3.0": {
+      "n_groups": 9,
+      "oracle_candidate_mean_utility": 0.7988430792941738,
+      "robust_generalist_mean_utility": 0.7970777222899055,
+      "robust_generalist_regret": 0.0017653570042683,
+      "robust_generalist_success": 1.0
+    },
+    "20.0": {
+      "n_groups": 9,
+      "oracle_candidate_mean_utility": 0.7947196949563213,
+      "robust_generalist_mean_utility": 0.7947196949563213,
+      "robust_generalist_regret": 0.0,
+      "robust_generalist_success": 1.0
+    },
+    "40.0": {
+      "n_groups": 9,
+      "oracle_candidate_mean_utility": 0.7937245068300227,
+      "robust_generalist_mean_utility": 0.7937245068300227,
+      "robust_generalist_regret": 0.0,
+      "robust_generalist_success": 1.0
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "split_seeds": {
+    "0": {
+      "B0_baserate": {
+        "mean_regret": 0.02632942792837425,
+        "top1_acc": 0.0
+      },
+      "B1_static": {
+        "mean_regret": 0.02632942792837425,
+        "top1_acc": 0.0
+      },
+      "B2_mean": {
+        "mean_regret": 0.02114376458192852,
+        "top1_acc": 0.1111111111111111
+      },
+      "B2_deepsets": {
+        "mean_regret": 4.5063675773405874e-05,
+        "top1_acc": 0.8888888888888888
+      },
+      "B2_gru": {
+        "mean_regret": 4.5063675773405874e-05,
+        "top1_acc": 0.8888888888888888
+      },
+      "OracleZ": {
+        "mean_regret": 0.02114376458192852,
+        "top1_acc": 0.1111111111111111
+      },
+      "robust_generalist": 0.0006640594217493708
+    },
+    "1": {
+      "B0_baserate": {
+        "mean_regret": 0.026784319664358507,
+        "top1_acc": 0.0
+      },
+      "B1_static": {
+        "mean_regret": 0.026784319664358507,
+        "top1_acc": 0.0
+      },
+      "B2_mean": {
+        "mean_regret": 0.02131391740373835,
+        "top1_acc": 0.1111111111111111
+      },
+      "B2_deepsets": {
+        "mean_regret": 0.00021968067089755342,
+        "top1_acc": 0.7777777777777778
+      },
+      "B2_gru": {
+        "mean_regret": 0.0,
+        "top1_acc": 1.0
+      },
+      "OracleZ": {
+        "mean_regret": 0.02131391740373835,
+        "top1_acc": 0.1111111111111111
+      },
+      "robust_generalist": 0.0006709768719146784
+    },
+    "2": {
+      "B0_baserate": {
+        "mean_regret": 0.02614427776467507,
+        "top1_acc": 0.0
+      },
+      "B1_static": {
+        "mean_regret": 0.02614427776467507,
+        "top1_acc": 0.0
+      },
+      "B2_mean": {
+        "mean_regret": 0.02061142150161989,
+        "top1_acc": 0.1111111111111111
+      },
+      "B2_deepsets": {
+        "mean_regret": 0.00017288100984318925,
+        "top1_acc": 0.8888888888888888
+      },
+      "B2_gru": {
+        "mean_regret": 0.00017288100984318925,
+        "top1_acc": 0.8888888888888888
+      },
+      "OracleZ": {
+        "mean_regret": 0.02061142150161989,
+        "top1_acc": 0.1111111111111111
+      },
+      "robust_generalist": 0.00043032071060425083
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "MODIFY",
+  "criteria": {
+    "pairing_and_leakage_ok": true,
+    "history_identifies_state": true,
+    "landscape_reranks": true,
+    "switch_rate": 0.6666666666666666,
+    "rank_reversal_rate": 0.17037037037037037,
+    "VSI_frozen": 0.0005884523347561288,
+    "VSI_meaningful(>0.02)": false,
+    "robust_generalist_gap_to_state_aware": 0.0005884523347561288,
+    "robust_generalist_matches_oracle(<0.01)": true,
+    "b2_beats_robust_generalist(>0.01)": false,
+    "replicates_independent": false,
+    "vsi_ci_target_block": {
+      "low": 0.0,
+      "high": 0.0016232485267831942,
+      "exploratory": true
+    }
+  },
+  "reasons": [
+    "history identifies state (True) and landscape reranks (switch=0.67, reversal=0.17), BUT frozen-utility VSI=0.0006 is ~0 and the robust generalist 'c1_steady' is within 0.0006 utility of the state-aware oracle. State information improves PREDICTION but has no DECISION value against a candidate set that contains a robust generalist."
+  ]
+}

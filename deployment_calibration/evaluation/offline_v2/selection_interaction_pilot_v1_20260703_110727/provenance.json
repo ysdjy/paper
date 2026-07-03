@@ -1,0 +1,9 @@
+{
+  "source_run_path": "/home1/banghai/Documents/IsaacLab/projects/paper/deployment_calibration/data/selection_interaction_pilot_v1_20260703_110727",
+  "source_git_commit": "1921641acec5a7e153f45f909c69613ed6036a12",
+  "source_branch": "experiment/runtime-selection-v2",
+  "contract_version": "open_drawer_v2",
+  "episodes_sha256": "8f88cb79063a73bd2f3eb8ebf09a93b5a4c19998d72f8e56af60307efba9e953",
+  "n_episodes": 162,
+  "damping_verified": true
+}

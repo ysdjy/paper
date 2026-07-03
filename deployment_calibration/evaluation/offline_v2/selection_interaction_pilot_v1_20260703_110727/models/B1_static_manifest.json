@@ -1,0 +1,13 @@
+{
+  "model_name": "B1_static",
+  "n_members": 1,
+  "members": [
+    {
+      "config": {
+        "name": "B1_static",
+        "reads_history": false,
+        "reads_secret": false
+      }
+    }
+  ]
+}

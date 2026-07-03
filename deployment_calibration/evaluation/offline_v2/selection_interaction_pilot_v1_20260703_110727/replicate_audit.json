@@ -1,0 +1,40 @@
+{
+  "n_cells": 45,
+  "replicates_per_cell": [
+    3
+  ],
+  "success_identical_cells": 45,
+  "failure_reason_identical_cells": 45,
+  "continuous_within_cell": {
+    "final_joint_position": {
+      "max_std": 0.004712305666982777,
+      "mean_std": 0.000619061573549228,
+      "max_range": 0.009996309876441956
+    },
+    "task_outcome_error": {
+      "max_std": 0.004712305666982777,
+      "mean_std": 0.000619061573549228,
+      "max_range": 0.009996309876441956
+    },
+    "skill_elapsed_time": {
+      "max_std": 0.08485281374230853,
+      "mean_std": 0.01319932658122008,
+      "max_range": 0.1799999999998363
+    }
+  },
+  "pull_duration_max_within_cell_std": 0.08485281374238557,
+  "effective_sample_sizes": {
+    "n_unique_hidden_states": 3,
+    "n_unique_conditions_cells": 45,
+    "n_unique_target_damping_contexts": 9,
+    "n_technical_repeats_per_cell": [
+      3
+    ],
+    "n_sessions_total": 9,
+    "n_independent_sessions_upper_bound": 3,
+    "n_replicates_per_level": 3
+  },
+  "discrete_deterministic": true,
+  "near_deterministic": true,
+  "resampling_recommendation": "Replicates are technical repeats (discrete outcomes identical, continuous jitter sub-cm). Do NOT treat the 9 sessions as 9 independent samples. Report descriptive stats per unique condition / matched group; bootstrap over target/condition blocks and label CIs EXPLORATORY."
+}

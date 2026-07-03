@@ -5,8 +5,38 @@ never launches Isaac; only writes under `deployment_calibration/{offline_v2,mode
 evaluation/offline_v2,tests/offline_v2}/` and `docs/offline_v2/`.
 
 ## Current commit
-Run `git log --oneline -8` on this branch. Latest work: pilot reanalysis + history models + full
-offline pipeline/CLI.
+Run `git log --oneline -10` on this branch. Latest work: **Phase 2** — analysis of Claude A's
+matched-candidate selection-interaction pilot (verdict MODIFY).
+
+## Phase 2 (selection_interaction_pilot_v1) — DONE
+Source (read-only): `.../data/selection_interaction_pilot_v1_20260703_110727/`; source commit
+`1921641acec5a7e153f45f909c69613ed6036a12`; candidate_bank_sha256 `d1d80d9646aae536…`;
+dirty_worktree false; damping_verified true; full_reset_all_verified true.
+
+- **Pairing/leakage**: ALL PASS — 162 eps, 9 matched groups (target×replicate × 3 damping),
+  27 selection groups, candset/θ/target consistent, no candidate-outcome in history, no secret in x.
+- **Replicate independence**: technical repeats — success/failure identical in 45/45 cells, only 3
+  unique hidden states. CIs are target-block bootstrap, EXPLORATORY. (`replicate_independence_audit_v1.md`)
+- **Decision value (frozen U)**: VSI = **+0.00059** (independently matches A's +0.0006); switch rate
+  0.667; rank reversal 0.170; robust-generalist(c1_steady) gap to state-aware oracle = VSI; best-single
+  archetype = c1_steady. selSucc = 1.00 for every policy.
+- **Prediction**: capacity-matched history gain B1 AUROC 0.87 → B2-mean 1.00 (Brier 0.152→0.022).
+- **Selection**: B2 regret 0.000 vs B1 0.026 but robust generalist 0.0007 ≈ oracle; stable over 3 split
+  seeds (B2 0.000/0.0002/0.0002).
+- **VOI**: Gross ≈ VSI (0.0006); **Net VOI negative** (K=1 −0.19) once probe time charged.
+- **Sensitivity (supplementary)**: VSI≈0 under success/success+error; grows to only 0.067 at λ_time 0.5;
+  low VSI is candidate-bank structure (robust generalist exists), not light speed weight. Frozen U kept.
+- **Verdict: MODIFY**; recommend Route B (handle-pose / calibration-bias hidden state that directly
+  moves the optimal grasp candidate) + nuisance variation, over Route A. (`final_go_modify_stop_v1.md`,
+  `selection_interaction_analysis_v1.md`)
+- New code: `offline_v2/replicate_audit.py`, pairing (target,replicate) keying + `full_pairing_validation`,
+  oracle policy baselines (`robust_generalist`/`best_single_archetype`/`gross_net_voi`),
+  `evaluation/offline_v2/run_selection_interaction.py`; tests `test_matched_bank_v2.py`.
+- Artifacts: `deployment_calibration/evaluation/offline_v2/selection_interaction_pilot_v1_20260703_110727/`.
+- Reproduce: `python -m deployment_calibration.evaluation.offline_v2.run_selection_interaction <A_run_dir>
+  --out <OUT> --seeds 5 --n-boot 2000 --split-seeds 0,1,2`.
+
+## Phase 1 (72-ep damping pilot) — DONE (below)
 
 ## Completed
 - **Robust metrics** (`offline_v2/metrics.py`): tie-aware AUROC (sklearn), AUPRC, Brier, ECE,

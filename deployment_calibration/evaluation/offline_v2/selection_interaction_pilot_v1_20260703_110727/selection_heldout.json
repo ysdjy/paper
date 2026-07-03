@@ -1,0 +1,60 @@
+{
+  "split_seed": 0,
+  "n_test_groups": 9,
+  "models": {
+    "B0_baserate": {
+      "mean_regret": 0.02632942792837425,
+      "median_regret": 0.025085938358288318,
+      "top1_acc": 0.0,
+      "selected_success_rate": 1.0,
+      "gap_to_state_aware": 0.026579216294765673
+    },
+    "B1_static": {
+      "mean_regret": 0.02632942792837425,
+      "median_regret": 0.025085938358288318,
+      "top1_acc": 0.0,
+      "selected_success_rate": 1.0,
+      "gap_to_state_aware": 0.026579216294765673
+    },
+    "B2_mean": {
+      "mean_regret": 0.02114376458192852,
+      "median_regret": 0.02438597121236863,
+      "top1_acc": 0.1111111111111111,
+      "selected_success_rate": 1.0,
+      "gap_to_state_aware": 0.021393552948319905
+    },
+    "B2_deepsets": {
+      "mean_regret": 4.5063675773405874e-05,
+      "median_regret": 0.0,
+      "top1_acc": 0.8888888888888888,
+      "selected_success_rate": 1.0,
+      "gap_to_state_aware": 0.00029485204216472827
+    },
+    "B2_gru": {
+      "mean_regret": 4.5063675773405874e-05,
+      "median_regret": 0.0,
+      "top1_acc": 0.8888888888888888,
+      "selected_success_rate": 1.0,
+      "gap_to_state_aware": 0.00029485204216472827
+    },
+    "OracleZ": {
+      "mean_regret": 0.02114376458192852,
+      "median_regret": 0.02438597121236863,
+      "top1_acc": 0.1111111111111111,
+      "selected_success_rate": 1.0,
+      "gap_to_state_aware": 0.021393552948319905
+    }
+  },
+  "robust_generalist": {
+    "mean_regret": 0.0006640594217493708,
+    "top1_acc": 0.7777777777777778,
+    "selected_success_rate": 1.0,
+    "gap_to_state_aware": 0.0009138477881407425
+  },
+  "best_single_archetype": {
+    "archetype": "c1_steady",
+    "mean_regret": 0.0006640594217493708,
+    "gap_to_state_aware": 0.0009138477881407425
+  },
+  "state_aware_oracle_mean_true_utility": 0.7957624270268392
+}
