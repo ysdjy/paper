@@ -117,6 +117,27 @@ artifact `.../confirmatory_design_v2/confirmatory_design_validation_v2.json`.
   K=0/1/2, Net VOI(K=1)>0 GO condition.
 - Tests 54→63 (+design_validation +power). Confirmatory run NOT requested.
 
+## Preregistration v3 (power-model / runtime alignment) — DONE
+Pre-data. Fixes a power-model vs runtime-implementation mismatch (not a design flaw): v2 power assumed a
+grasp perturbation moving the effective offset, but A runtime injects only calibration bias + joint/target
+jitter → 0 label flips in exploration. v3 freezes an IMPLEMENTABLE block-level **residual calibration
+nuisance** and re-runs design validation + power. **v3 supersedes v2** (v1/v2 retained).
+
+- **Residual nuisance** (`residual_nuisance.py`): actual_bias = nominal + residual;
+  residual ~ TruncNormal(0, σ=0.005, [−0.01,+0.01]) (eff SD 0.0044); one per block, reused across split's
+  bias levels, blocks independent, splits isolated; residual/actual bias secret/audit-only (model reads
+  neither; guard + test); no artificial action noise; cap keeps actual ≤ ±0.05 (compensable).
+- **Residual design validation** (`design_validation.validate_confirmatory_split_residual`): every nominal
+  bias compensable over full residual support (max actual 0.05); **no common offset covers both test biases
+  at any residual** → best-single test success ≤0.5, state-aware 1.0, max gain 0.5; candidate-group +
+  matched-block unchanged. v1 test still rejected.
+- **Power re-run** (`power.power_curve_residual`, runtime-aligned): N=9 power **0.97 baseline / 0.89
+  conservative** (≥0.8 target) → **9/6/9 retained, 675 episodes**. Block-bootstrap over test blocks.
+- **UNCHANGED** (re-validated): split, 7-offset bank, probe order + K=1 stop rule, utility, success-only
+  co-primary, AND gate, 6 instrumentation fields, K=0/1/2, Net VOI(K=1)>0 GO condition.
+- Docs: `preregistration_v3.md`, `confirmatory_freeze_proposal_v3.md`, `power_analysis_v3.md`,
+  `confirmatory_design_validation_v3.json`. Tests 63→69 (+residual). Confirmatory run NOT requested.
+
 ## (original) Waiting on Claude A capability map — ingestion plan
 1. Read A's exploratory capability map **read-only** by absolute path; record source_run_path /
    source_git_commit / candidate_bank_sha256 / dirty_worktree / reset flags.
