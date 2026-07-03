@@ -68,7 +68,34 @@ Compensation success is a non-monotonic BAND in offset, so **linear B1 vs B2-mea
 history effect** (both near chance). The honest H1 capacity control is **DeepSets K=0 vs K>0**; a
 feature-enriched linear baseline is reported as a secondary capacity-matched comparison.
 
-## Waiting on Claude A capability map — ingestion plan
+## Capability-map ingestion (A run calibration_bias_capability_map_v2_20260703_162715) — DONE
+Read-only. source commit `4fcfeba` (data `13b152b`, report `24919cd`, design `d65960e`);
+episodes sha256 `de21417390a80b5b…`; dirty_worktree false; damping/reset verified.
+Driver: `evaluation/offline_v2/calibration_bias/run_capability_map.py`; artifacts under
+`evaluation/offline_v2/calibration_bias/capability_map_v2_20260703_162715/`.
+
+- **Validator**: ALL PASS (135/105/30; candidate_id→offset pure fn; matched bank consistent across 5
+  bias; within-session & matched-block x/g identical; no bias/seed/block in x; leakage-safe history).
+- **Independence**: frozen **blocker=False** (blocks correctly applied+varied, time SD up to 1.2s), but
+  success label deterministic (0 flips), n=3 → **exploratory-only**; NO nuisance redesign mandated.
+  Reconciled vs A's `replicates_independent=false` (A's CI-bar vs B's bug-guard).
+- **Decision value (frozen U)**: best offset ≈ −bias monotone (5 distinct), **no robust generalist**,
+  **VSI 0.524**, switch 1.0, reversal 0.581; **success-only block-wise best-single gain 0.40** (3-fold,
+  leave-one-block-out; stable).
+- **Probes**: selected success K0 0.60→K1 1.00→K2 1.00; **Net VOI K1 +0.164, K2 −0.064**; only 2 probes
+  → K=3 not computed.
+- **Failure mechanism**: success ⇔ **|bias+offset|≤0.02**; |eff|0.04→POSITION_TIMEOUT(APPROACH),
+  ≥0.06→HANDLE_DETACHED(PULL); cannot exclude joint-limit/IK/collision (fields absent) → instrumentation.
+- **Exploration gate: PASS** (AND: gain 0.40≥0.15 ∧ VSI 0.524≥0.05; +no robust; +5 distinct; +no blocker;
+  +integrity). Differs from A (A gate_pass=false via replicates_independent hard-criterion).
+- **Final preregistration PRODUCED**: `preregistration_v1.md` + `confirmatory_freeze_proposal_v1.md`
+  (9 bias levels train{±0.04,±0.02,0}/val{±0.03}/test-interior{±0.01}; matched 7-offset grid; freeze 2
+  probes report K0/1/2; ≥9 blocks partitioned by split; frozen U + success-only; 6 required instrumentation
+  fields; Net VOI must be +ve in final GO). Confirmatory run NOT requested.
+- Docs: capability_map_analysis / independence_adjudication / failure_mechanism_audit /
+  exploration_gate_result / preregistration_v1 / confirmatory_freeze_proposal (all _v1).
+
+## (original) Waiting on Claude A capability map — ingestion plan
 1. Read A's exploratory capability map **read-only** by absolute path; record source_run_path /
    source_git_commit / candidate_bank_sha256 / dirty_worktree / reset flags.
 2. Run validator → independence → decision-value → exploration gate.
