@@ -1,0 +1,42 @@
+{
+  "synthetic_only": true,
+  "ok": true,
+  "checks": [
+    {
+      "check": "no_bias_or_seed_in_x",
+      "ok": true,
+      "detail": "x clean"
+    },
+    {
+      "check": "probes_have_no_candidate_fields",
+      "ok": true,
+      "detail": "probes carry no candidate fields"
+    },
+    {
+      "check": "leakage_safe_history",
+      "ok": true,
+      "detail": "all candidate histories legal"
+    },
+    {
+      "check": "nuisance_seed_independent_of_bias",
+      "ok": true,
+      "detail": "key=nuisance_block_id n_ids=21 n_bias=7 deterministic_map=False paired_reuse_across_bias=False"
+    },
+    {
+      "check": "matched_offset_bank_consistent",
+      "ok": true,
+      "detail": "matched bank consistent"
+    },
+    {
+      "check": "bias_level_count",
+      "ok": true,
+      "detail": "n_bias_levels=7 (expected 7)"
+    }
+  ],
+  "n_episodes": 210,
+  "n_candidates": 147,
+  "n_probes": 63,
+  "n_bias_levels": 7,
+  "n_matched_groups": 3,
+  "n_selection_groups": 21
+}

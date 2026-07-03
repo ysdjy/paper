@@ -1,0 +1,149 @@
+# calibration-bias offline status — Claude B
+
+Branch `experiment/offline-calibration-bias-v1`, worktree
+`projects/paper_calibration_bias_offline_v1` (branched from `origin/experiment/integration-damping-v1`).
+Offline/CPU only; never launches Isaac; only writes under
+`deployment_calibration/{offline_v2,evaluation/offline_v2,tests/offline_v2}/calibration_bias/` and
+`docs/offline_v2/calibration_bias/`. Reuses the frozen offline_v2 framework + models_v2.
+
+## Stage: protocol + tooling + synthetic validation — DONE (no real data yet)
+
+### Delivered code
+- `offline_v2/calibration_bias/schema.py` — spec-only layer (does NOT touch frozen contract):
+  hidden `bias_y`, controllable `grasp_offset_local_y`, model-legal vs hidden fields, FieldMap.
+- `offline_v2/calibration_bias/validator.py` — leakage/pairing gate + poison-tested checks
+  (no bias/seed in x; probes carry no candidate fields; leakage-safe history; nuisance⊥bias;
+  matched offset bank consistent).
+- `offline_v2/calibration_bias/splits.py` — bias-level split with held-out INTERIOR levels,
+  double isolation (level+session+seed), interpolation bracketing audit, manifest.
+- `offline_v2/calibration_bias/independence.py` — nuisance provenance + replicate variance +
+  near-duplicate detection + effective-N + **blocker rule**.
+- `offline_v2/calibration_bias/oracle.py` — matched offset bank (bias↔damping alias to reuse
+  offline_v2.oracle): oracle-candidate / state-agnostic / state-aware / VSI (frozen + success-only) /
+  switch / reversal / best-single offset / robust-offset existence / best-offset-per-bias.
+- `offline_v2/calibration_bias/voi.py` — probe-time + Gross/Net VOI (frozen + success-only).
+- `offline_v2/calibration_bias/synthetic.py` — controllable compensation world (`synthetic_only`).
+- `evaluation/offline_v2/calibration_bias/pipeline.py` — validate → independence → decision-value →
+  bias-level split → held-out selection + adaptation → VOI → **frozen exploration gate** → artifacts.
+
+### Tests — `pytest deployment_calibration/tests/offline_v2/calibration_bias/` → **20 passed**
+(+ 48 total offline_v2, framework unaffected). Poison: bias/seed/block-id/effective-error in x,
+candidate masquerading as probe, block↔bias 1:1. Independence: exploration paired block-reuse across
+bias is LEGAL. Split: partition/pairwise-disjoint(levels+sessions+seeds+blocks)/interpolation/<5-levels;
+confirmatory block-crossing-split flagged. Pipeline: positive world (gate PASS, VSI>0.05 AND success
+gain>0.15, no robust offset, DeepSets K0→K2 history gain), negative world (robust offset → gate fails),
+deterministic-replicate → blocker; **gate criterion-3 AND logic** (time-only VSI without success gain
+FAILS; success gain without VSI FAILS).
+
+### Frozen exploration gate (GO-to-preregistration; thresholds fixed in the draft)
+1. ≥3 bias levels have a different best offset. 2. no robust generalist (worst-case gap ≤0.02 → none).
+3. **success-only gain ≥0.15 AND frozen VSI ≥0.05 (both; AND not OR)** — 3a necessary for physical
+decision value, 3b necessary for combined utility. 4. independence blocker False. 5. validation ok.
+Net VOI is NOT a capability-map gate but MUST be positive in the final confirmatory GO.
+
+### Held-out bias split scheme
+≥5–7 continuous levels; extremes→train; ≥1–2 unseen **interior** levels→test (bracketed by train =
+interpolation); intermediate→val; disjoint by level+session+**nuisance seed + nuisance block**;
+deterministic seed/block never crosses split. Manifest + pairwise-disjoint unit tests.
+
+### Nuisance-block rules (exploration vs confirmatory)
+- Exploration Capability Map: same block MAY be reused across ALL bias levels (paired matched context);
+  probe+all candidates in a session share one x/g nuisance; raw seed/block id never in `x`; independence
+  treats block-reuse-across-bias as HEALTHY and rejects only a 1:1 block↔bias encoding.
+- Confirmatory: train/val/test use non-overlapping block ids + seeds; a block must NOT cross a split;
+  within a split a block may still pair across that split's bias levels. Enforced by split audit.
+
+### Independence blocker rule
+same-bias sessions near-deterministic AND seeds absent/not-varied-within-level ⇒ blocker=True ⇒
+CIs may not narrow by session count, GO disallowed. Formal CIs bootstrap over seeds/level blocks.
+
+### Synthetic pipeline result (SYNTHETIC ONLY, `synthetic_demo_v1/`)
+frozen VSI 0.590, success-only VSI 0.571, switch 1.0, reversal 0.417, no robust offset, 5 distinct
+best offsets, gate PASSED. Held-out interior biases: DeepSets/GRU selSucc≈1.0 (regret≈0) vs all
+no-history/best-single selSucc 0.0 (regret 1.07). DeepSets AUROC K0 0.39→K2 0.97. Net VOI +0.43 (K1)
+→ +0.03 (K3). Negative control → robust offset + VSI≈0; deterministic control → blocker.
+
+### KEY protocol insight (baked into the draft)
+Compensation success is a non-monotonic BAND in offset, so **linear B1 vs B2-mean understates the
+history effect** (both near chance). The honest H1 capacity control is **DeepSets K=0 vs K>0**; a
+feature-enriched linear baseline is reported as a secondary capacity-matched comparison.
+
+## Capability-map ingestion (A run calibration_bias_capability_map_v2_20260703_162715) — DONE
+Read-only. source commit `4fcfeba` (data `13b152b`, report `24919cd`, design `d65960e`);
+episodes sha256 `de21417390a80b5b…`; dirty_worktree false; damping/reset verified.
+Driver: `evaluation/offline_v2/calibration_bias/run_capability_map.py`; artifacts under
+`evaluation/offline_v2/calibration_bias/capability_map_v2_20260703_162715/`.
+
+- **Validator**: ALL PASS (135/105/30; candidate_id→offset pure fn; matched bank consistent across 5
+  bias; within-session & matched-block x/g identical; no bias/seed/block in x; leakage-safe history).
+- **Independence**: frozen **blocker=False** (blocks correctly applied+varied, time SD up to 1.2s), but
+  success label deterministic (0 flips), n=3 → **exploratory-only**; NO nuisance redesign mandated.
+  Reconciled vs A's `replicates_independent=false` (A's CI-bar vs B's bug-guard).
+- **Decision value (frozen U)**: best offset ≈ −bias monotone (5 distinct), **no robust generalist**,
+  **VSI 0.524**, switch 1.0, reversal 0.581; **success-only block-wise best-single gain 0.40** (3-fold,
+  leave-one-block-out; stable).
+- **Probes**: selected success K0 0.60→K1 1.00→K2 1.00; **Net VOI K1 +0.164, K2 −0.064**; only 2 probes
+  → K=3 not computed.
+- **Failure mechanism**: success ⇔ **|bias+offset|≤0.02**; |eff|0.04→POSITION_TIMEOUT(APPROACH),
+  ≥0.06→HANDLE_DETACHED(PULL); cannot exclude joint-limit/IK/collision (fields absent) → instrumentation.
+- **Exploration gate: PASS** (AND: gain 0.40≥0.15 ∧ VSI 0.524≥0.05; +no robust; +5 distinct; +no blocker;
+  +integrity). Differs from A (A gate_pass=false via replicates_independent hard-criterion).
+- **Final preregistration PRODUCED**: `preregistration_v1.md` + `confirmatory_freeze_proposal_v1.md`
+  (9 bias levels train{±0.04,±0.02,0}/val{±0.03}/test-interior{±0.01}; matched 7-offset grid; freeze 2
+  probes report K0/1/2; ≥9 blocks partitioned by split; frozen U + success-only; 6 required instrumentation
+  fields; Net VOI must be +ve in final GO). Confirmatory run NOT requested.
+- Docs: capability_map_analysis / independence_adjudication / failure_mechanism_audit /
+  exploration_gate_result / preregistration_v1 / confirmatory_freeze_proposal (all _v1).
+
+## Preregistration v2 (pre-data split-flaw fix) — DONE
+Found BEFORE any confirmatory data: v1 test={−0.01,+0.01} + success⇔|bias+offset|≤0.02 → offset 0 covers
+BOTH test biases → success-only H3 gain 0 by construction (H3 unprovable). **v2 supersedes v1** (pre-data,
+not post-hoc tuning). Driver `evaluation/offline_v2/calibration_bias/run_confirmatory_design_v2.py`;
+artifact `.../confirmatory_design_v2/confirmatory_design_validation_v2.json`.
+
+- **Split fixed**: train{−0.04,−0.02,0,+0.02,+0.04} / val{−0.01,+0.01} / **test{−0.03,+0.03}** (unseen
+  interior, bracketed; success-offset intersection ∅; max achievable success-only gain 0.5). New module
+  `design_validation.py` (predicted_success_offsets + validate_confirmatory_split: bracket + empty-
+  intersection; v1 rejected, v2 accepted).
+- **Probe order/K frozen**: first=probe_m040(−0.04,idx0), second=probe_p040(+0.04,idx1); K=1 = fixed first
+  probe only (verified NOT best-of-two); K=2=both; report K=0/1/2; no 3rd probe; **stop rule = K=1**.
+  Predicted confirmatory K-curve (geometry): full grid K0 0.556→K1 0.889→K2 1.0 (2nd probe adds value on
+  finer grid); test biases K0 0.5→K1 1.0. Net VOI full grid K1 +0.098, K2 −0.020.
+- **Nuisance blocks frozen via pre-data power sim** (`power.py`, exploration-calibrated + conservative
+  sensitivity): train 9 / val 6 / **test 9** (≥9 floor; power ≥0.94 at N=9; effect ~0.5). Total 75
+  sessions, **675 episodes**. Block-bootstrap CI (2000 reps, over blocks disjoint by split).
+- Docs: `preregistration_v2.md`, `confirmatory_freeze_proposal_v2.md`, `power_analysis_v2.md` (v1 retained).
+  Retained unchanged: 7-offset bank, frozen U, success-only co-primary, AND gate, 6 instrumentation fields,
+  K=0/1/2, Net VOI(K=1)>0 GO condition.
+- Tests 54→63 (+design_validation +power). Confirmatory run NOT requested.
+
+## Preregistration v3 (power-model / runtime alignment) — DONE
+Pre-data. Fixes a power-model vs runtime-implementation mismatch (not a design flaw): v2 power assumed a
+grasp perturbation moving the effective offset, but A runtime injects only calibration bias + joint/target
+jitter → 0 label flips in exploration. v3 freezes an IMPLEMENTABLE block-level **residual calibration
+nuisance** and re-runs design validation + power. **v3 supersedes v2** (v1/v2 retained).
+
+- **Residual nuisance** (`residual_nuisance.py`): actual_bias = nominal + residual;
+  residual ~ TruncNormal(0, σ=0.005, [−0.01,+0.01]) (eff SD 0.0044); one per block, reused across split's
+  bias levels, blocks independent, splits isolated; residual/actual bias secret/audit-only (model reads
+  neither; guard + test); no artificial action noise; cap keeps actual ≤ ±0.05 (compensable).
+- **Residual design validation** (`design_validation.validate_confirmatory_split_residual`): every nominal
+  bias compensable over full residual support (max actual 0.05); **no common offset covers both test biases
+  at any residual** → best-single test success ≤0.5, state-aware 1.0, max gain 0.5; candidate-group +
+  matched-block unchanged. v1 test still rejected.
+- **Power re-run** (`power.power_curve_residual`, runtime-aligned): N=9 power **0.97 baseline / 0.89
+  conservative** (≥0.8 target) → **9/6/9 retained, 675 episodes**. Block-bootstrap over test blocks.
+- **UNCHANGED** (re-validated): split, 7-offset bank, probe order + K=1 stop rule, utility, success-only
+  co-primary, AND gate, 6 instrumentation fields, K=0/1/2, Net VOI(K=1)>0 GO condition.
+- Docs: `preregistration_v3.md`, `confirmatory_freeze_proposal_v3.md`, `power_analysis_v3.md`,
+  `confirmatory_design_validation_v3.json`. Tests 63→69 (+residual). Confirmatory run NOT requested.
+
+## (original) Waiting on Claude A capability map — ingestion plan
+1. Read A's exploratory capability map **read-only** by absolute path; record source_run_path /
+   source_git_commit / candidate_bank_sha256 / dirty_worktree / reset flags.
+2. Run validator → independence → decision-value → exploration gate.
+3. Issue **one** freeze proposal (bias levels, offset bank, probe set, split).
+4. Commit `preregistration_v1` (final) BEFORE any confirmatory data.
+5. Do NOT request the confirmatory run; wait for user confirmation.
+
+Docs: `preregistration_draft_v1.md`, this file.

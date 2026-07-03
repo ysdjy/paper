@@ -1,0 +1,5 @@
+{
+  "synthetic_only": true,
+  "note": "SYNTHETIC pipeline self-test \u2014 NOT a paper result",
+  "generator": "offline_v2.calibration_bias.synthetic.make_synthetic (defaults)"
+}
