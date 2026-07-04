@@ -125,6 +125,14 @@ def check_full_record_schema(fails):
         fails.append(f"assembled record fails schema/leakage: {r}")
 
 
+def test_band_edge_instrumentation_cores():   # pytest-discoverable
+    fails = []
+    for fn in (check_joint_margin, check_clamps, check_ik_failure, check_failure_phase,
+               check_close_snapshot, check_full_record_schema):
+        fn(fails)
+    assert not fails, fails
+
+
 def main() -> int:
     fails = []
     for fn in (check_joint_margin, check_clamps, check_ik_failure, check_failure_phase,

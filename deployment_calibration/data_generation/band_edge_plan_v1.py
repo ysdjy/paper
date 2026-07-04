@@ -125,6 +125,7 @@ def build_plan(pc: PlanConfig) -> dict:
                 continue
             o = float(oid[1:])
             planned.append({"execution_index": exec_i, "block_id": b, "offset_id": oid,
+                            "planned_episode_id": f"b{b:02d}_{oid}",   # run-independent, deterministic id
                             "grasp_offset_local_y": o,
                             "eff_signed": round(blocks[b]["actual_bias_y"] + o, 6),
                             "abs_eff": round(abs(blocks[b]["actual_bias_y"] + o), 6)})

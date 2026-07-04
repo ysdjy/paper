@@ -158,6 +158,14 @@ def check_validators(fails):
         fails.append("exclude_smoke did not drop smoke_only records")
 
 
+def test_band_edge_plan_and_validators():   # pytest-discoverable
+    fails = []
+    check_plan(fails)
+    check_resume(fails)
+    check_validators(fails)
+    assert not fails, fails
+
+
 def main() -> int:
     fails = []
     check_plan(fails)

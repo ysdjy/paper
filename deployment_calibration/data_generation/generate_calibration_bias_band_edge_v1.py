@@ -56,6 +56,14 @@ def main():
     ap.add_argument("--config", default=None)
     ap.add_argument("--run_id", default=None)
     ap.add_argument("--i_have_explicit_user_approval", action="store_true")
+    # reliability / test controls
+    ap.add_argument("--stop_after_new_episodes", type=int, default=0,
+                    help="test-only planned stop after N NEW episodes -> IN_PROGRESS (forbidden for full)")
+    ap.add_argument("--inject_invalid_record_at", default=None,
+                    help="test-only: corrupt the record at this planned_episode_id to prove fail-fast "
+                         "(smoke/test only; forbidden for full)")
+    ap.add_argument("--allow_dirty", action="store_true",
+                    help="allow a dirty source tree (smoke only; a full run always refuses dirty)")
     # AppLauncher args are added only when Isaac is needed
     if "--mode" in sys.argv and "manifest_only" in sys.argv:
         args, _ = ap.parse_known_args()
@@ -95,83 +103,176 @@ def _run_manifest_only(args):
     return 0
 
 
+def _build_record(pe, b, run_id, smoke_only, sci_sha, gi, x, y, instr, deff, dpost, config_sha):
+    return {"episode_id": f"{run_id}__{pe['planned_episode_id']}",
+            "planned_episode_id": pe["planned_episode_id"],
+            "episode_role": "candidate", "smoke_only": bool(smoke_only),
+            "block_id": b["block_id"], "nuisance_block_id": b["block_id"],
+            "offset_id": pe["offset_id"], "candidate_id": pe["offset_id"],
+            "x": x, "g": {"target_open_position": pe.get("_g_target"), "target_tolerance": 0.02},
+            "theta": {"grasp_offset_local_y": pe["grasp_offset_local_y"], "max_pos_step": 0.02, "pull_lead": 0.08},
+            "y": y,
+            "secret_deployment_state": {"nominal_bias_y": b["nominal_bias_y"],
+                                        "residual_bias_y": b["residual_bias_y"], "actual_bias_y": b["actual_bias_y"]},
+            "nuisance_robot_joint_delta": b["nuisance_robot_joint_delta"],
+            "nuisance_target_jitter": b["nuisance_target_jitter"], "block_seed": b["block_seed"],
+            "residual_seed": b["residual_seed"], "eff_signed": pe["eff_signed"], "abs_eff": pe["abs_eff"],
+            "damping_eff": deff, "damping_post": dpost, "config_sha256": config_sha,
+            "science_manifest_sha256": sci_sha, "code_commit": gi["git_commit"], **instr}
+
+
 def _run_isaac(args, app_launcher):
+    import traceback
     from _drawer_harness_v2 import run_id_dir, git_info
     from band_edge_runtime_v1 import launch_band_edge_scene, run_band_edge_episode
+    import band_edge_reliability_v1 as REL
 
-    if args.mode == "full" and not args.i_have_explicit_user_approval:
-        print("[band-edge] FULL run not authorized. Refusing.", flush=True); return 2
-    cfg = _load_yaml(args.config)
+    is_full = args.mode == "full"
     smoke_only = args.mode == "smoke"
+    if is_full and not args.i_have_explicit_user_approval:
+        print("[band-edge] FULL run not authorized. Refusing.", flush=True); return 2
+    # test-only controls are forbidden on the formal full path
+    if is_full and (args.stop_after_new_episodes or args.inject_invalid_record_at or args.allow_dirty):
+        print("[band-edge] test-only controls (stop_after/inject_invalid/allow_dirty) forbidden for full run.",
+              flush=True); return 2
+
+    cfg = _load_yaml(args.config)
     pc = _pc_from_cfg(cfg, smoke_only)
     manifest = PLAN.build_plan(pc)
-    if args.mode == "full":
-        # (unreachable without approval flag) — full 306
-        if manifest["planned_episode_count"] != 306:
-            print("[band-edge] refusing full run: plan != 306"); return 2
+    if is_full and manifest["planned_episode_count"] != 306:
+        print("[band-edge] refusing full run: plan != 306"); return 2
+    sci_sha = REL.science_manifest_sha256(manifest)
     gi = git_info()
     run_id = args.run_id or f"{'band_edge_smoke' if smoke_only else 'band_edge'}_v1_{time.strftime('%Y%m%d_%H%M%S')}"
     outdir = run_id_dir(run_id)
-    manifest["run_id"] = run_id
-    manifest["git_commit"] = gi["git_commit"]; manifest["dirty_worktree"] = gi["dirty_worktree"]
-    manifest["branch"] = gi["branch"]
-    (outdir / "manifest.json").write_text(json.dumps(manifest, indent=1))
+    config_sha = manifest["config_sha256"]
+
+    # ---- dirty-source refusal (full run must start clean; only its own output dir may differ) ----
+    if is_full:
+        try:
+            REL.assert_clean_source_tree_for_full_run(_PAPER, outdir,
+                                                      extra_allowed=("deployment_calibration/data/",))
+        except RuntimeError as ex:
+            REL.write_run_status(outdir, REL.INVALID, reason=str(ex))
+            print(f"[band-edge] {ex}", flush=True); return 3
+    elif not args.allow_dirty and gi["dirty_worktree"]:
+        print("[band-edge] note: dirty worktree in smoke mode (allowed; pass --allow_dirty to silence).", flush=True)
+
+    # ---- manifest-first identity: freeze/verify the run manifest ----
+    man_path = outdir / "manifest.json"
+    if man_path.exists():
+        existing = json.loads(man_path.read_text())
+        if REL.science_manifest_sha256(existing) != sci_sha or existing.get("config_sha256") != config_sha:
+            REL.write_run_status(outdir, REL.INVALID, reason="existing manifest science/config hash mismatch")
+            print("[band-edge] INVALID: existing run manifest does not match the frozen plan.", flush=True)
+            return 3
+        manifest = existing
+    else:
+        m = dict(manifest); m["run_id"] = run_id; m["science_manifest_sha256"] = sci_sha
+        m["git_commit"] = gi["git_commit"]; m["branch"] = gi["branch"]
+        REL.write_json_atomic(man_path, m); manifest = m
+        REL.write_json_atomic(outdir / "run_metadata.json",
+                              {"run_id": run_id, "mode": args.mode, "smoke_only": smoke_only,
+                               "config_sha256": config_sha, "science_manifest_sha256": sci_sha,
+                               "source_commit": gi["git_commit"], "master_seed": manifest["master_seed"],
+                               "planned_episode_count": manifest["planned_episode_count"],
+                               "output_directory": str(outdir), "created_at": REL._ts(), **gi})
+        REL.write_run_status(outdir, REL.PLANNED, planned=manifest["planned_episode_count"])
+
+    # ---- resume: load + verify committed records; build completed set (no resample, no re-exec) ----
+    try:
+        completed, existing_recs = REL.load_and_verify_completed(outdir, manifest, sci_sha)
+    except ValueError as ex:
+        REL.write_run_status(outdir, REL.INVALID, reason="existing records inconsistent", detail=str(ex)[:2000])
+        (outdir / "errors").mkdir(exist_ok=True)
+        REL.write_json_atomic(outdir / "errors" / "resume_invalid.json", {"detail": str(ex)})
+        print(f"[band-edge] INVALID: existing records inconsistent -> {ex}", flush=True); return 3
+    planned = manifest["planned_episodes"]
+    remaining = [pe for pe in planned if pe["planned_episode_id"] not in completed]
+    REL.append_resume_log(outdir, {"source_commit": gi["git_commit"], "science_manifest_sha256": sci_sha,
+                                    "completed": len(completed), "remaining": len(remaining),
+                                    "planned": len(planned)})
+    print(f"[band-edge] resume: {len(completed)} completed, {len(remaining)} remaining of {len(planned)} "
+          f"(mode={args.mode})", flush=True)
+    REL.write_run_status(outdir, REL.IN_PROGRESS, completed=len(completed), remaining=len(remaining))
 
     H = launch_band_edge_scene(app_launcher, device=args.device)
     arm_ids = list(H.provider._arm_joint_ids)
     spec = H.spec(pc.drawer)
     blk_by_id = {b["block_id"]: b for b in manifest["blocks"]}
-    ep_f = open(outdir / "episodes.jsonl", "w")
-    records = []
-    t0 = time.time(); n = 0; sensor_ok = None
-    for pe in manifest["planned_episodes"]:
+    seen_ids = set(completed)
+    t0 = time.time(); new_done = 0
+    stop_after = int(args.stop_after_new_episodes or 0)
+    for pe in remaining:
+        if stop_after and new_done >= stop_after:
+            print(f"[band-edge] test-only planned stop after {new_done} new episodes -> IN_PROGRESS.", flush=True)
+            REL.rebuild_episodes_jsonl(outdir, manifest)
+            REL.write_run_status(outdir, REL.IN_PROGRESS, completed=len(seen_ids), remaining=len(planned) - len(seen_ids),
+                                 stopped_for_test=True)
+            H.close(); return 0
+        # running guard: membership + no duplicate + count
+        if (pe["block_id"], pe["offset_id"]) not in {(p["block_id"], p["offset_id"]) for p in planned} \
+                or pe["planned_episode_id"] in seen_ids or len(seen_ids) >= len(planned):
+            _fail(outdir, REL, pe, "running guard: unplanned/duplicate/over-count", None, len(seen_ids))
+            H.close(); return 4
         b = blk_by_id[pe["block_id"]]
-        g = {"target_open_position": pc.target_open_position + b["nuisance_target_jitter"],
-             "target_tolerance": 0.02}
-        x, y, instr, deff, dpost = run_band_edge_episode(
-            H, spec, actual_bias_y=b["actual_bias_y"], offset_y=pe["grasp_offset_local_y"], g=g,
-            robot_joint_delta=b["nuisance_robot_joint_delta"], damping=pc.damping, arm_ids=arm_ids)
-        sensor_ok = instr.get("contact_sensor_available")
-        rec = {"episode_id": f"{run_id}_b{b['block_id']:02d}_{pe['offset_id']}",
-               "episode_role": "candidate", "smoke_only": bool(smoke_only),
-               "block_id": b["block_id"], "nuisance_block_id": b["block_id"],
-               "offset_id": pe["offset_id"], "candidate_id": pe["offset_id"],
-               "x": x, "g": g, "theta": {"grasp_offset_local_y": pe["grasp_offset_local_y"],
-                                         "max_pos_step": 0.02, "pull_lead": 0.08},
-               "y": y,
-               "secret_deployment_state": {"nominal_bias_y": b["nominal_bias_y"],
-                                           "residual_bias_y": b["residual_bias_y"],
-                                           "actual_bias_y": b["actual_bias_y"]},
-               "nuisance_robot_joint_delta": b["nuisance_robot_joint_delta"],
-               "nuisance_target_jitter": b["nuisance_target_jitter"], "block_seed": b["block_seed"],
-               "residual_seed": b["residual_seed"], "eff_signed": pe["eff_signed"], "abs_eff": pe["abs_eff"],
-               "damping_eff": deff, "damping_post": dpost, "config_sha256": manifest["config_sha256"],
-               "code_commit": gi["git_commit"], **instr}
+        g_target = pc.target_open_position + b["nuisance_target_jitter"]
+        pe = {**pe, "_g_target": g_target}
+        try:
+            x, y, instr, deff, dpost = run_band_edge_episode(
+                H, spec, actual_bias_y=b["actual_bias_y"], offset_y=pe["grasp_offset_local_y"],
+                g={"target_open_position": g_target, "target_tolerance": 0.02},
+                robot_joint_delta=b["nuisance_robot_joint_delta"], damping=pc.damping, arm_ids=arm_ids)
+        except Exception:
+            _fail(outdir, REL, pe, "episode exception", traceback.format_exc(), len(seen_ids))
+            H.close(); return 4
+        rec = _build_record(pe, b, run_id, smoke_only, sci_sha, gi, x, y, instr, deff, dpost, config_sha)
+        # test-only invalid injection (smoke/test only)
+        if args.inject_invalid_record_at and pe["planned_episode_id"] == args.inject_invalid_record_at:
+            if is_full:
+                _fail(outdir, REL, pe, "invalid-injection forbidden on full run", None, len(seen_ids)); H.close(); return 4
+            rec["minimum_joint_limit_margin_rad"] = -1.0   # deterministic schema violation
+        # FAIL-FAST: validate BEFORE persisting; never write an invalid record
         vr = VAL.validate_record_full(rec)
-        rec["_validation_ok"] = vr["ok"]
         if not vr["ok"]:
-            print(f"[band-edge] RECORD INVALID {rec['episode_id']}: {vr}", flush=True)
-        ep_f.write(json.dumps(rec) + "\n"); ep_f.flush(); records.append(rec); n += 1
-        print(f"[band-edge] {n}/{len(manifest['planned_episodes'])} b{b['block_id']} {pe['offset_id']} "
+            _fail(outdir, REL, pe, "record failed validate_record_full",
+                  json.dumps(vr), len(seen_ids), errors=vr)
+            H.close(); return 4
+        REL.atomic_write_record(outdir, rec["episode_id"], rec)   # crash-safe commit AFTER validation
+        seen_ids.add(pe["planned_episode_id"]); new_done += 1
+        print(f"[band-edge] {len(seen_ids)}/{len(planned)} b{b['block_id']} {pe['offset_id']} "
               f"abseff={pe['abs_eff']:.3f} succ={y['success']} contact={instr['max_unintended_contact_force_N']:.2f}N "
               f"({(time.time()-t0)/60:.1f}min)", flush=True)
-    ep_f.close()
-
-    # smoke-level validators
-    mb = VAL.validate_matched_block(records)
-    dup = VAL.reject_duplicate_episodes(records)
-    npb = VAL.assert_no_probes(records)
-    summary = {"run_id": run_id, "mode": args.mode, "smoke_only": smoke_only, "n_episodes": n,
-               "contact_sensor_available": sensor_ok, "matched_block_ok": mb["ok"],
-               "matched_block_errors": mb["errors"][:8], "duplicate_ok": dup["ok"], "no_probes_ok": npb["ok"],
-               "all_records_valid": all(r["_validation_ok"] for r in records),
-               "wall_clock_minutes": round((time.time() - t0) / 60, 2), **gi}
-    (outdir / "smoke_summary.json").write_text(json.dumps(summary, indent=1))
-    print(f"[band-edge] DONE {run_id} n={n} sensor_available={sensor_ok} matched_block={mb['ok']} "
-          f"dup_ok={dup['ok']} no_probes={npb['ok']} all_valid={summary['all_records_valid']} "
-          f"dirty={gi['dirty_worktree']} -> {outdir}", flush=True)
     H.close()
+
+    # ---- rebuild episodes.jsonl (manifest order) + HARD self-check controls exit ----
+    REL.rebuild_episodes_jsonl(outdir, manifest)
+    all_recs = list(REL.committed_records(outdir).values())
+    sc = REL.hard_self_check(all_recs, manifest)
+    REL.write_json_atomic(outdir / "self_check.json",
+                          {"ok": sc["ok"], "errors": sc["errors"], "counts": sc["counts"],
+                           "contact_sensor_available": all(r.get("contact_sensor_available") for r in all_recs),
+                           "wall_clock_minutes": round((time.time() - t0) / 60, 2)})
+    if not sc["ok"]:
+        REL.write_run_status(outdir, REL.INVALID, self_check_errors=sc["errors"][:10])
+        print(f"[band-edge] INVALID self-check: {sc['errors'][:5]}", flush=True); return 5
+    REL.write_run_status(outdir, REL.COMPLETE, n_episodes=len(all_recs))
+    REL.append_resume_log(outdir, {"final_status": REL.COMPLETE, "completed": len(all_recs)})
+    print(f"[band-edge] COMPLETE {run_id} n={len(all_recs)} self_check=OK -> {outdir}", flush=True)
     return 0
+
+
+def _fail(outdir, REL, pe, reason, tb, completed_count, errors=None):
+    (Path(outdir) / "errors").mkdir(exist_ok=True)
+    payload = {"planned_episode_id": pe.get("planned_episode_id"), "reason": reason,
+               "validation_errors": errors, "traceback": tb, "completed_count": completed_count,
+               "time": REL._ts()}
+    REL.write_json_atomic(Path(outdir) / "errors" / f"fail_{pe.get('planned_episode_id','x')}.json", payload)
+    REL.write_run_status(outdir, REL.FAILED, reason=reason,
+                         failed_episode=pe.get("planned_episode_id"), completed=completed_count)
+    REL.append_resume_log(outdir, {"final_status": REL.FAILED, "reason": reason,
+                                   "failed_episode": pe.get("planned_episode_id")})
+    print(f"[band-edge] FAILED at {pe.get('planned_episode_id')}: {reason}", flush=True)
 
 
 if __name__ == "__main__":
