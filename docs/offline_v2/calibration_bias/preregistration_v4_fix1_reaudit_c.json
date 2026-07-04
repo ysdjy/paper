@@ -1,0 +1,102 @@
+{
+  "verdict": "MODIFY_PREREGISTRATION_V4_FIX1",
+  "auditor": "Claude C (independent, read-only, adversarial, second pass / fix1 re-audit)",
+  "audited_commit": "91a41e51282f716595bc3553ba500e6e2af95f40",
+  "audited_branch": "experiment/offline-calibration-preregistration-v4-fix1",
+  "original_v4_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
+  "original_audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "authorizes_generator_implementation": false,
+  "authorizes_manifest_instance_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "power_recertification_note": "None of the open items touches the candidate bank, geometry, residual, probe, model/HP/seeds, primary comparator, bootstrap, 0.15 threshold, or effect. Selection invariance independently reconfirmed (4500/4500: 0 step-1 ties, 0 old/new mismatch, all offset 0).",
+  "resolved_blockers": [
+    {
+      "id": "BLOCKER_SECRET_TIEBREAK",
+      "status": "RESOLVED (rule)",
+      "evidence": "best_single.rule = max observed mean success -> min |offset| -> fixed bank order; the tau-|eff| step is removed; forbidden_inputs lists nominal/residual/actual/eff/tau-|eff|/oracle/test. Independently reconfirmed selection-invariant on 4500/4500 replicates. NOTE: a residual production-binding issue remains (see new_blockers)."
+    },
+    {
+      "id": "BLOCKER_SEEDS_NOT_FROZEN",
+      "status": "RESOLVED",
+      "evidence": "15 exact-integer frozen_seeds recompute bit-exactly from seed(label)=int(sha256('confirmatory-v4|2bf7217...|'+label)[:16],16)%(2**63-1); master_seed=6341914557047805261 and bootstrap_seed=9014517173581927929 match the reference; no collisions; MD==JSON==code. subseed(domain,identity) frozen. bootstrap_seed frozen pre-unseal. Residual identity-format sub-issue -> new_blockers."
+    },
+    {
+      "id": "BLOCKER_SEAL_SCHEME_NOT_UNIQUE",
+      "status": "RESOLVED",
+      "evidence": "single SCHEME_2_MODEL_FREEZE_BEFORE_TEST_GENERATION (Steps 0-8, no either/or); test manifest generated ONLY after Step 5 model+analysis freeze; Step-6 deterministic instantiation; post_unseal_forbidden includes 'reselect test seed' and 'generate multiple test manifests and pick'; early access -> EXPERIMENT_INVALID_EARLY_TEST_ACCESS; Step-order guard requires model_analysis_freeze.json."
+    },
+    {
+      "id": "BLOCKER_MODEL_FAILURE_SEMANTICS",
+      "status": "RESOLVED",
+      "evidence": "model_fit_failure_count is a SEPARATE namespace from runtime_trial_invalid_count (not subject to >15); all 5 seeds must be valid for BOTH K0 and K1 (10 checkpoints, hashes frozen); no seed replacement/drop; missing/invalid seed -> EXPERIMENT_INVALID_MODEL_FIT (no test manifest); retry = initial + at most 1 deterministic, infrastructural-only, identical data/seed/HP/code/device; 9 model-validity conditions; reaching max_epochs is not a failure. The >=4/5 gain gate can no longer mask a missing seed."
+    }
+  ],
+  "new_blockers": [
+    {
+      "id": "BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT",
+      "severity": "blocker",
+      "summary": "The best-single RULE is now legal, but confirmatory_v4_config.json best_single.implementation points at learned_selector_power.best_single_legal, which computes succ(s['nominal'], s['residual'], o, tau) -- it RECONSTRUCTS the success label from the SECRET hidden state (nominal + residual) and the band parameter tau, and never reads an observed y.success. Its docstring calls succ() 'the OBSERVED binary outcome', but the synthetic session has no y.success field; this is a mislabel. No observed-outcome-only production interface is frozen.",
+      "why_it_matters": "If Claude A uses/copies best_single_legal for the confirmatory best-single, the production baseline would read secret fields and substitute the fitted |eff|<=tau band label for the real trial outcome -- a leakage and a correctness error. The preregistration must freeze the production contract, not a simulation helper.",
+      "files": [
+        "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : best_single.implementation",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_analysis_plan.md : sec.2 ('Implementation: learned_selector_power.best_single_legal')",
+        "deployment_calibration/offline_v2/calibration_bias/learned_selector_power.py : best_single_legal (line ~129, succ(s['nominal'], s['residual'], o, tau))"
+      ],
+      "minimal_fix": "Freeze a pure production interface, e.g. select_best_single(observed_train_val_candidate_records) that groups train+val CANDIDATE trials by candidate offset and reads ONLY: candidate grasp_offset_local_y, observed y.success, and split in {train,validation}; computes mean observed success per offset; applies max-success -> min|offset| -> bank order. It must NOT read nominal/residual/actual/eff/tau or any secret. Relabel best_single_legal explicitly as SIMULATION-ONLY (the Monte-Carlo reference) and stop designating it as the confirmatory implementation. Add tests: (a) perturbing secret fields does not change the selection; (b) perturbing observed y.success changes it per the rule.",
+      "power_recert_needed": false,
+      "power_recert_reason": "A correct observed-success selector picks the same offset 0 (offset 0 has the highest train+val observed success; 4500/4500 invariance). Contract/plumbing fix only."
+    },
+    {
+      "id": "BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN",
+      "severity": "blocker",
+      "summary": "The subseed FUNCTION is frozen, but the canonical planned_identity STRING format is only exemplified, not pinned: the residual draw uses subseed(<split>_residual_seed, 'block=<i>') while examples show 'block=03'/'block=07' (2-digit zero-pad) -- 'block=3' vs 'block=03' yield different subseeds. The 'trial=<planned_episode_id>' identity depends on a planned_episode_id template that is not frozen (fields, order, padding).",
+      "why_it_matters": "This leaves Claude A discretion over the identity strings, which changes the actual per-block residual and order draws. It undermines Blocker B's 'one deterministic manifest, no cherry-pick' guarantee and Blocker C's Step-6 determinism: the manifest is not uniquely determined by the frozen config+seeds alone.",
+      "files": [
+        "docs/offline_v2/calibration_bias/confirmatory_v4_manifest_spec.md : sec.2.2, sec.3 ('block=<i>' vs examples 'block=03')",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : subseed_derivation (no identity template)"
+      ],
+      "minimal_fix": "Freeze the exact canonical planned_identity template: field set, order, separators, and integer zero-padding (e.g. 'split=<train|validation|test>|block=<02d>|session=<02d>|role=<probe|candidate>|cand=<+0.02f>'), and the planned_episode_id string format. Add a test that recomputes a couple of block residual subseeds from the frozen template.",
+      "power_recert_needed": false
+    }
+  ],
+  "minor_issues": [
+    {
+      "id": "DETERMINISM_ENV_FLAGS_NOT_FULLY_FROZEN",
+      "summary": "model.determinism relies on 'CPU full-batch -> deterministic rerun' and records environment_versions, but does not explicitly freeze torch thread count / torch.use_deterministic_algorithms / BLAS thread pinning. For a tiny full-batch CPU model with fixed seeds determinism is robust, but the reproducibility environment should pin these flags.",
+      "recommendation": "Freeze: device=CPU asserted, torch.use_deterministic_algorithms(True), torch.set_num_threads(1) (or a fixed value), and record them in model_analysis_freeze.json."
+    },
+    {
+      "id": "MINOR_7_1_TO_7_4_RESOLVED",
+      "summary": "7.1 stale band-edge verdict SUPERSEDED (original band_edge_exit_verdict_v1.json unchanged = MODIFY_RESIDUAL_OR_DESIGN; a separate supersession note added, no overwrite, no pretend-new-experiment). 7.2 all 8 probe fields required -> TECHNICAL_INVALID_SCHEMA (no silent zero-fill). 7.3 HP passed explicitly; DeepSets defaults (300/30) documented as not relied on. 7.4 tau=0.0325 remains a non-primary sensitivity anchor. All confirmed."
+    }
+  ],
+  "verified_pass": {
+    "best_single_rule": "PASS (observable-only rule; secret margin removed)",
+    "selection_invariance": "PASS - independently recomputed 4500/4500: 0 ties, 0 old/new mismatch, all offset 0",
+    "seeds_frozen": "PASS - 15 exact seeds recompute; master & bootstrap match reference; no collisions",
+    "seal_scheme_unique": "PASS - SCHEME_2, no either/or, early-access invalid, step-order guard",
+    "model_failure_semantics": "PASS - separate namespace, all-5-required, retry<=1 infra-only, EXPERIMENT_INVALID_MODEL_FIT",
+    "power_inputs_unchanged": "PASS - bank/geometry/residual/probe/model/seeds/comparator/bootstrap/threshold unchanged; POWER_SUFFICIENT_FOR_PREREG_V4 stands",
+    "probe_fields_required": "PASS - no silent zero-fill",
+    "band_edge_original_untouched": "PASS - superseded not overwritten",
+    "stale_semantics": "PASS - tau-|eff|/either-or appear only in historical/pre-power docs, not the active v4 spec",
+    "status_consistency": "PASS - PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT across MD/JSON"
+  },
+  "tests": {
+    "b_fix1_suite": "test_preregistration_v4_fix1.py -> 27 passed (env_isaaclab)",
+    "c_reaudit_suite": "test_preregistration_v4_fix1_reaudit_c.py -> 11 passed, 2 xfailed (the 2 new blockers)",
+    "c_first_audit_file": "test_preregistration_v4_audit_c.py is UNMODIFIED; its 4 strict-xfail now XPASS(strict)->fail, the intended machine signal that the four original blockers were fixed against the old commit 9a02eb5."
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/preregistration_v4_fix1_reaudit_c.md",
+    "docs/offline_v2/calibration_bias/preregistration_v4_fix1_reaudit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_preregistration_v4_fix1_reaudit_c.py"
+  ]
+}
