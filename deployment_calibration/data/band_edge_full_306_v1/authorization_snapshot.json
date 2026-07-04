@@ -1,0 +1,18 @@
+{
+ "authorization_verdict": "AUTHORIZE_306_EXPLORATORY_RUN",
+ "authorization_commit": "0fbe68a295702df131af6c4187d5315d2a7f5447",
+ "authorized_runtime_commit": "e447f00728b9b3dd26cbc85ecc3f0c2de17822f5",
+ "authorized_runtime_branch": "experiment/runtime-calibration-band-edge-reliability-v1",
+ "authorized_config_sha256": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+ "authorized_science_manifest_sha256": "e2c8216ed2b2bae19d03815ed922eaf49a6870afce72d7d3fb544e98cd7c86ba",
+ "authorized_episode_count": 306,
+ "authorized_blocks": 18,
+ "authorized_offsets_per_block": 17,
+ "authorized_master_seed": 8801150,
+ "authorized_run_count": 1,
+ "resume_allowed": true,
+ "smoke_only": false,
+ "confirmatory_authorized": false,
+ "launch_config": "external scratchpad launch yaml (frozen defaults, no subset); frozen config_sha256 unchanged",
+ "run_id": "band_edge_full_306_v1"
+}

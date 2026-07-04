@@ -1,0 +1,138 @@
+{
+ "episode_id": "band_edge_full_306_v1__b03_o+0.000",
+ "planned_episode_id": "b03_o+0.000",
+ "episode_role": "candidate",
+ "smoke_only": false,
+ "block_id": 3,
+ "nuisance_block_id": 3,
+ "offset_id": "o+0.000",
+ "candidate_id": "o+0.000",
+ "x": {
+  "mechanism_id": "cabinet:middle_drawer",
+  "drawer_name": "middle_drawer",
+  "member": "cabinet",
+  "robot_joint_pos": [
+   0.1048734188079834,
+   -1.013962745666504,
+   0.01987045258283615,
+   -2.787829875946045,
+   -0.005629921332001686,
+   1.7714821100234985,
+   0.8952363133430481,
+   0.03999999910593033,
+   0.03999999910593033
+  ],
+  "tcp_pos": [
+   2.373952627182007,
+   2.038867473602295,
+   1.0807881355285645
+  ],
+  "tcp_quat": [
+   0.011260544881224632,
+   0.9999310374259949,
+   0.003322768956422806,
+   2.3878179490566254e-05
+  ],
+  "gripper_width": 0.07999999821186066,
+  "initial_mechanism_joint_pos": 2.1206927769412687e-08
+ },
+ "g": {
+  "target_open_position": 0.20468748227738273,
+  "target_tolerance": 0.02
+ },
+ "theta": {
+  "grasp_offset_local_y": 0.0,
+  "max_pos_step": 0.02,
+  "pull_lead": 0.08
+ },
+ "y": {
+  "success": true,
+  "failure_reason": "NONE",
+  "final_joint_position": 0.20033428072929382,
+  "task_outcome_error": 0.004353201548088909,
+  "overshoot": 0.0,
+  "skill_elapsed_time": 9.399999999999888,
+  "phase_durations": {
+   "ARC_TO_FACE": 1.88,
+   "MOVE_TO_PRE_GRASP": 2.9,
+   "APPROACH": 1.94,
+   "CLOSE_GRIPPER": 1.02,
+   "PULL": 0.72,
+   "SETTLE": 0.52,
+   "RELEASE": 0.42
+  },
+  "handle_detached": false,
+  "handle_relative_error": 0.015151865573392974,
+  "command_tracking_error": 0.0,
+  "phase_goal_error": 0.07163192868562221,
+  "wall_clock_time": 17.750213623046875
+ },
+ "secret_deployment_state": {
+  "nominal_bias_y": 0.0,
+  "residual_bias_y": 0.005185059887756118,
+  "actual_bias_y": 0.005185059887756118
+ },
+ "nuisance_robot_joint_delta": [
+  -0.005580817176525304,
+  0.02152097589244768,
+  -5.058335898764667e-05,
+  0.007889545813166166,
+  -0.023835785772218482,
+  0.01220034592043153,
+  0.008264944982677096
+ ],
+ "nuisance_target_jitter": 0.004687482277382715,
+ "block_seed": 621940980,
+ "residual_seed": 1669818504,
+ "eff_signed": 0.005185,
+ "abs_eff": 0.005185,
+ "damping_eff": 3.0,
+ "damping_post": 3.0,
+ "config_sha256": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+ "science_manifest_sha256": "e2c8216ed2b2bae19d03815ed922eaf49a6870afce72d7d3fb544e98cd7c86ba",
+ "code_commit": "e447f00728b9b3dd26cbc85ecc3f0c2de17822f5",
+ "minimum_joint_limit_margin_rad": 0.0,
+ "minimum_joint_limit_margin_rad_signed": -1.5e-05,
+ "minimum_joint_limit_margin_normalized": 0.0,
+ "minimum_joint_limit_joint_index": 0,
+ "minimum_joint_limit_phase": "APPROACH",
+ "joint_limit_margin_negative_flag": true,
+ "ik_solve_count": 376,
+ "ik_failure_count": 0,
+ "max_consecutive_ik_failures": 0,
+ "ik_failure_phase_counts": {},
+ "joint_step_clamp_count": 78,
+ "joint_limit_clamp_count": 245,
+ "failure_phase": "NONE",
+ "failure_transition": "NONE",
+ "true_handle_error_at_close_3d": 0.005503,
+ "true_handle_error_at_close_local_y": -0.000339,
+ "tcp_pose_at_close": [
+  1.628011,
+  2.357356,
+  1.142102,
+  -0.507411,
+  0.514892,
+  0.489838,
+  -0.487318
+ ],
+ "true_handle_pose_at_close": [
+  1.623857,
+  2.353763,
+  1.141763,
+  0.50865,
+  -0.50865,
+  -0.491198,
+  0.491198
+ ],
+ "gripper_width_at_close": 0.010809,
+ "gripper_command_at_close": -1.0,
+ "close_snapshot_available": true,
+ "close_snapshot_reason": "captured",
+ "max_unintended_contact_force_N": 0.0,
+ "unintended_contact_frame_count": 0,
+ "first_unintended_contact_phase": "NONE",
+ "contact_force_by_phase": {},
+ "contact_sensor_available": true,
+ "contact_sensor_backend": "isaaclab.sensors.ContactSensor(robot_contact.net_forces_w, non-finger links)"
+}

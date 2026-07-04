@@ -1,0 +1,11 @@
+{
+ "ok": true,
+ "errors": [],
+ "counts": {
+  "records": 306,
+  "planned": 306,
+  "is_full": true
+ },
+ "contact_sensor_available": true,
+ "wall_clock_minutes": 139.61
+}

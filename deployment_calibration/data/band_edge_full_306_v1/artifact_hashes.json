@@ -1,0 +1,12 @@
+{
+ "manifest.json": "d6c2df38e75a77b9d54a1850cee30a81638b770a3f1850004bcfa06ba41f1486",
+ "episodes.jsonl": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+ "run_metadata.json": "b320b6ae4e334ca29fb055adceab5228c92d5cb75e627748106d5226ad08ad30",
+ "run_status.json": "073275ed8447e70a844e7a5c2ee6a84a29181fd7f03daebf1a416c7df51a74d7",
+ "self_check.json": "680f20b3ac3269f1b48a197eb13ad3cc4735070f782cfcc7239915f86344e62a",
+ "authorization_snapshot.json": "b83379ddb5bb5527c08ea00125c967b52eee7b754fe054230fc814e7fb065e4e",
+ "integrity_summary.json": "f51ae069b3820e2e41cd246d3b06b323178fc2de99de6b6e66374ea02b8502ef",
+ "frozen_config_band_edge_characterization_config_v1.json": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+ "config_sha256_authorized": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+ "science_manifest_sha256_authorized": "e2c8216ed2b2bae19d03815ed922eaf49a6870afce72d7d3fb544e98cd7c86ba"
+}

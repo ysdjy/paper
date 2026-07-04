@@ -1,0 +1,42 @@
+{
+ "success_conditions": {
+  "run_status_COMPLETE": true,
+  "self_check_ok": true,
+  "episode_count_306": true,
+  "unique_306": true,
+  "blocks_18": true,
+  "each_block_17": true,
+  "offset_grid_matches_frozen": true,
+  "no_probes": true,
+  "no_smoke_records": true,
+  "no_dup_ids": true,
+  "no_dup_block_offset": true,
+  "all_planned_completed": true,
+  "schema_valid_all": true,
+  "matched_block_valid": true,
+  "config_hash_ok": true,
+  "science_manifest_hash_ok": true,
+  "instrumentation_complete": true,
+  "contact_fields_present": true
+ },
+ "all_success": true,
+ "raw_summary": {
+  "total_episodes": 306,
+  "success": 211,
+  "failure": 95,
+  "failure_reason_counts": {
+   "NONE": 211,
+   "POSITION_TIMEOUT": 62,
+   "HANDLE_DETACHED": 33
+  },
+  "failure_phase_counts": {
+   "APPROACH": 62,
+   "PULL": 33
+  },
+  "contact_sensor_available_all": true,
+  "max_contact_force_N": 0.0,
+  "min_contact_force_N": 0.0,
+  "instrumentation_missing_fields_total": 0,
+  "resumes": 0
+ }
+}

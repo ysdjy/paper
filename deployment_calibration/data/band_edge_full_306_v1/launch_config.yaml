@@ -1,0 +1,8 @@
+# AUTHORIZED full 306 band-edge exploratory run — launch config (OUTSIDE repo; keeps source tree clean).
+# Provides only the frozen defaults; NO subset keys -> full 18x17=306 plan. Science is byte-identical to
+# the authorized plan (science_manifest_sha256 e2c8216e...); frozen config_sha256 2f20429b... unchanged.
+drawer: middle_drawer
+target_open_position: 0.20
+damping: 3.0
+master_seed: 8801150
+# (no blocks_subset / offsets_subset -> full plan; smoke_only=false is set by --mode full)
