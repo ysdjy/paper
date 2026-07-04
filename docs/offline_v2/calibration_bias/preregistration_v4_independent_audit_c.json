@@ -1,0 +1,114 @@
+{
+  "verdict": "MODIFY_PREREGISTRATION_V4",
+  "auditor": "Claude C (independent, read-only, adversarial, pre-run)",
+  "audited_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
+  "audited_branch": "experiment/offline-calibration-preregistration-v4",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "authorizes_generator_implementation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "power_recertification_note": "The four blockers do not touch the certified effect, estimator, model, or geometry. Blocker A's secret tie-break is dead code (best-single = offset 0 in 200/200 independent replicates; 0 step-1 ties), so removing/replacing it provably cannot change any selection. B/C/D are protocol-hardening, not design changes.",
+  "blockers": [
+    {
+      "id": "BLOCKER_SECRET_TIEBREAK",
+      "severity": "blocker",
+      "summary": "best-single tie-break step (2) 'max mean frozen continuous margin (tau - |eff|)' reads eff = actual_bias + offset, and actual_bias is in the secret_denylist. An oracle/secret quantity must not participate in the state-agnostic best-single baseline.",
+      "files": [
+        "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : best_single.rule[1]",
+        "docs/offline_v2/calibration_bias/preregistration_v4.md : §7",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_analysis_plan.md : §2",
+        "deployment_calibration/offline_v2/calibration_bias/learned_selector_power.py : best_single() lines 99-111 (margins = tau - abs(nominal+residual+offset))"
+      ],
+      "independent_evidence": "best_single returns offset 0.0 in 200/200 replicates; step-1 (max mean success) is a tie in 0/200 -> the secret margin is never consulted (dead code).",
+      "minimal_fix": "Replace step (2) with an OBSERVABLE continuous tie-break computed on train+val only (e.g. min mean task_outcome_error, or min mean |final_joint_position - target|, or min mean skill_elapsed_time), OR delete step (2) and go step1 -> min |offset| -> fixed numeric order. Remove the secret margin from the power code's best_single too.",
+      "power_recert_needed": false,
+      "power_recert_reason": "Provably no-change: step-1 uniquely selects offset 0 in every replicate, so the tie-break never decides. Prove from the saved best-single selection logs / the 200/200 replicate check, not a re-run."
+    },
+    {
+      "id": "BLOCKER_SEEDS_NOT_FROZEN",
+      "severity": "blocker",
+      "summary": "Only model_seeds {1103,2207,3301,4409,5519} are frozen. master_seed (and the residual/block-order/session-order/nominal-order/candidate-order/bootstrap seeds derived from it) have NO frozen integer value and NO derivation rule from the commit/config hash. The manifest spec says Claude A will 'Fix master_seed' at construction time -> a post-hoc randomization choice, which the preregistration forbids.",
+      "files": [
+        "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : manifest_fields (names only, no values)",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_manifest_spec.md : §3 step 1 ('Fix master_seed ...')"
+      ],
+      "minimal_fix": "Freeze an exact integer master_seed and bootstrap_seed in confirmatory_v4_config.json (all sub-seeds already derive deterministically from master_seed), OR freeze an unambiguous derivation rule such as master_seed = int(sha256(config_hash).hexdigest()[:8], 16). The bootstrap_seed must be frozen before test is unsealed.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_SEAL_SCHEME_NOT_UNIQUE",
+      "severity": "blocker",
+      "summary": "The seal/unseal protocol keeps an either/or: STEP 2 = 'test is either (a) not yet generated, or (b) generated into a sealed store'. A preregistration must freeze exactly ONE executable scheme so there is no run-time discretion over when/how the test outcomes come into existence.",
+      "files": [
+        "docs/offline_v2/calibration_bias/confirmatory_v4_seal_unseal_protocol.md : STEP 2",
+        "docs/offline_v2/calibration_bias/preregistration_v4.json : seal_unseal[1]",
+        "docs/offline_v2/calibration_bias/preregistration_v4.md : §10"
+      ],
+      "minimal_fix": "Choose ONE. Recommended Scheme 2 (generate test only after model + analysis hashes are frozen), since it needs no encryption/access-control machinery: STEP 2 becomes 'test manifest is frozen (hashed) now; test TRIALS are generated only after STEP 6, from that frozen manifest, with no test seed/manifest re-selection'. Define exactly who may read secret/test, prove the feature cache holds no test outcome, and state that any accidental early unseal makes the experiment INVALID.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_MODEL_FAILURE_SEMANTICS",
+      "severity": "blocker",
+      "summary": "A model-training exception is labelled 'TECHNICAL-INVALID event (§17)', conflating an analysis-stage model-fit failure with the 300 runtime-trial technical-invalid budget (max 15). There is no rule that ALL 5 model seeds must converge and freeze a hash, and the seed-stability gate '>=4/5 seeds >=0.15' could silently PASS with a missing (failed) seed - effectively dropping a seed.",
+      "files": [
+        "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : model.training_failure_handling",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_analysis_plan.md : §1, §6, §9",
+        "docs/offline_v2/calibration_bias/preregistration_v4.md : §9, §12"
+      ],
+      "minimal_fix": "Separate model-training-failure handling from the 300-trial technical-invalid count. Freeze: all 5 model seeds MUST converge and have a frozen state_dict hash; a training exception triggers a deterministic same-seed retry (fixed max retries), no seed replacement, and if any of the 5 seeds still fails the PRIMARY analysis is INVALID (not a 4/5 pass). State that the seed-gate denominator is fixed at 5 and a missing seed is a failed seed, never an excluded one.",
+      "power_recert_needed": false
+    }
+  ],
+  "minor_issues": [
+    {
+      "id": "STALE_BAND_EDGE_EXIT_VERDICT",
+      "summary": "band_edge_exit_verdict_v1.json still reads MODIFY_RESIDUAL_OR_DESIGN and residual_induces_block_label_variation=false; that analysis was for the OLD +-0.03 geometry. v4's +-0.035 resolves it. Independently verified from the 306 data: state-aware region |eff| in [0,0.015] -> success 1.0 (deterministic); best-single offset-0 at +-0.035 (|eff| in [0.025,0.045]) -> success 0.53 (MIXED); offsets +-0.030/0.035/0.040 are mixed across the 18 blocks (residual-driven). Non-degenerate at the real operating point.",
+      "recommendation": "Add an explicit +-0.035 operating-point residual-label-variation confirmation from the 306 data and supersede/relabel the stale exit verdict so the evidence chain is unambiguous. (Evidence already exists in the 306 sec-8.1 table; this is documentation, not new data.)"
+    },
+    {
+      "id": "TAU_SENSITIVITY_BAND_NARROW",
+      "summary": "The power tau-sensitivity spans only {0.0342, 0.03425, 0.0343} (logistic neighbourhood), but the edge-location uncertainty is [isotonic 0.0325, logistic 0.03425]. The untested lower tau makes the effect LARGER (best-single fails harder), so power is conservative, not threatened.",
+      "recommendation": "For completeness report power at tau = 0.0325 (isotonic crossing) too; expected to pass with a larger gain."
+    },
+    {
+      "id": "PROBE_VECTOR_SILENT_ZERO_FILL",
+      "summary": "features.probe_vector uses h.get(field, 0.0); a missing required probe field becomes 0.0 rather than erroring.",
+      "recommendation": "Have the generator assert all 8 probe-allowlist fields are present (schema-completeness is already a technical-invalid condition, so largely covered); add a guard test."
+    },
+    {
+      "id": "DEEPSETS_DEFAULT_HP_MISMATCH",
+      "summary": "DeepSets.__init__ defaults (max_epochs=300, patience=30) differ from the frozen values (200/25). Both power and confirmatory pass explicit values, so there is no practical mismatch.",
+      "recommendation": "Align the __init__ defaults to the frozen values to avoid future confusion (cosmetic)."
+    }
+  ],
+  "pass_items": {
+    "overall_design": "PASS - bank {-0.04,0,+0.04}, nominals train/val/test, blocks 9/6/9, 75 sessions, 300 trials, probe!=candidate, task-level reset, block-constant hidden state, split-independent blocks, test actual support inside train support, no robust action, claim scope bounded. Recomputed.",
+    "power_v4_consistency": "PASS - the certifying study (test_geometry_power at +-0.035) trains the REAL models_v2.DeepSets (K1 vs K0, 5 seeds) with bank/probe/residual/blocks/HP/seeds/best-single all matching v4, and reports LEARNED power 0.984-0.986 SEPARATELY from structural 1.000 (no oracle substitution). tau ~0.033-0.034 justified by the 306 band-edge fit.",
+    "best_single_leakage": "BLOCKER (secret tie-break) - but dead code; observable/removed fix needs no power recert.",
+    "seed_completeness": "model_seeds frozen; randomization seeds NOT frozen (Blocker B).",
+    "seal_unseal": "BLOCKER (either/or) - Blocker C.",
+    "model_training_consistency": "PASS - real code loss = BCE + MSE + MSE (weight 1 each; NOT 2xMSE), full-batch Adam(weight_decay=l2), z-normalized regression targets, patience early-stop with best-state restore, seeded; matches v4.",
+    "technical_invalid_retry": "PASS on trial retry semantics (same planned trial, no residual/nuisance resample, no block replacement, never rerun on task outcome, >15 -> INVALID); model-failure conflation is Blocker D.",
+    "collision": "PASS (minor) - strict >0 N supportable (306 all exactly 0.0 N, sensor available 306/306, positive control ~240 N); primary intention-to-analyze keeps all trials; only the secondary sensitivity excludes; threshold not set on confirmatory data.",
+    "feature_leakage": "PASS - PROBE_KEYS (8) == history allowlist in order; static_features (8) == static allowlist; no secret reachable; verified against real features.py.",
+    "instrumentation": "PASS - the six failure-mechanism fields are implemented and present 306/306 (minimum_joint_limit_margin, ik_failure_count, joint_limit_clamp_count AND joint_step_clamp_count separated, failure_phase, true_handle_error_at_close, gripper_width_at_close); resolves the v3 instrumentation blocker.",
+    "primary_statistics": "PASS - unit = test block (9); per-block avg over 2 nominals then 5 seeds; gain vs train/val best-single; 2000 test-block percentile bootstrap; CI_lower>=0.15; seed gate >=4/5 & none<0.",
+    "manifest_implementability": "MOSTLY PASS - fields, provenance, per-trial hashes, resume, sealed-test flag, source commit all specified; the ONE gap is the unfrozen master/bootstrap seed (Blocker B).",
+    "claim_scope": "PASS - matches the allowed statement; disclaims unseen-hidden-state, one-shot/online, non-destructive, arbitrary/continuous action; positive-control boundary stated."
+  },
+  "tests": {
+    "b_suite": "147 passed (deployment_calibration/tests/offline_v2/calibration_bias, env_isaaclab)",
+    "c_audit_suite": "deployment_calibration/tests/offline_v2/calibration_bias/test_preregistration_v4_audit_c.py -> 12 passed, 4 xfailed (the 4 blockers, strict xfail)"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/preregistration_v4_independent_audit_c.md",
+    "docs/offline_v2/calibration_bias/preregistration_v4_independent_audit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_preregistration_v4_audit_c.py"
+  ]
+}
