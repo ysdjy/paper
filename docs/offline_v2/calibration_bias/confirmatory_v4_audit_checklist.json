@@ -1,24 +1,17 @@
 {
-  "for": "Claude C independent audit",
+  "for": "Claude C re-audit of preregistration v4 FIX1",
   "must_verify": [
-    "train/val/test nominals exactly {-0.04..+0.04}/{-0.01,+0.01}/{-0.035,+0.035}",
-    "candidate bank {-0.04,0,+0.04}; probe fixed -0.04; K=1",
-    "blocks 9/6/9; sessions 45/12/18=75; full-task trials 300",
-    "probe and candidate(-0.04) are DISTINCT full-task trials; probe outcome not reused as candidate label",
-    "history allowlist == features.probe_vector fields (8); static allowlist == features.static_features (8)",
-    "secret denylist enforced; feature cache excludes secret",
-    "DeepSets hyperparameters/seeds == power-verified values; no confirmatory hp search",
-    "K0 and K1 capacity-matched (same model, empty vs 1-probe history)",
-    "best-single train/val only, tie-break frozen, not hardcoded",
-    "test sealed until models frozen; seal/unseal executable; post-unseal changes forbidden",
-    "primary estimator: per-block avg over 2 nominals then 5 seeds; unit=test block",
-    "primary event CI_lower>=0.15 (2000 test-block bootstrap); threshold not lowered; comparator unchanged",
-    "seed gate >=4/5>=0.15 and none<0 is a PRIMARY necessary gate",
-    "collision rule frozen (nonzero-N confounded def + intention-to-analyze primary + sensitivity)",
-    "technical-invalidation list frozen; legitimate failures never invalid; no rerun on task outcome",
-    "no 306/capability/synthetic reuse in confirmatory training",
-    "claim scope wording matches; probe term correct; positive-control boundary stated",
-    "markdown and JSON consistent"
+    "BLOCKER A: best_single rule has NO tau/eff/secret; implementation=best_single_legal; invariance proven",
+    "BLOCKER B: all 15 randomization seeds are exact ints from the frozen SHA256 rule; subseed rule frozen",
+    "BLOCKER C: exactly ONE seal scheme (model-freeze-before-test-generation); no either/or; early-access INVALID",
+    "BLOCKER D: model-fit failure separate namespace; all-5-seeds-valid required; retry<=1; no seed drop",
+    "trial count 300 / 75 sessions unchanged; bank/geometry/model/estimator unchanged",
+    "history allowlist == features.probe_vector (8); 8 fields REQUIRED (no silent zero-fill)",
+    "generator must pass all hyperparameters explicitly (constructor defaults differ 300/30)",
+    "bootstrap seed frozen before unseal",
+    "band_edge exit verdict superseded (not overwritten)",
+    "power_recertification_required == false, justified by invariance proof",
+    "markdown and JSON consistent; no generator/manifest/data produced"
   ],
   "deliverable_gate": "C must return GO before A implements the generator; this phase authorizes nothing"
 }

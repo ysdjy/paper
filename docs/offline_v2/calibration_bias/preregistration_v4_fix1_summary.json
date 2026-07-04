@@ -1,0 +1,80 @@
+{
+  "status": "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT",
+  "previous_status": "PREREGISTRATION_V4_READY_FOR_INDEPENDENT_AUDIT",
+  "audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
+  "v4_original_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
+  "power_cert_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4",
+  "power_recertification_required": false,
+  "blockers": {
+    "A_BLOCKER_SECRET_TIEBREAK": {
+      "fixed": true,
+      "new_rule": ["max observed mean binary success (train+val)", "tie -> min abs(offset)",
+                   "tie -> first in bank order {-0.04,0,+0.04}"],
+      "removed": "tau-|eff| secret continuous margin",
+      "implementation": "learned_selector_power.best_single_legal"
+    },
+    "B_BLOCKER_SEEDS_NOT_FROZEN": {
+      "fixed": true,
+      "seed_root": "confirmatory-v4|2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+      "seed_rule": "int(sha256(f'{SEED_ROOT}|{label}').hexdigest()[:16],16) % (2**63-1)",
+      "subseed_rule": "int(sha256(f'{domain_seed}|{identity}').hexdigest()[:16],16) % (2**63-1)",
+      "frozen_seeds": {
+        "master_seed": 6341914557047805261,
+        "train_residual_seed": 21089512851089425,
+        "validation_residual_seed": 460814074379885831,
+        "test_residual_seed": 3711293848599206733,
+        "train_block_order_seed": 1149828801064435573,
+        "validation_block_order_seed": 3299593555457530435,
+        "test_block_order_seed": 1822308122877636532,
+        "train_session_order_seed": 2515327920114602329,
+        "validation_session_order_seed": 1299366601310815075,
+        "test_session_order_seed": 6018004042777158871,
+        "train_nominal_order_seed": 6034848631996342392,
+        "validation_nominal_order_seed": 138566264689194917,
+        "test_nominal_order_seed": 6188830238780111281,
+        "candidate_order_seed": 4072632114177748606,
+        "bootstrap_seed": 9014517173581927929
+      }
+    },
+    "C_BLOCKER_SEAL_SCHEME_NOT_UNIQUE": {
+      "fixed": true,
+      "scheme": "SCHEME_2_MODEL_FREEZE_BEFORE_TEST_GENERATION",
+      "either_or_removed": true,
+      "early_test_access_verdict": "EXPERIMENT_INVALID_EARLY_TEST_ACCESS"
+    },
+    "D_BLOCKER_MODEL_FAILURE_SEMANTICS": {
+      "fixed": true,
+      "namespaces": ["runtime_trial_invalid_count (300 trials; >15 rule)",
+                     "model_fit_failure_count (analysis-stage; separate)"],
+      "all_seeds_must_converge": true,
+      "retry": "<=1 deterministic retry for infrastructural faults only",
+      "no_seed_replacement": true,
+      "invalid_verdict": "EXPERIMENT_INVALID_MODEL_FIT"
+    }
+  },
+  "selection_invariance": {
+    "total_replicates_checked": 4500,
+    "step1_tie_count": 0,
+    "selection_mismatch_count": 0,
+    "all_replicates_offset_zero": true,
+    "evidence": "best_single_tiebreak_invariance_v1.json"
+  },
+  "minor_issues": {
+    "7_1_band_edge_supersession": "band_edge_exit_verdict_supersession_v1.{md,json} (original not overwritten)",
+    "7_2_probe_fields_required": "8 fields required; missing -> TECHNICAL_INVALID_SCHEMA (no zero-fill)",
+    "7_3_explicit_hyperparameters": "generator passes all HP; constructor defaults 300/30 differ from 200/25",
+    "7_4_tau_0325": "non-primary sensitivity anchor only; not upgraded"
+  },
+  "unchanged": ["candidate_bank", "test_geometry_pm035", "model+hyperparameters+seeds",
+                "primary_comparator", "0.15_CI_threshold", "75_sessions_300_trials", "power_result"],
+  "tests": {
+    "test_preregistration_v4_fix1.py": "new; all PASS",
+    "test_preregistration_v4.py": "B-owned; updated to fix1; all PASS",
+    "test_preregistration_v4_audit_c.py": "Claude C, UNMODIFIED; its 4 strict-xfail now XPASS(strict)=fail, the intended signal the blockers are fixed; not in B's passing suite"
+  },
+  "no_generator": true,
+  "no_manifest_instance": true,
+  "no_confirmatory_data": true,
+  "no_run_authorization": true
+}

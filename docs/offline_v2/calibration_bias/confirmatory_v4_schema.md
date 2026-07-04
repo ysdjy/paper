@@ -45,11 +45,14 @@ used as the candidate label.
 7 pull_phase_duration
 8 final_joint_position
 ```
-- `features.PROBE_KEYS` / `PROBE_DIM == 8`. The generator MUST populate all 8 on every probe HistoryEntry
-  (note: `HistoryEntry` also carries `g`, `failure_reason`, `handle_relative_error`, `mechanism_id`,
-  `probe_index`, but `probe_vector` does **not** read them, so the model ignores them; `final_joint_position`
-  must be provided or it silently defaults to 0.0 — the generator is required to provide the real value).
-- A test asserts `HISTORY_ALLOWLIST == features.PROBE_KEYS`.
+- `features.PROBE_KEYS` / `PROBE_DIM == 8`. **FIX1 (minor 7.2): all 8 fields are REQUIRED** on every probe
+  HistoryEntry. If any is missing at feature-extraction time the trial is **`TECHNICAL_INVALID_SCHEMA`** — it
+  must **NOT** be silently zero-filled. (`features.probe_vector` uses `h.get(field, 0.0)` internally, so the
+  generator/validator must assert presence of all 8 fields BEFORE feature extraction; a runtime schema guard
+  is required.) `HistoryEntry` also carries `g`, `failure_reason`, `handle_relative_error`, `mechanism_id`,
+  `probe_index`, which `probe_vector` does **not** read, so the model ignores them.
+- A test asserts `HISTORY_ALLOWLIST == features.PROBE_KEYS` and that a missing field →
+  `TECHNICAL_INVALID_SCHEMA` (not zero-fill).
 
 ## 6. Candidate static features — `features.static_features` (8 dims)
 ```

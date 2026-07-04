@@ -97,7 +97,13 @@ def _pairs(sessions, k):
 
 
 def best_single(train_sessions, val_sessions, tau):
-    """Train+val ONLY. Rule: max mean success; tie -> max mean margin(tau-|eff|); tie -> min |offset|."""
+    """LEGACY rule (kept ONLY as the fix1 invariance baseline; NOT the preregistered rule).
+
+    Uses a tau-|eff| continuous margin as the step-2 tie-break, where eff = actual_bias + offset reads the
+    SECRET hidden state -- illegal for a state-agnostic best-single (BLOCKER_SECRET_TIEBREAK, Claude C). The
+    tie-break is DEAD CODE on every frozen config (step-1 is always unique -> offset 0), which is exactly why
+    fix1 needs no power recertification. Retained so best_single_tiebreak_invariance can compare old vs new.
+    """
     sess = list(train_sessions) + list(val_sessions)
     rows = []
     for o in BANK:
@@ -109,6 +115,23 @@ def best_single(train_sessions, val_sessions, tau):
     max_m = max(r[2] for r in tied)
     tied2 = [r for r in tied if abs(r[2] - max_m) < 1e-9]
     return min(tied2, key=lambda r: abs(r[0]))[0]
+
+
+def best_single_legal(train_sessions, val_sessions, tau):
+    """PREREGISTERED (fix1) state-agnostic best-single. Train+val ONLY, no secret.
+
+    Rule: (1) max observed mean binary success; (2) tie -> min |offset|; (3) tie -> fixed candidate-bank
+    numeric order {-0.04, 0.00, +0.04} (earliest). No nominal/residual/actual bias, no eff_signed/abs_eff,
+    no tau-|eff| margin, no oracle/secret, no test outcomes. `succ(...)` here is the OBSERVED binary
+    outcome of an executed train/val candidate trial (a legal observable), not the hidden state.
+    """
+    sess = list(train_sessions) + list(val_sessions)
+    rows = [(o, float(np.mean([succ(s["nominal"], s["residual"], o, tau) for s in sess]))) for o in BANK]
+    max_s = max(r[1] for r in rows)
+    tied = [r for r in rows if abs(r[1] - max_s) < 1e-9]
+    min_abs = min(abs(r[0]) for r in tied)
+    tied2 = [r for r in tied if abs(abs(r[0]) - min_abs) < 1e-9]
+    return min(tied2, key=lambda r: BANK.index(r[0]))[0]
 
 
 def oracle_select(session):

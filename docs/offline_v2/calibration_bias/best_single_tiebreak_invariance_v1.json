@@ -1,0 +1,106 @@
+{
+  "configs": [
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0342,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.03425,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0343,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0342,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.03425,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0343,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0342,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.03425,
+      "step1_ties": 0,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0343,
+      "step1_ties": 0,
+      "mismatch": 0
+    }
+  ],
+  "total_replicates_checked": 4500,
+  "step1_tie_count": 0,
+  "selection_mismatch_count": 0,
+  "selected_offset_distribution": {
+    "-0.04": 0,
+    "0.0": 4500,
+    "0.04": 0
+  },
+  "all_replicates_offset_zero": true,
+  "power_recertification_required": false,
+  "old_rule": "max mean success -> max mean (tau-|eff|) [SECRET] -> min|offset|",
+  "new_rule": "max mean success -> min|offset| -> fixed bank order"
+}

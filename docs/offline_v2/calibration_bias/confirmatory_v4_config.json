@@ -1,5 +1,6 @@
 {
   "base_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
   "design": {
     "candidate_bank": [
       -0.04,
@@ -63,6 +64,29 @@
     "candidate_trials_per_session": 3,
     "full_task_trials_total": 300
   },
+  "seed_root": "confirmatory-v4|2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "seed_derivation": "seed(label) = int(sha256(f'{SEED_ROOT}|{label}'.encode()).hexdigest()[:16], 16) % (2**63 - 1); SEED_ROOT = 'confirmatory-v4|<power_cert_commit>'; UTF-8 bytes; first 16 hex chars; base 16; modulus 2**63-1",
+  "subseed_derivation": "subseed(domain_seed, planned_identity) = int(sha256(f'{domain_seed}|{planned_identity}'.encode()).hexdigest()[:16], 16) % (2**63 - 1)",
+  "frozen_seeds": {
+    "master_seed": 6341914557047805261,
+    "train_residual_seed": 21089512851089425,
+    "validation_residual_seed": 460814074379885831,
+    "test_residual_seed": 3711293848599206733,
+    "train_block_order_seed": 1149828801064435573,
+    "validation_block_order_seed": 3299593555457530435,
+    "test_block_order_seed": 1822308122877636532,
+    "train_session_order_seed": 2515327920114602329,
+    "validation_session_order_seed": 1299366601310815075,
+    "test_session_order_seed": 6018004042777158871,
+    "train_nominal_order_seed": 6034848631996342392,
+    "validation_nominal_order_seed": 138566264689194917,
+    "test_nominal_order_seed": 6188830238780111281,
+    "candidate_order_seed": 4072632114177748606,
+    "bootstrap_seed": 9014517173581927929
+  },
+  "master_seed": 6341914557047805261,
+  "residual_seed": 21089512851089425,
+  "bootstrap_seed": 9014517173581927929,
   "model": {
     "class": "deployment_calibration.models_v2.DeepSets",
     "name": "B2_deepsets",
@@ -105,8 +129,71 @@
         60.0
       ]
     },
-    "training_failure_handling": "a training exception is a TECHNICAL-INVALID event (section 17); in the power simulation it was scored conservatively as a power failure",
+    "training_failure_handling": "a model-fit failure is an analysis-stage event governed by MODEL_FIT (namespace model_fit_failure_count); it is NOT a runtime trial and does NOT consume the 300-trial runtime-invalid budget",
+    "all_seeds_must_converge": true,
+    "model_validity_conditions": [
+      "training process terminates normally (no exception)",
+      "no NaN/Inf during training",
+      "best_state checkpoint produced",
+      "train and validation loss both finite",
+      "checkpoint reloadable",
+      "inference from the reloaded checkpoint is finite",
+      "state_dict hash saved",
+      "input schema / leakage checks pass"
+    ],
+    "model_fit": {
+      "all_seeds_must_converge": true,
+      "required": "5/5 fixed seeds valid for BOTH K0 and K1 (10 checkpoints); all hashes frozen",
+      "reaching_max_epochs_is_not_failure": "hitting max_epochs without early-stop is VALID if the validity conditions hold",
+      "retry": "initial attempt + at most 1 deterministic retry, ONLY for an infrastructural exception / abnormal process exit / reproducible I/O failure",
+      "retry_constraints": [
+        "same data hash",
+        "same model seed",
+        "same hyperparameters",
+        "same code commit",
+        "same device/determinism config",
+        "keep first-failure log",
+        "do NOT change initialization or training budget"
+      ],
+      "no_seed_replacement": true,
+      "no_dropping_bad_seed": true,
+      "missing_or_invalid_seed_makes_experiment_invalid": true,
+      "invalid_verdict": "EXPERIMENT_INVALID_MODEL_FIT",
+      "on_invalid": "do NOT generate the test manifest; do NOT unseal test",
+      "namespace": "model_fit_failure_count  (SEPARATE from runtime_trial_invalid_count; NOT subject to the >15 runtime rule)"
+    },
+    "must_pass_all_hyperparameters_explicitly": true,
+    "constructor_defaults_differ": {
+      "max_epochs_default": 300,
+      "patience_default": 30,
+      "note": "must override with 200/25; never rely on defaults"
+    },
     "no_hyperparameter_search_on_confirmatory": true
+  },
+  "model_fit": {
+    "all_seeds_must_converge": true,
+    "required": "5/5 fixed seeds valid for BOTH K0 and K1 (10 checkpoints); all hashes frozen",
+    "reaching_max_epochs_is_not_failure": "hitting max_epochs without early-stop is VALID if the validity conditions hold",
+    "retry": "initial attempt + at most 1 deterministic retry, ONLY for an infrastructural exception / abnormal process exit / reproducible I/O failure",
+    "retry_constraints": [
+      "same data hash",
+      "same model seed",
+      "same hyperparameters",
+      "same code commit",
+      "same device/determinism config",
+      "keep first-failure log",
+      "do NOT change initialization or training budget"
+    ],
+    "no_seed_replacement": true,
+    "no_dropping_bad_seed": true,
+    "missing_or_invalid_seed_makes_experiment_invalid": true,
+    "invalid_verdict": "EXPERIMENT_INVALID_MODEL_FIT",
+    "on_invalid": "do NOT generate the test manifest; do NOT unseal test",
+    "namespace": "model_fit_failure_count  (SEPARATE from runtime_trial_invalid_count; NOT subject to the >15 runtime rule)"
+  },
+  "invalid_counters": {
+    "runtime_trial_invalid_count": "counts the 300 runtime full-task trials only; subject to the >15 rule",
+    "model_fit_failure_count": "counts model-training failures; SEPARATE; governed by MODEL_FIT; a single invalid/missing seed after retry -> EXPERIMENT_INVALID_MODEL_FIT"
   },
   "history_allowlist": [
     "theta.grasp_offset_local_y",
@@ -118,6 +205,8 @@
     "pull_phase_duration",
     "final_joint_position"
   ],
+  "history_fields_required": true,
+  "missing_probe_field_verdict": "TECHNICAL_INVALID_SCHEMA",
   "static_allowlist": [
     "theta.grasp_offset_local_y",
     "theta.max_pos_step",
@@ -144,24 +233,37 @@
     "secret_deployment_state",
     "hidden_state_id",
     "damping_eff",
-    "damping_post"
+    "damping_post",
+    "tau_minus_abs_eff (secret continuous margin)"
   ],
   "best_single": {
-    "data": "train + validation ONLY (test never participates)",
+    "data": "train + validation candidate trials ONLY (test never participates)",
     "rule": [
-      "1. max mean success",
-      "2. tie -> max mean frozen continuous margin/utility (tau - |eff|)",
-      "3. tie -> min |offset|",
-      "4. tie -> fixed numeric order of the bank"
+      "1. maximize observed mean binary success over train+val candidate trials",
+      "2. tie -> minimize abs(offset)",
+      "3. tie -> first in the frozen candidate-bank numeric order {-0.04, 0.00, +0.04}"
     ],
+    "forbidden_inputs": [
+      "nominal bias",
+      "residual bias",
+      "actual bias",
+      "eff_signed",
+      "abs_eff",
+      "tau-|eff| / secret continuous margin",
+      "oracle action",
+      "test outcomes"
+    ],
+    "no_new_observable_continuous_tiebreak": true,
+    "implementation": "deployment_calibration.offline_v2.calibration_bias.learned_selector_power.best_single_legal",
     "must_save": [
-      "per-candidate train/val score",
+      "per-candidate train/val success score",
       "tie-break trace",
       "final offset",
       "selection hash"
     ],
     "exploratory_expectation": 0.0,
-    "hardcoded_in_confirmatory": false
+    "hardcoded_in_confirmatory": false,
+    "invariance_proof": "best_single_tiebreak_invariance_v1.json (4500 replicates: 0 step-1 ties, 0 old/new mismatches -> the removed secret tie-break was dead code; no power recert)"
   },
   "primary": {
     "comparator": "Delta_primary = seed-averaged B2_K1 selected success - train/val-only best-single success",
@@ -172,6 +274,7 @@
     "plus_gate": {
       ">=4/5 seed point gains >= 0.15": true,
       "no seed point gain < 0": true,
+      "precondition": "all 5 model seeds exist and are technically valid (MODEL_FIT); a missing/invalid seed makes the experiment INVALID and is NOT treated as a gain<0 seed nor dropped from the denominator",
       "role": "PRIMARY necessary quality gate (GO requires it)"
     },
     "not_allowed": [
@@ -186,7 +289,9 @@
     "n_boot": 2000,
     "ci": 0.95,
     "method": "test-block percentile bootstrap",
-    "resample_unit": "test nuisance block (keeps both test nominals, all 5 seeds, block candidate correspondence)"
+    "resample_unit": "test nuisance block (keeps both test nominals, all 5 seeds, block candidate correspondence)",
+    "bootstrap_seed_frozen_before_unseal": true,
+    "bootstrap_seed": 9014517173581927929
   },
   "collision_rule": {
     "evidence": {
@@ -205,10 +310,11 @@
     "confirmatory_data_not_used_to_set_threshold": true
   },
   "technical_invalid": {
+    "scope": "RUNTIME full-task trials ONLY (namespace runtime_trial_invalid_count); model-fit failures are governed separately by MODEL_FIT and do NOT count here",
     "invalid_conditions": [
       "runtime_crash / EPISODE_EXCEPTION",
       "ContactSensor unavailable",
-      "incomplete schema (missing required field)",
+      "incomplete schema (missing required field, incl. any probe allowlist field)",
       "manifest hash mismatch",
       "controller not started",
       "invalid initial state / full_reset not verified",
@@ -225,21 +331,41 @@
     "resample_residual_or_nuisance_on_retry": false,
     "replace_block_allowed": false,
     "max_technical_invalid_trials": 15,
-    "experiment_invalid_if": ">15 technical-invalid trials, OR any unresolved manifest/leakage/integrity breach",
+    "experiment_invalid_if": ">15 runtime technical-invalid trials, OR any unresolved manifest/leakage/integrity breach",
     "never_rerun_on_task_outcome": true
+  },
+  "seal_scheme": "SCHEME_2_MODEL_FREEZE_BEFORE_TEST_GENERATION",
+  "access_control": {
+    "test_outcomes_nonexistent_before_step6": true,
+    "trainval_feature_cache_excludes_test_fields": true,
+    "test_manifest_only_after_step5": true,
+    "all_test_access_logged": true,
+    "early_test_access_verdict": "EXPERIMENT_INVALID_EARLY_TEST_ACCESS",
+    "early_test_access_condition": "generating or reading any test outcome before Step 5 completes"
   },
   "manifest_fields": [
     "master_seed",
-    "residual_seed",
-    "block_order",
-    "session_order",
-    "nominal_order",
-    "candidate_order",
-    "model_seeds",
+    "train_residual_seed",
+    "validation_residual_seed",
+    "test_residual_seed",
+    "train_block_order_seed",
+    "validation_block_order_seed",
+    "test_block_order_seed",
+    "train_session_order_seed",
+    "validation_session_order_seed",
+    "test_session_order_seed",
+    "train_nominal_order_seed",
+    "validation_nominal_order_seed",
+    "test_nominal_order_seed",
+    "candidate_order_seed",
     "bootstrap_seed",
+    "seed_root",
+    "seed_derivation",
+    "subseed_derivation",
     "manifest_hash",
     "config_hash",
     "code_commit",
+    "generator_commit",
     "environment_versions"
   ],
   "voi": {
@@ -253,5 +379,6 @@
     ],
     "priority": "SECONDARY",
     "no_post_hoc_T_as_primary_endpoint": true
-  }
+  },
+  "status": "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT"
 }

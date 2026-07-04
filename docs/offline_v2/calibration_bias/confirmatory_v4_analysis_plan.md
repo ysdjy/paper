@@ -24,13 +24,17 @@ before unsealing test. Machine form: `PRIMARY`/`SECONDARY`/`BOOTSTRAP`/`SEED_GAT
 | candidate argmax | max p_success over the 3-candidate bank |
 | tie-break | strict-greater scan over bank order (−0.04, 0.0, +0.04) → earliest bank index on a tie |
 | regression clip | error_clip [0.0,0.30], time_clip [0.0,60.0] |
-| training failure | a training exception is TECHNICAL-INVALID (§17); scored conservatively as failure in power sim |
+| training failure | **FIX1:** an analysis-stage event in the `model_fit_failure_count` namespace (§9); NOT a runtime trial, NOT part of the 300-trial invalid budget |
+| explicit hyperparameters | **FIX1:** generator/training must pass all HP explicitly; constructor defaults `max_epochs=300, patience=30` differ from frozen `200/25` and must not be relied on |
 
-## 2. Best-single (train + validation only)
-Rule (frozen): (1) max mean success → (2) tie: max mean frozen continuous margin `τ − |eff|` → (3) tie:
-min |offset| → (4) tie: fixed numeric bank order. Save per-candidate train/val score, tie-break trace, final
-offset, selection hash. **Test never participates.** Exploratory expectation offset 0, but **computed in
-confirmatory, not hardcoded**.
+## 2. Best-single (train + validation only) — FIX1: no secret tie-break
+Rule (frozen, legal): (1) max observed mean binary success over train+val candidate trials → (2) tie:
+min |offset| → (3) tie: first in the frozen bank order `{-0.04, 0.00, +0.04}`. **The illegal `τ − |eff|`
+step (which reads the secret `actual_bias`) is REMOVED** (BLOCKER A); no new observable continuous tie-break
+replaces it. Implementation: `learned_selector_power.best_single_legal`. Save per-candidate train/val score,
+tie-break trace, final offset, selection hash. **Test never participates.** Exploratory expectation offset 0,
+but **computed in confirmatory, not hardcoded**. Selection-invariant on 4500/4500 frozen replicates
+(0 step-1 ties, 0 old↔new mismatches, `best_single_tiebreak_invariance_v1`) → **no power recertification**.
 
 ## 3. K0 / K1 / Oracle
 - **K1 (B2)** = DeepSets with one frozen probe-history entry. **K0 (B1)** = the *same* DeepSets with empty
@@ -61,8 +65,10 @@ Candidate trials and model seeds are **not** independent statistical units.
 - Always report: point estimate, 95% CI, per-seed gain, raw block gains.
 
 ## 6. Seed stability gate (PRIMARY necessary)
-`≥ 4/5 seed point gains ≥ 0.15` **and** `no seed point gain < 0`. GO requires this in addition to the CI
-event (consistent with the power simulation, where seed-stability ≈ 0.99 at this design).
+**Precondition (FIX1):** all 5 model seeds exist and are technically valid (§9); a missing/invalid seed makes
+the experiment INVALID and is **not** treated as a `gain<0` seed nor dropped from the denominator. Given
+that, the gate is `≥ 4/5 seed point gains ≥ 0.15` **and** `no seed point gain < 0`. GO requires this in
+addition to the CI event (consistent with the power simulation, where seed-stability ≈ 0.99 at this design).
 
 ## 7. Secondary analyses (never replace primary)
 - **H2 history:** `Δ_history = B2_K1 − B1_K0`; point estimate + 95% block-bootstrap CI.
@@ -78,12 +84,25 @@ event (consistent with the power simulation, where seed-stability ≈ 0.99 at th
 - **Sensitivity:** re-compute the primary contrast excluding pre-registered collision-confounded trials;
   report whether `CI_lower ≥ 0.15` is unchanged. Confirmatory data are **not** used to set the threshold.
 
-## 9. Technical invalidation
-Only the pre-listed technical faults invalidate a trial (runtime crash/EPISODE_EXCEPTION, ContactSensor
-unavailable, incomplete schema, manifest mismatch, controller not started, invalid initial state, file
-corruption). Legitimate failures are never invalid. Fail-fast then resume at the failed planned trial;
-retry the same planned trial without resampling residual/nuisance; no block replacement; **>15 technical-
-invalid trials → experiment INVALID**. Never rerun on a task outcome.
+## 9. Technical invalidation & model-fit failure (FIX1: two separate namespaces)
+**Runtime trials (`runtime_trial_invalid_count`):** only the pre-listed technical faults invalidate a trial
+(runtime crash/EPISODE_EXCEPTION, ContactSensor unavailable, incomplete schema incl. a missing probe
+allowlist field, manifest mismatch, controller not started, invalid initial state, file corruption).
+Legitimate failures are never invalid. Fail-fast then resume at the failed planned trial; retry the same
+planned trial without resampling residual/nuisance; no block replacement; **>15 → experiment INVALID**.
+Never rerun on a task outcome.
+
+**Model-fit failure (`model_fit_failure_count`) — BLOCKER D:** a model-training failure is an
+**analysis-stage** event, **NOT** one of the 300 runtime trials and **NOT** subject to the >15 rule. Each of
+the 5 seeds (for both K0 and K1 → 10 checkpoints) must be **valid**: training terminates without exception,
+no NaN/Inf, a `best_state` is produced, train & val loss finite, checkpoint reloadable, reloaded inference
+finite, state_dict hash saved, schema/leakage checks pass. Reaching `max_epochs` without early-stop is
+**valid**. Retry = initial attempt + **at most 1** deterministic retry, only for an infrastructural
+exception / abnormal process exit / reproducible I/O failure, with identical data hash, seed, HP, commit,
+device/determinism config (first-failure log kept; init/budget unchanged). **No seed replacement, no
+dropping a bad seed, no missing seed removed from the denominator.** If any seed is still invalid after the
+retry → **`EXPERIMENT_INVALID_MODEL_FIT`** (do not generate the test manifest, do not unseal test). The seed
+gate (§6) requires **all 5 valid first**, so `≥4/5` can never mask a missing seed.
 
 ## 10. GO / FAIL / INVALID
 ```

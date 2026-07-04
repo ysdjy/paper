@@ -1,15 +1,31 @@
-# Confirmatory Preregistration v4 (offline; NO Isaac, NO generator, NO confirmatory data)
+# Confirmatory Preregistration v4 — FIX1 (offline; NO Isaac, NO generator, NO confirmatory data)
 
-Claude B. Branch `experiment/offline-calibration-preregistration-v4` from
-`2bf7217907f24ae54a08db71bbdcf624b110ccf0`. This document is the complete, auditable, unambiguous
-preregistration of the confirmatory experiment. All frozen quantities are emitted from
-`deployment_calibration/offline_v2/calibration_bias/preregistration_v4.py`; the machine forms are
-`preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`. Markdown
-and JSON are kept consistent (guarded by tests).
+Claude B. Branch `experiment/offline-calibration-preregistration-v4-fix1` from Claude C's audit commit
+`2ab39063c42f545b35beb53015c6a16402660c37` (design frozen at power-cert `2bf7217`). This document is the
+complete, auditable, unambiguous preregistration of the confirmatory experiment, **revised to resolve the
+four blockers** from Claude C's independent audit (`MODIFY_PREREGISTRATION_V4`). All frozen quantities are
+emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration_v4.py`; the machine forms
+are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
+Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_READY_FOR_INDEPENDENT_AUDIT`.** This phase authorizes nothing — Claude C must
+**Status: `PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT`.** This phase authorizes nothing — Claude C must
 return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, confirmatory data, or run authorization is produced here.
+
+## 0. Fix1 changes (resolving Claude C's four blockers)
+- **A `BLOCKER_SECRET_TIEBREAK`** — best-single tie-break no longer reads the secret; the illegal
+  `τ−|eff|` step is removed (§7). Proven selection-invariant on all 4500 frozen replicates
+  (`best_single_tiebreak_invariance_v1`), so **no power recertification** is required.
+- **B `BLOCKER_SEEDS_NOT_FROZEN`** — all 15 randomization seeds are now exact integers from a frozen SHA256
+  rule; run-time seed choice is forbidden (§Manifest).
+- **C `BLOCKER_SEAL_SCHEME_NOT_UNIQUE`** — a single seal scheme (`SCHEME_2_MODEL_FREEZE_BEFORE_TEST_
+  GENERATION`) is frozen; the either/or is deleted (§10).
+- **D `BLOCKER_MODEL_FAILURE_SEMANTICS`** — model-fit failure is an analysis-stage event in its own
+  namespace, separate from the 300-trial runtime-invalid budget; all 5 seeds must be valid (§6, §9).
+- Minor: probe 8 allowlist fields are **required** (no silent zero-fill); the generator must pass all
+  hyperparameters explicitly (constructor defaults differ); the stale band-edge exit verdict is superseded,
+  not overwritten; τ=0.0325 stays a non-primary sensitivity anchor.
+- `power_recertification_required = false` (bank, geometry, model, estimator, effect all unchanged).
 
 ## 1. Scientific positioning (§2)
 > This confirmatory experiment tests whether, **when the hidden deployment calibration state is stable
@@ -83,14 +99,22 @@ value is secondary.
 static + probe features and z-normalized continuous targets (success not normalized); early stopping on the
 validation multitask loss (patience 25, threshold 1e-5) with **best-val checkpoint restore**; `p_success =
 sigmoid(logit)` clipped to [0,1]; candidate selection = argmax p_success with strict-greater scan over bank
-order (tie → earliest bank index). No hyperparameter search on confirmatory data. Full list in
+order (tie → earliest bank index). No hyperparameter search on confirmatory data. **FIX1:** the
+generator/training must pass **all** frozen hyperparameters explicitly — the `DeepSets` constructor defaults
+(`max_epochs=300, patience=30`) differ from the frozen `200/25` and must never be relied on. **Model-fit
+validity & failure semantics** (all 5 seeds must be valid, retry ≤ 1, separate `model_fit_failure_count`
+namespace, `EXPERIMENT_INVALID_MODEL_FIT`) are in the analysis plan §1/§9. Full list in
 `confirmatory_v4_analysis_plan.md` / `MODEL` in the JSON.
 
-## 7. Best-single (§9)
-Train+validation **only** (test never participates). Rule: (1) max mean success; (2) tie → max mean frozen
-continuous margin `τ−|eff|`; (3) tie → min |offset|; (4) tie → fixed numeric bank order. Save per-candidate
-train/val score, tie-break trace, final offset, selection hash. Exploratory expectation is offset 0 but it
-is **computed in confirmatory, not hardcoded**.
+## 7. Best-single (§9) — FIX1: no secret tie-break
+Train+validation **only** (test never participates). **Legal rule (fix1):** (1) maximize observed mean
+binary success over train+val candidate trials; (2) tie → min |offset|; (3) tie → first in the frozen bank
+order `{-0.04, 0.00, +0.04}`. **No** `τ−|eff|` / secret continuous margin, no nominal/residual/actual bias,
+no eff, no oracle, no test outcomes; no new observable continuous tie-break is introduced. Implementation:
+`learned_selector_power.best_single_legal`. Save per-candidate train/val score, tie-break trace, final
+offset, selection hash. Exploratory expectation is offset 0 but it is **computed in confirmatory, not
+hardcoded**. The removed secret tie-break was **dead code** on every frozen config (4500/4500 replicates,
+0 step-1 ties, 0 old↔new mismatches → `best_single_tiebreak_invariance_v1`), so **no power recertification**.
 
 ## 8. History allowlist / secret denylist (§7)
 Model reads history ONLY via `features.probe_vector` — **8 fields**: `theta.grasp_offset_local_y`,
@@ -102,6 +126,20 @@ nuisance_block_id, block_seed, residual_seed, split identity, future candidate o
 hidden-state class label, secret_deployment_state, hidden_state_id, damping. K0 vs K1 differ **only** by
 empty history vs one frozen probe entry. A test asserts the allowlist equals the real code.
 
+## 8b. Frozen seeds (§Manifest) — FIX1: no run-time seed choice
+All randomization is fixed **now**, not when the generator runs. Frozen derivation:
+```
+SEED_ROOT = "confirmatory-v4|2bf7217907f24ae54a08db71bbdcf624b110ccf0"
+seed(label)    = int(sha256(f"{SEED_ROOT}|{label}").hexdigest()[:16], 16) % (2**63-1)
+subseed(ds,id) = int(sha256(f"{ds}|{id}").hexdigest()[:16], 16) % (2**63-1)
+```
+15 exact integers are stored in `confirmatory_v4_config.json → frozen_seeds` (master_seed
+6341914557047805261, bootstrap_seed 9014517173581927929, plus the residual/block-order/session-order/
+nominal-order/candidate-order seeds for each split). Identity-addressed `subseed` fixes per-block residual,
+per-block nuisance, per-session candidate order, and per-trial init so results do not depend on Python
+iteration order, resume is bit-identical, and no manifest can be regenerated-and-picked. `bootstrap_seed`
+is frozen **before** unseal. Full spec in `confirmatory_v4_manifest_spec.md`.
+
 ## 9. Collision & technical invalidation (§16, §17)
 - **Collision (frozen from existing evidence):** clean smoke 0 N; intentional positive control ~240 N;
   explore-306 max unintended contact 0.0 N and 0 frames with the ContactSensor available for all 306
@@ -110,19 +148,28 @@ empty history vs one frozen probe entry. A test asserts the allowlist equals the
   trial ≝ schema-valid trial with `max_unintended_contact_force_N > 0.0 N` on non-finger links (nonzero rule).
   **Sensitivity** re-runs the primary excluding pre-registered collision-confounded trials. Confirmatory data
   are **not** used to set this threshold.
-- **Technical-invalid (frozen):** only runtime crash/EPISODE_EXCEPTION, ContactSensor unavailable, incomplete
-  schema, manifest mismatch, controller not started, invalid initial state, file corruption. Legitimate
-  failures (timeouts, HANDLE_DETACHED, approach/pull/offset failures) are **never** invalid. Policy:
-  fail-fast then resume at the failed planned trial; retry the **same** planned trial without resampling
-  residual/nuisance; no block replacement; **max 15** technical-invalid trials (>15 → experiment INVALID).
-  Never rerun on a task outcome.
+- **Technical-invalid (frozen, RUNTIME trials only):** only runtime crash/EPISODE_EXCEPTION, ContactSensor
+  unavailable, incomplete schema (incl. any missing probe allowlist field), manifest mismatch, controller
+  not started, invalid initial state, file corruption. Legitimate failures (timeouts, HANDLE_DETACHED,
+  approach/pull/offset failures) are **never** invalid. Policy: fail-fast then resume at the failed planned
+  trial; retry the **same** planned trial without resampling residual/nuisance; no block replacement;
+  **max 15** `runtime_trial_invalid_count` (>15 → experiment INVALID). Never rerun on a task outcome.
+  **FIX1 — two separate namespaces:** `runtime_trial_invalid_count` (the 300 runtime trials; subject to the
+  >15 rule) vs `model_fit_failure_count` (model-training failures; governed by §6/§9 of the analysis plan;
+  **not** part of the 300-trial budget). A model-fit failure never consumes the runtime-invalid budget.
 
-## 10. Test sealing (§10)
-Executable order (full protocol in `confirmatory_v4_seal_unseal_protocol.md`): (1) build+validate train/val;
-(2) keep test sealed (or generate only after models frozen); (3) select best-single from train/val only;
-(4) train K0/K1 from train/val only; (5) freeze 5 seed-model hashes; (6) freeze analysis-code hash;
-(7) unseal test; (8) one-shot final analysis. After unsealing: no retrain, no history/bank/threshold/seed/
-bootstrap/exclusion changes.
+## 10. Test sealing (§10) — FIX1: one unique scheme
+Exactly one scheme, `SCHEME_2_MODEL_FREEZE_BEFORE_TEST_GENERATION` (no either/or). Full protocol in
+`confirmatory_v4_seal_unseal_protocol.md`: **Step 0** pre-run freeze+hash (commit, config, all seeds,
+manifest algorithm, schema, generator commit, planned structure, test identities) — test outcomes do not
+exist; **Step 1** generate train/val manifest; **Step 2** run train/val; **Step 3** freeze train/val data
+(integrity+leakage+hashes+lock); **Step 4** select best-single + train K0/K1 (5 seeds each, all 10 valid);
+**Step 5** freeze analysis (10 model hashes, best-single artifact, feature+analysis code hashes, bootstrap
+seed, exclusion/invalidation rules) → `model_analysis_freeze.json`; **Step 6** generate the test manifest
+**once, deterministically**, only after Step 5; **Step 7** run test; **Step 8** one-shot final analysis.
+Generating or reading any test outcome before Step 5 → **`EXPERIMENT_INVALID_EARLY_TEST_ACCESS`**. After
+Step 6/unseal: no retrain, no history/bank/threshold/seed/bootstrap/exclusion change, no test-seed reselect,
+no generate-many-and-pick.
 
 ## 11. Primary estimator & CI (§11, §12)
 Per test session × model seed: B2_K1 predicts p_success for the 3 candidates → frozen argmax → selected
@@ -156,13 +203,17 @@ The 3-point candidate bank is a **constructed positive-control skill library** f
 exploration phase, to validate the history-conditioned action-selection mechanism. It is **not** a claim over
 arbitrary continuous action spaces, arbitrary tasks, or long-horizon autonomous adaptation.
 
-## 17. GO / FAIL / INVALID (§21)
+## 17. GO / FAIL / INVALID (§21) — FIX1
 ```
-PRIMARY PASS       : CI_lower(Δ_primary) ≥ 0.15  AND seed gate (≥4/5 ≥0.15, none <0)
+PRIMARY PASS       : CI_lower(Δ_primary) ≥ 0.15  AND seed gate (all 5 seeds valid, ≥4/5 ≥0.15, none <0)
 PRIMARY FAIL       : any primary gate unmet
-EXPERIMENT INVALID : only the pre-registered integrity/leakage/manifest/technical-failure conditions
+EXPERIMENT INVALID : pre-registered integrity/leakage/manifest/RUNTIME-technical conditions,
+                     OR EXPERIMENT_INVALID_MODEL_FIT (a model seed invalid after ≤1 retry),
+                     OR EXPERIMENT_INVALID_EARLY_TEST_ACCESS (test outcome touched before Step 5)
 ```
-A non-ideal result may **not** be rewritten as an exploratory PASS.
+The seed gate's `≥4/5` can **never** hide a missing/invalid seed: all 5 must first be valid, else the
+experiment is INVALID (not a `gain<0` seed, not dropped from the denominator). A non-ideal result may **not**
+be rewritten as an exploratory PASS.
 
 ## 18. Hard constraints
 No Isaac; no confirmatory generator; no runtime code; no confirmatory manifest instance; no confirmatory

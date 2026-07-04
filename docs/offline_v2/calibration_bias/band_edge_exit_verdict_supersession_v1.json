@@ -1,0 +1,21 @@
+{
+  "title": "Supersession note for band_edge_exit_verdict_v1",
+  "superseded_file": "band_edge_exit_verdict_v1.json",
+  "superseded_file_unchanged": true,
+  "superseded_verdict": "MODIFY_RESIDUAL_OR_DESIGN",
+  "superseded_scope": "the ORIGINAL test geometry with test nominals at +-0.03 and the then-current design",
+  "why_superseded": [
+    "the exit verdict flagged mixed labels at the 0.025-0.035 boundary and no block-level label variation for the +-0.03 operating point",
+    "the design was subsequently moved to test nominals +-0.035 (test-geometry power study)",
+    "at +-0.035 the state-agnostic best-single straddles the empirical edge (|eff| in [0.025,0.045]) while the state-aware +-0.04 stays deep -> a large, low-variance decision-value gain"
+  ],
+  "current_operating_point": {
+    "test_nominals": [-0.035, 0.035],
+    "validated_by": ["independent 306 band-edge data (episodes.jsonl sha256 131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e)",
+                     "test_geometry_power_verdict_v1.json = POWER_SUFFICIENT_FOR_PREREG_V4"],
+    "edge_center_still_used": 0.03425,
+    "edge_interval": [0.0342, 0.0343]
+  },
+  "clarification": "this note only clarifies the evidence chain; it does NOT modify band_edge_exit_verdict_v1.json, the 306 data, or any prior analysis. The old verdict remains valid FOR THE +-0.03 geometry it audited.",
+  "no_data_recomputation": true
+}

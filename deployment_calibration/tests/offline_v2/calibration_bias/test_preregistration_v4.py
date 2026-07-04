@@ -110,9 +110,12 @@ def test_k0_k1_capacity_matched(pre):
 # ---------------- best-single ----------------
 def test_best_single_train_val_only_not_hardcoded(pre):
     bs = pre["best_single"]
-    assert "train + validation ONLY" in bs["data"]
+    assert "train + validation" in bs["data"] and "ONLY" in bs["data"]
     assert bs["hardcoded_in_confirmatory"] is False
     assert bs["exploratory_expectation"] == 0.0
+    # fix1: no secret tie-break
+    rule = " ".join(bs["rule"]).lower()
+    assert "tau" not in rule and "eff" not in rule
 
 
 # ---------------- primary / CI / gate ----------------
@@ -167,8 +170,12 @@ def test_technical_invalidation_frozen(pre):
 # ---------------- seal/unseal ----------------
 def test_seal_unseal_order(pre):
     s = pre["seal_unseal"]
-    assert s[0].startswith("1.") and s[-1].endswith("final analysis")
-    assert any("SEALED" in x or "sealed" in x for x in s)
+    # fix1: unique scheme, steps 0..8; model-freeze (Step 5) precedes test-manifest generation (Step 6)
+    assert pre["seal_scheme"] == "SCHEME_2_MODEL_FREEZE_BEFORE_TEST_GENERATION"
+    assert s[0].startswith("Step 0")
+    i5 = next(i for i, x in enumerate(s) if x.startswith("Step 5"))
+    i6 = next(i for i, x in enumerate(s) if x.startswith("Step 6"))
+    assert i5 < i6
     for bad in ["change threshold", "change bank", "change seeds", "retrain"]:
         assert bad in pre["post_unseal_forbidden"]
 
@@ -193,7 +200,7 @@ def test_claim_scope_wording(pre):
 
 
 def test_status_and_no_authorization(pre):
-    assert pre["status"] == "PREREGISTRATION_V4_READY_FOR_INDEPENDENT_AUDIT"
+    assert pre["status"] == "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT"
     for k in ["no confirmatory generator", "no confirmatory data", "no run authorization"]:
         assert k in pre["hard_constraints"]
 
@@ -204,7 +211,7 @@ def test_emitted_json_matches_module(tmp_path):
     j = json.load(open(os.path.join(str(tmp_path), "preregistration_v4.json")))
     assert j["trial_counts"]["full_task_trials_total"] == 300
     assert j["design"]["test_nominals"] == [-0.035, 0.035]
-    assert j["status"] == "PREREGISTRATION_V4_READY_FOR_INDEPENDENT_AUDIT"
+    assert j["status"] == "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT"
 
 
 def test_docs_json_present_and_consistent(pre):

@@ -1,60 +1,75 @@
-# Confirmatory v4 — seal / unseal protocol (frozen, executable)
+# Confirmatory v4 — seal / unseal protocol (frozen, executable) — FIX1: ONE unique scheme
 
-Claude B. The executable procedure that guarantees the test split cannot influence any modelling or
-selection choice. Machine form: `SEAL_UNSEAL` / `POST_UNSEAL_FORBIDDEN` in `preregistration_v4.json`.
+Claude B. The single, unambiguous procedure that guarantees the test split cannot influence any modelling or
+selection choice. Machine form: `SEAL_SCHEME` / `SEAL_UNSEAL` / `ACCESS_CONTROL` / `POST_UNSEAL_FORBIDDEN`
+in `preregistration_v4.json`.
 
-## 1. Principle
-best-single selection and K0/K1 training use **train + validation only**. Test outcomes are revealed
-**once**, after every model and the analysis code are frozen and hashed. The primary contrast is then
-computed a single time.
+## 1. The unique scheme (BLOCKER C)
+`SCHEME_2_MODEL_FREEZE_BEFORE_TEST_GENERATION`. **All either/or wording is deleted**; the previous "test may
+be generated early and sealed" alternative is removed. The test manifest is generated **only after** every
+model and the analysis code are frozen and hashed — so test outcomes do not even exist until Step 6.
 
-## 2. Executable steps
+## 2. Executable steps (single path)
 ```
-STEP 1  BUILD_TRAINVAL
-        generate + schema-validate train (45 sessions) and validation (12 sessions).
-        Assert: no test session materialized yet (or test kept in a sealed store).
+STEP 0  PRE-RUN FREEZE
+        freeze + hash: the fix1 v4 commit, confirmatory config, all 15 exact seeds, the manifest-generation
+        algorithm, the schema, the generator commit (future, post-GO), the train/val/test PLANNED structure,
+        and the test split identities + nominal sets. No test outcomes exist.
 
-STEP 2  SEAL_TEST
-        test (18 sessions) is either (a) not yet generated, or (b) generated into a sealed store whose
-        outcomes are inaccessible to the modelling code (enforced by a leakage test).
+STEP 1  GENERATE TRAIN/VAL MANIFEST
+        deterministically from the frozen config + seeds; save its hash. No resample.
 
-STEP 3  SELECT_BEST_SINGLE   (train + validation only)
-        apply the frozen best-single rule; write per-candidate scores, tie-break trace, final offset,
-        selection hash.
+STEP 2  RUN TRAIN/VAL TRIALS
+        generate ONLY train (45 sessions) + validation (12 sessions) runtime data.
 
-STEP 4  TRAIN_MODELS         (train + validation only)
-        train DeepSets K0 and K1 for each of the 5 model seeds; early stop on validation loss.
+STEP 3  FREEZE TRAIN/VAL DATA
+        integrity validation, leakage validation, dataset hashes, train/val lock file.
 
-STEP 5  FREEZE_MODEL_HASHES
-        compute + record a state_dict hash for each of the 5×{K0,K1} models. Immutable hereafter.
+STEP 4  SELECT BEST-SINGLE + TRAIN MODELS   (train + validation only)
+        apply best_single_legal (no secret); train DeepSets K0 and K1 for each of the 5 model seeds
+        (10 checkpoints); ALL 10 must be valid (analysis-plan §9); save state_dict hashes.
 
-STEP 6  FREEZE_ANALYSIS_HASH
-        compute + record the sha256 of the analysis code (estimator + bootstrap + gates).
+STEP 5  FREEZE ANALYSIS  (before ANY test trial)
+        freeze: 5 K0 hashes, 5 K1 hashes, best-single artifact/hash, feature-extraction code hash,
+        final-analysis code hash, bootstrap seed, collision sensitivity rule, exclusion/invalidation rules
+        -> write model_analysis_freeze.json.
 
-STEP 7  UNSEAL_TEST
-        reveal test candidate + probe outcomes. Record unseal timestamp + operator.
+STEP 6  GENERATE TEST MANIFEST   (ONLY after Step 5 passes)
+        one-shot, deterministic, from the frozen test seeds + manifest algorithm + generator commit + config;
+        save the test manifest hash. No reselecting seeds, no generate-many-and-pick, no change to test
+        geometry / block count / nominal / order / residual rules.
 
-STEP 8  FINAL_ANALYSIS       (one shot)
+STEP 7  RUN TEST TRIALS   per the test manifest (18 sessions).
+
+STEP 8  ONE-SHOT FINAL ANALYSIS
         run the frozen estimator + 2000 test-block bootstrap + seed gate exactly once; emit the verdict.
 ```
 
-## 3. Forbidden after UNSEAL (STEP 7)
+## 3. Access control & early-test access (BLOCKER C)
+- Test outcomes are **non-existent before Step 6**; the train/val feature cache excludes test fields; all
+  test access is written to an audit log.
+- Generating or reading **any** test outcome **before Step 5 completes** →
+  **`EXPERIMENT_INVALID_EARLY_TEST_ACCESS`** (whole experiment invalid).
+
+## 4. Forbidden after Step 6 / unseal
 `retrain`, `change history`, `change bank`, `change threshold`, `change seeds`, `change bootstrap`,
-`change exclusion rules`. Any such action voids the confirmatory status.
+`change exclusion rules`, `reselect test seed`, `generate multiple test manifests and pick`,
+`change test geometry/block count`. Any such action voids the confirmatory status.
 
-## 4. Enforcement hooks (for the generator/analysis, implemented by A after GO)
-- A **leakage assertion** that the modelling code (STEPs 3–6) has no read path to test outcomes or any secret
-  field (matches the `SECRET_DENYLIST`).
-- **Hash pinning**: STEP 8 refuses to run unless the 5 model hashes and the analysis-code hash equal the
-  values frozen at STEPs 5–6.
-- **One-shot guard**: STEP 8 records that the final analysis has executed; a second execution is refused
-  (re-running requires an explicit, logged, pre-registered technical-invalid recovery, not a re-analysis).
+## 5. Enforcement hooks (for the generator/analysis, implemented by A after GO)
+- **Leakage assertion**: the modelling code (Steps 3–5) has no read path to test outcomes or any secret field
+  (matches `SECRET_DENYLIST`).
+- **Hash pinning**: Step 8 refuses to run unless the 10 model hashes and the analysis-code hash equal the
+  values frozen at Step 5.
+- **One-shot guard**: Step 8 records that the final analysis has executed; a second execution is refused.
+- **Step-order guard**: Step 6 refuses unless `model_analysis_freeze.json` from Step 5 exists and validates.
 
-## 5. Recovery (technical faults only)
-If a technical-invalid fault (analysis-plan §9) occurs before STEP 7, resume from the frozen manifest at the
-failed planned trial (no residual/nuisance resampling, no block replacement). A technical fault does **not**
-permit revisiting STEPs 3–6 choices. Exceeding 15 technical-invalid trials → experiment INVALID.
+## 6. Recovery (technical faults only)
+A runtime technical-invalid fault (analysis-plan §9) resumes from the frozen manifest at the failed planned
+trial (no residual/nuisance resampling, no block replacement) and does **not** permit revisiting Step 3–5
+choices; >15 runtime technical-invalid trials → experiment INVALID. A **model-fit** failure is handled by the
+separate `model_fit_failure_count` path (retry ≤ 1; else `EXPERIMENT_INVALID_MODEL_FIT`), and blocks Step 6.
 
-## 6. Not produced in this phase
-This is the protocol specification only. No sealing code, no models, no test data, and no execution are
+## 7. Not produced in this phase
+Protocol specification only. No sealing code, no models, no test manifest, no test data, and no execution are
 produced here; A implements the hooks only after C returns GO.
