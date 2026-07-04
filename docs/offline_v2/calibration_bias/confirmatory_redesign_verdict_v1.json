@@ -1,0 +1,16 @@
+{
+  "verdict": "SELECT_CANDIDATE_BANK_REDESIGN",
+  "selected_design": "A_three_point",
+  "needs_larger_residual": false,
+  "needs_new_runtime_validation": false,
+  "next_stage_learned_selector_power_allowed": true,
+  "designs_meeting_all_criteria": [
+    "A_three_point",
+    "B_five_point"
+  ],
+  "rejected": {
+    "C_current_seven_point": [
+      "best_single_train_val_stable(no_thin_tie)"
+    ]
+  }
+}

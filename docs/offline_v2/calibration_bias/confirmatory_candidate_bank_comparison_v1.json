@@ -1,0 +1,426 @@
+{
+  "designs": [
+    {
+      "design_id": "A_three_point",
+      "candidate_bank": [
+        -0.04,
+        0.0,
+        0.04
+      ],
+      "residual_support": [
+        -0.01,
+        0.01
+      ],
+      "best_single_offset": 0.0,
+      "best_single_test_success": 0.75,
+      "state_aware_test_success": 1.0,
+      "expected_success_gain": 0.25,
+      "per_block_gain_variance": 0.0625,
+      "per_block_gain_nondegenerate": true,
+      "mixed_best_single_labels": true,
+      "mixed_state_aware_labels": false,
+      "common_robust_action_exists": false,
+      "all_states_compensable": true,
+      "best_single_tie_on_success": false,
+      "best_single_success_margin_top2": 0.3333,
+      "gain_sensitivity_min": 0.2222,
+      "gain_sensitivity_max": 0.3333,
+      "nondegenerate_all_tau": true,
+      "frozen_dist_gain": 0.1854,
+      "frozen_dist_best_single_success": 0.8146,
+      "probe_K1_selected_success": 1.0,
+      "probe_K2_selected_success": 1.0,
+      "probe_first_distinguishes_test": true,
+      "gross_VOI_K1_success": 0.25,
+      "net_VOI_K1": -0.0817,
+      "criteria": {
+        "A_state_aware_gt_best_single": true,
+        "B_gain_ge_0.15": true,
+        "C_per_block_gain_nondegenerate": true,
+        "D_test_blocks_both_best_single_outcomes": true,
+        "E_residual_flips_primary_operating_cell": true,
+        "F_state_aware_not_broadly_failing(>=0.85)": true,
+        "G_no_common_robust_action": true,
+        "best_single_train_val_stable(no_thin_tie)": true,
+        "all_states_compensable": true,
+        "nondegenerate_all_tau": true,
+        "bs_test_success_in_band": true,
+        "sa_test_success_ge_0.85": true
+      },
+      "all_criteria_met": true,
+      "detail": {
+        "sensitivity": {
+          "per_tau": {
+            "tau=0.0342": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.75,
+              "gain": 0.25,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.03425": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.75,
+              "gain": 0.25,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.0343": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.7778,
+              "gain": 0.2222,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.0325": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.6667,
+              "gain": 0.3333,
+              "nondegenerate": true,
+              "best_single_tie": false
+            }
+          },
+          "gain_min": 0.2222,
+          "gain_max": 0.3333,
+          "nondegenerate_all_tau": true,
+          "best_single_tie_any_tau": false
+        },
+        "frozen_dist": {
+          "state_aware_success": 1.0,
+          "best_single_success": 0.8146,
+          "gain": 0.1854,
+          "nondegenerate": true,
+          "best_single_offset": 0.0
+        },
+        "probe": {
+          "probe_offsets": [
+            -0.04,
+            0.04
+          ],
+          "K_selected_success": {
+            "0": 0.75,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "voi": {
+            "0": {
+              "gross_voi_success": 0.0,
+              "probe_time_s": 0.0,
+              "probe_time_cost": 0.0,
+              "net_voi": 0.0
+            },
+            "1": {
+              "gross_voi_success": 0.25,
+              "probe_time_s": 16.58,
+              "probe_time_cost": 0.3317,
+              "net_voi": -0.0817
+            },
+            "2": {
+              "gross_voi_success": 0.25,
+              "probe_time_s": 33.17,
+              "probe_time_cost": 0.6634,
+              "net_voi": -0.4134
+            }
+          },
+          "first_probe_distinguishes_test_nominals": true,
+          "note": "probe = repeated-task deployment diagnostic full-task trial (NOT low-cost/non-destructive/online); Net VOI uses observed full-task times as a proxy and is preliminary."
+        }
+      }
+    },
+    {
+      "design_id": "B_five_point",
+      "candidate_bank": [
+        -0.06,
+        -0.04,
+        0.0,
+        0.04,
+        0.06
+      ],
+      "residual_support": [
+        -0.01,
+        0.01
+      ],
+      "best_single_offset": 0.0,
+      "best_single_test_success": 0.75,
+      "state_aware_test_success": 1.0,
+      "expected_success_gain": 0.25,
+      "per_block_gain_variance": 0.0625,
+      "per_block_gain_nondegenerate": true,
+      "mixed_best_single_labels": true,
+      "mixed_state_aware_labels": false,
+      "common_robust_action_exists": false,
+      "all_states_compensable": true,
+      "best_single_tie_on_success": false,
+      "best_single_success_margin_top2": 0.3333,
+      "gain_sensitivity_min": 0.2222,
+      "gain_sensitivity_max": 0.3333,
+      "nondegenerate_all_tau": true,
+      "frozen_dist_gain": 0.1854,
+      "frozen_dist_best_single_success": 0.8146,
+      "probe_K1_selected_success": 1.0,
+      "probe_K2_selected_success": 1.0,
+      "probe_first_distinguishes_test": true,
+      "gross_VOI_K1_success": 0.25,
+      "net_VOI_K1": -0.0817,
+      "criteria": {
+        "A_state_aware_gt_best_single": true,
+        "B_gain_ge_0.15": true,
+        "C_per_block_gain_nondegenerate": true,
+        "D_test_blocks_both_best_single_outcomes": true,
+        "E_residual_flips_primary_operating_cell": true,
+        "F_state_aware_not_broadly_failing(>=0.85)": true,
+        "G_no_common_robust_action": true,
+        "best_single_train_val_stable(no_thin_tie)": true,
+        "all_states_compensable": true,
+        "nondegenerate_all_tau": true,
+        "bs_test_success_in_band": true,
+        "sa_test_success_ge_0.85": true
+      },
+      "all_criteria_met": true,
+      "detail": {
+        "sensitivity": {
+          "per_tau": {
+            "tau=0.0342": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.75,
+              "gain": 0.25,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.03425": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.75,
+              "gain": 0.25,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.0343": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.7778,
+              "gain": 0.2222,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.0325": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.6667,
+              "gain": 0.3333,
+              "nondegenerate": true,
+              "best_single_tie": false
+            }
+          },
+          "gain_min": 0.2222,
+          "gain_max": 0.3333,
+          "nondegenerate_all_tau": true,
+          "best_single_tie_any_tau": false
+        },
+        "frozen_dist": {
+          "state_aware_success": 1.0,
+          "best_single_success": 0.8146,
+          "gain": 0.1854,
+          "nondegenerate": true,
+          "best_single_offset": 0.0
+        },
+        "probe": {
+          "probe_offsets": [
+            -0.04,
+            0.04
+          ],
+          "K_selected_success": {
+            "0": 0.75,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "voi": {
+            "0": {
+              "gross_voi_success": 0.0,
+              "probe_time_s": 0.0,
+              "probe_time_cost": 0.0,
+              "net_voi": 0.0
+            },
+            "1": {
+              "gross_voi_success": 0.25,
+              "probe_time_s": 16.58,
+              "probe_time_cost": 0.3317,
+              "net_voi": -0.0817
+            },
+            "2": {
+              "gross_voi_success": 0.25,
+              "probe_time_s": 33.17,
+              "probe_time_cost": 0.6634,
+              "net_voi": -0.4134
+            }
+          },
+          "first_probe_distinguishes_test_nominals": true,
+          "note": "probe = repeated-task deployment diagnostic full-task trial (NOT low-cost/non-destructive/online); Net VOI uses observed full-task times as a proxy and is preliminary."
+        }
+      }
+    },
+    {
+      "design_id": "C_current_seven_point",
+      "candidate_bank": [
+        -0.06,
+        -0.04,
+        -0.02,
+        0.0,
+        0.02,
+        0.04,
+        0.06
+      ],
+      "residual_support": [
+        -0.01,
+        0.01
+      ],
+      "best_single_offset": 0.0,
+      "best_single_test_success": 0.75,
+      "state_aware_test_success": 1.0,
+      "expected_success_gain": 0.25,
+      "per_block_gain_variance": 0.0625,
+      "per_block_gain_nondegenerate": true,
+      "mixed_best_single_labels": true,
+      "mixed_state_aware_labels": false,
+      "common_robust_action_exists": false,
+      "all_states_compensable": true,
+      "best_single_tie_on_success": false,
+      "best_single_success_margin_top2": 0.0476,
+      "gain_sensitivity_min": 0.2222,
+      "gain_sensitivity_max": 0.3333,
+      "nondegenerate_all_tau": true,
+      "frozen_dist_gain": 0.1854,
+      "frozen_dist_best_single_success": 0.8146,
+      "probe_K1_selected_success": 1.0,
+      "probe_K2_selected_success": 1.0,
+      "probe_first_distinguishes_test": true,
+      "gross_VOI_K1_success": 0.25,
+      "net_VOI_K1": -0.0817,
+      "criteria": {
+        "A_state_aware_gt_best_single": true,
+        "B_gain_ge_0.15": true,
+        "C_per_block_gain_nondegenerate": true,
+        "D_test_blocks_both_best_single_outcomes": true,
+        "E_residual_flips_primary_operating_cell": true,
+        "F_state_aware_not_broadly_failing(>=0.85)": true,
+        "G_no_common_robust_action": true,
+        "best_single_train_val_stable(no_thin_tie)": false,
+        "all_states_compensable": true,
+        "nondegenerate_all_tau": true,
+        "bs_test_success_in_band": true,
+        "sa_test_success_ge_0.85": true
+      },
+      "all_criteria_met": false,
+      "detail": {
+        "sensitivity": {
+          "per_tau": {
+            "tau=0.0342": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.75,
+              "gain": 0.25,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.03425": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.75,
+              "gain": 0.25,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.0343": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.7778,
+              "gain": 0.2222,
+              "nondegenerate": true,
+              "best_single_tie": false
+            },
+            "tau=0.0325": {
+              "best_single_offset": 0.0,
+              "state_aware_success": 1.0,
+              "best_single_success": 0.6667,
+              "gain": 0.3333,
+              "nondegenerate": true,
+              "best_single_tie": false
+            }
+          },
+          "gain_min": 0.2222,
+          "gain_max": 0.3333,
+          "nondegenerate_all_tau": true,
+          "best_single_tie_any_tau": false
+        },
+        "frozen_dist": {
+          "state_aware_success": 1.0,
+          "best_single_success": 0.8146,
+          "gain": 0.1854,
+          "nondegenerate": true,
+          "best_single_offset": 0.0
+        },
+        "probe": {
+          "probe_offsets": [
+            -0.04,
+            0.04
+          ],
+          "K_selected_success": {
+            "0": 0.75,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "voi": {
+            "0": {
+              "gross_voi_success": 0.0,
+              "probe_time_s": 0.0,
+              "probe_time_cost": 0.0,
+              "net_voi": 0.0
+            },
+            "1": {
+              "gross_voi_success": 0.25,
+              "probe_time_s": 16.58,
+              "probe_time_cost": 0.3317,
+              "net_voi": -0.0817
+            },
+            "2": {
+              "gross_voi_success": 0.25,
+              "probe_time_s": 33.17,
+              "probe_time_cost": 0.6634,
+              "net_voi": -0.4134
+            }
+          },
+          "first_probe_distinguishes_test_nominals": true,
+          "note": "probe = repeated-task deployment diagnostic full-task trial (NOT low-cost/non-destructive/online); Net VOI uses observed full-task times as a proxy and is preliminary."
+        }
+      }
+    }
+  ],
+  "empirical_edge": {
+    "tau_point": 0.03425,
+    "tau_interval": [
+      0.0342,
+      0.0343
+    ],
+    "isotonic": 0.0325
+  },
+  "residual": {
+    "sigma": 0.005,
+    "support": [
+      -0.01,
+      0.01
+    ]
+  },
+  "criteria_thresholds": {
+    "gain_min": 0.15,
+    "bs_test_success_band": [
+      0.2,
+      0.8
+    ],
+    "sa_test_success_min": 0.85
+  }
+}

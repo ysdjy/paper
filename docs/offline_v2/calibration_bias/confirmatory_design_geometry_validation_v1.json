@@ -1,0 +1,71 @@
+{
+  "A_three_point": {
+    "all_states_compensable": true,
+    "non_compensable": [],
+    "common_robust_action": {
+      "most_common_offset": 0.0,
+      "frac_both_test_nominals": 0.5,
+      "robust_common_action_exists": false
+    },
+    "best_single_operating_cells": {
+      "-0.03": {
+        "best_single_offset": 0.0,
+        "abs_eff_min": 0.02077,
+        "abs_eff_max": 0.03672,
+        "straddles_edge": true
+      },
+      "0.03": {
+        "best_single_offset": 0.0,
+        "abs_eff_min": 0.02328,
+        "abs_eff_max": 0.03923,
+        "straddles_edge": true
+      }
+    }
+  },
+  "B_five_point": {
+    "all_states_compensable": true,
+    "non_compensable": [],
+    "common_robust_action": {
+      "most_common_offset": 0.0,
+      "frac_both_test_nominals": 0.5,
+      "robust_common_action_exists": false
+    },
+    "best_single_operating_cells": {
+      "-0.03": {
+        "best_single_offset": 0.0,
+        "abs_eff_min": 0.02077,
+        "abs_eff_max": 0.03672,
+        "straddles_edge": true
+      },
+      "0.03": {
+        "best_single_offset": 0.0,
+        "abs_eff_min": 0.02328,
+        "abs_eff_max": 0.03923,
+        "straddles_edge": true
+      }
+    }
+  },
+  "C_current_seven_point": {
+    "all_states_compensable": true,
+    "non_compensable": [],
+    "common_robust_action": {
+      "most_common_offset": 0.0,
+      "frac_both_test_nominals": 0.5,
+      "robust_common_action_exists": false
+    },
+    "best_single_operating_cells": {
+      "-0.03": {
+        "best_single_offset": 0.0,
+        "abs_eff_min": 0.02077,
+        "abs_eff_max": 0.03672,
+        "straddles_edge": true
+      },
+      "0.03": {
+        "best_single_offset": 0.0,
+        "abs_eff_min": 0.02328,
+        "abs_eff_max": 0.03923,
+        "straddles_edge": true
+      }
+    }
+  }
+}

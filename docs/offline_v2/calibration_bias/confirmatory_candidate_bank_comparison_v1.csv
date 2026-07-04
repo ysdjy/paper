@@ -1,0 +1,4 @@
+design_id,candidate_bank,best_single_offset,best_single_test_success,state_aware_test_success,expected_success_gain,per_block_gain_nondegenerate,mixed_best_single_labels,best_single_tie_on_success,best_single_success_margin_top2,common_robust_action_exists,all_states_compensable,probe_K1_selected_success,gross_VOI_K1_success,net_VOI_K1,all_criteria_met
+A_three_point,"[-0.04, 0.0, 0.04]",0.0,0.75,1.0,0.25,True,True,False,0.3333,False,True,1.0,0.25,-0.0817,True
+B_five_point,"[-0.06, -0.04, 0.0, 0.04, 0.06]",0.0,0.75,1.0,0.25,True,True,False,0.3333,False,True,1.0,0.25,-0.0817,True
+C_current_seven_point,"[-0.06, -0.04, -0.02, 0.0, 0.02, 0.04, 0.06]",0.0,0.75,1.0,0.25,True,True,False,0.0476,False,True,1.0,0.25,-0.0817,False
