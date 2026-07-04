@@ -1,0 +1,16 @@
+{
+ "experiment": "band_edge_resume_smoke_v1",
+ "smoke_only": true,
+ "first_pass_completed": 3,
+ "resumed_skipped": 3,
+ "resumed_executed": 3,
+ "total_unique_records": 6,
+ "duplicate_count": 0,
+ "manifest_sci_hash_pass1": "24fced220c1ecd26dc69b92864175c7a2008422271e3b5bc85d2acf35463ef2a",
+ "manifest_sci_hash_pass2": "24fced220c1ecd26dc69b92864175c7a2008422271e3b5bc85d2acf35463ef2a",
+ "manifest_hash_unchanged": true,
+ "nuisance_equality_verified": true,
+ "final_run_status": "COMPLETE",
+ "self_check_ok": true,
+ "n_episodes": 6
+}

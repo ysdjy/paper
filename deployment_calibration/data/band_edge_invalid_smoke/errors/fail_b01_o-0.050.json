@@ -1,0 +1,14 @@
+{
+ "planned_episode_id": "b01_o-0.050",
+ "reason": "record failed validate_record_full",
+ "validation_errors": {
+  "ok": false,
+  "schema_errors": [
+   "field 'minimum_joint_limit_margin_rad' must be >= 0, got -1.0"
+  ],
+  "leakage_errors": []
+ },
+ "traceback": "{\"ok\": false, \"schema_errors\": [\"field 'minimum_joint_limit_margin_rad' must be >= 0, got -1.0\"], \"leakage_errors\": []}",
+ "completed_count": 1,
+ "time": "2026-07-04 14:02:07"
+}

@@ -1,0 +1,16 @@
+{
+ "experiment": "band_edge_invalid_record_failfast_smoke_v1",
+ "smoke_only": true,
+ "injected_invalid_at": "b01_o-0.050",
+ "invalid_record_written": false,
+ "committed_valid_records": [
+  "b01_o+0.050"
+ ],
+ "prior_valid_retained": true,
+ "subsequent_episodes_executed": false,
+ "final_run_status": "FAILED",
+ "failed_episode": "b01_o-0.050",
+ "process_exit_nonzero": true,
+ "error_artifact_saved": true,
+ "validation_error_sample": "field 'minimum_joint_limit_margin_rad' must be >= 0, got -1.0"
+}

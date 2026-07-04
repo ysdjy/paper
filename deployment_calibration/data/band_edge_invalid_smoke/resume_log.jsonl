@@ -1,0 +1,2 @@
+{"time": "2026-07-04 14:00:40", "source_commit": "630d81cde51e6ed6c2732ca91ee8da2d9f508436", "science_manifest_sha256": "24fced220c1ecd26dc69b92864175c7a2008422271e3b5bc85d2acf35463ef2a", "completed": 0, "remaining": 6, "planned": 6}
+{"time": "2026-07-04 14:02:07", "final_status": "FAILED", "reason": "record failed validate_record_full", "failed_episode": "b01_o-0.050"}

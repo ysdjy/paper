@@ -1,0 +1,15 @@
+{
+ "run_id": "band_edge_resume_smoke",
+ "mode": "smoke",
+ "smoke_only": true,
+ "config_sha256": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+ "science_manifest_sha256": "24fced220c1ecd26dc69b92864175c7a2008422271e3b5bc85d2acf35463ef2a",
+ "source_commit": "630d81cde51e6ed6c2732ca91ee8da2d9f508436",
+ "master_seed": 8801150,
+ "planned_episode_count": 6,
+ "output_directory": "/home1/banghai/Documents/IsaacLab/projects/paper_runtime_calibration_band_edge_reliability_v1/deployment_calibration/data/band_edge_resume_smoke",
+ "created_at": "2026-07-04 00:55:06",
+ "git_commit": "630d81cde51e6ed6c2732ca91ee8da2d9f508436",
+ "branch": "experiment/runtime-calibration-band-edge-reliability-v1",
+ "dirty_worktree": true
+}
