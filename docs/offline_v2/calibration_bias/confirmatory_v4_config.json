@@ -1,0 +1,257 @@
+{
+  "base_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "design": {
+    "candidate_bank": [
+      -0.04,
+      0.0,
+      0.04
+    ],
+    "train_nominals": [
+      -0.04,
+      -0.02,
+      0.0,
+      0.02,
+      0.04
+    ],
+    "val_nominals": [
+      -0.01,
+      0.01
+    ],
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "probe_offset": -0.04,
+    "K": 1,
+    "blocks": {
+      "train": 9,
+      "val": 6,
+      "test": 9
+    },
+    "residual": {
+      "dist": "TruncatedNormal",
+      "mean": 0.0,
+      "sigma": 0.005,
+      "support": [
+        -0.01,
+        0.01
+      ],
+      "unit": "m"
+    },
+    "train_actual_support": [
+      -0.05,
+      0.05
+    ],
+    "test_actual_support": {
+      "-0.035": [
+        -0.045000000000000005,
+        -0.025
+      ],
+      "0.035": [
+        0.025,
+        0.045000000000000005
+      ]
+    }
+  },
+  "trial_counts": {
+    "sessions_train": 45,
+    "sessions_val": 12,
+    "sessions_test": 18,
+    "sessions_total": 75,
+    "trials_per_session": 4,
+    "probe_trials_per_session": 1,
+    "candidate_trials_per_session": 3,
+    "full_task_trials_total": 300
+  },
+  "model": {
+    "class": "deployment_calibration.models_v2.DeepSets",
+    "name": "B2_deepsets",
+    "encoder": "deepsets (permutation-invariant: shared phi MLP per probe, mean+sum pool, rho)",
+    "hyperparameters": {
+      "d_hid": 32,
+      "d_emb": 16,
+      "lr": 0.01,
+      "max_epochs": 200,
+      "patience": 25,
+      "l2": 0.0001
+    },
+    "model_seeds": [
+      1103,
+      2207,
+      3301,
+      4409,
+      5519
+    ],
+    "optimizer": "Adam(lr=1e-2, weight_decay=1e-4)",
+    "loss": "BCEWithLogits(success) + MSE(z-task_outcome_error) + MSE(z-skill_elapsed_time)  [multitask]",
+    "batching": "FULL-BATCH gradient descent (one Adam step per epoch over the entire train set)",
+    "feature_normalization": "standardize static (train mu/sd), standardize probe vectors (train pooled mu/sd), z-normalize the two continuous targets (train mu/sd); success target NOT normalized; eps 1e-8",
+    "class_weighting": "none (plain BCE)",
+    "initialization": "default PyTorch init under torch.manual_seed(seed) and np.random.seed(seed)",
+    "determinism": "seeds set per model_seed; CPU full-batch -> deterministic rerun (verified by test)",
+    "validation_metric": "the multitask training loss evaluated on the validation fold",
+    "early_stopping": "patience=25 epochs, improvement threshold 1e-5 on val loss",
+    "checkpoint_selection": "restore the state_dict at minimum validation loss (best_state)",
+    "p_success_output": "sigmoid(success logit), then clipped to [0,1] (clip_predictions)",
+    "candidate_selection": "argmax_o p_success over the 3-candidate bank",
+    "prediction_tie_break": "strict-greater argmax scanning the bank in fixed order (-0.04, 0.0, +0.04); on an exact tie the earliest bank index is kept",
+    "regression_clip": {
+      "error_clip": [
+        0.0,
+        0.3
+      ],
+      "time_clip": [
+        0.0,
+        60.0
+      ]
+    },
+    "training_failure_handling": "a training exception is a TECHNICAL-INVALID event (section 17); in the power simulation it was scored conservatively as a power failure",
+    "no_hyperparameter_search_on_confirmatory": true
+  },
+  "history_allowlist": [
+    "theta.grasp_offset_local_y",
+    "theta.max_pos_step",
+    "theta.pull_lead",
+    "success",
+    "task_outcome_error",
+    "skill_elapsed_time",
+    "pull_phase_duration",
+    "final_joint_position"
+  ],
+  "static_allowlist": [
+    "theta.grasp_offset_local_y",
+    "theta.max_pos_step",
+    "theta.pull_lead",
+    "g.target_open_position",
+    "g.target_tolerance",
+    "x.initial_mechanism_joint_pos",
+    "x.gripper_width",
+    "x.member==sektion_cabinet (bool)"
+  ],
+  "secret_denylist": [
+    "nominal_bias",
+    "residual_bias",
+    "actual_bias",
+    "eff_signed",
+    "abs_eff",
+    "nuisance_block_id",
+    "block_seed",
+    "residual_seed",
+    "split_identity",
+    "future_candidate_outcomes",
+    "oracle_action",
+    "hidden_state_class_label",
+    "secret_deployment_state",
+    "hidden_state_id",
+    "damping_eff",
+    "damping_post"
+  ],
+  "best_single": {
+    "data": "train + validation ONLY (test never participates)",
+    "rule": [
+      "1. max mean success",
+      "2. tie -> max mean frozen continuous margin/utility (tau - |eff|)",
+      "3. tie -> min |offset|",
+      "4. tie -> fixed numeric order of the bank"
+    ],
+    "must_save": [
+      "per-candidate train/val score",
+      "tie-break trace",
+      "final offset",
+      "selection hash"
+    ],
+    "exploratory_expectation": 0.0,
+    "hardcoded_in_confirmatory": false
+  },
+  "primary": {
+    "comparator": "Delta_primary = seed-averaged B2_K1 selected success - train/val-only best-single success",
+    "statistical_unit": "test nuisance block",
+    "aggregation": "per test block: average over the 2 test nominals, then average over the 5 model seeds (B2); best-single averaged over the 2 nominals in the same block",
+    "point_estimate": "mean over test blocks of gain_b",
+    "primary_pass": "CI_lower(Delta_primary) >= 0.15  (95% test-block bootstrap, n_boot=2000)",
+    "plus_gate": {
+      ">=4/5 seed point gains >= 0.15": true,
+      "no seed point gain < 0": true,
+      "role": "PRIMARY necessary quality gate (GO requires it)"
+    },
+    "not_allowed": [
+      "point estimate as primary",
+      "CI>0 as primary",
+      "episode-level bootstrap",
+      "lowering 0.15",
+      "changing the comparator"
+    ]
+  },
+  "bootstrap": {
+    "n_boot": 2000,
+    "ci": 0.95,
+    "method": "test-block percentile bootstrap",
+    "resample_unit": "test nuisance block (keeps both test nominals, all 5 seeds, block candidate correspondence)"
+  },
+  "collision_rule": {
+    "evidence": {
+      "clean_smoke_force_N": 0.0,
+      "intentional_positive_control_force_N": "~240",
+      "explore_306_max_unintended_contact_force_N": 0.0,
+      "explore_306_unintended_contact_frame_count": 0,
+      "contact_sensor_available_frac": 1.0,
+      "sensor_backend": "isaaclab.sensors.ContactSensor(robot_contact.net_forces_w, non-finger links)"
+    },
+    "monitored_scope": "robot non-finger links (arm/hand) vs cabinet; intended finger-handle contact EXCLUDED",
+    "primary": "intention-to-analyze: primary success includes ALL schema-valid task trials regardless of unintended-contact force (no trial dropped for collision)",
+    "collision_confounded_definition": "a schema-valid trial with max_unintended_contact_force_N > 0.0 N on monitored (non-finger) links",
+    "numeric_threshold_N": 0.0,
+    "sensitivity": "re-run the primary contrast excluding pre-registered collision-confounded trials; report whether the CI_lower>=0.15 verdict is unchanged",
+    "confirmatory_data_not_used_to_set_threshold": true
+  },
+  "technical_invalid": {
+    "invalid_conditions": [
+      "runtime_crash / EPISODE_EXCEPTION",
+      "ContactSensor unavailable",
+      "incomplete schema (missing required field)",
+      "manifest hash mismatch",
+      "controller not started",
+      "invalid initial state / full_reset not verified",
+      "file corruption"
+    ],
+    "legitimate_failures_never_invalid": [
+      "timeout (REACH/PULL/POSITION)",
+      "HANDLE_DETACHED",
+      "approach/pull failure",
+      "offset-induced failure"
+    ],
+    "policy": "fail-fast then resume from the frozen manifest at the failed planned trial",
+    "retry_same_planned_trial_allowed": true,
+    "resample_residual_or_nuisance_on_retry": false,
+    "replace_block_allowed": false,
+    "max_technical_invalid_trials": 15,
+    "experiment_invalid_if": ">15 technical-invalid trials, OR any unresolved manifest/leakage/integrity breach",
+    "never_rerun_on_task_outcome": true
+  },
+  "manifest_fields": [
+    "master_seed",
+    "residual_seed",
+    "block_order",
+    "session_order",
+    "nominal_order",
+    "candidate_order",
+    "model_seeds",
+    "bootstrap_seed",
+    "manifest_hash",
+    "config_hash",
+    "code_commit",
+    "environment_versions"
+  ],
+  "voi": {
+    "lambda_time": 0.02,
+    "probe_time_s": 16.58,
+    "horizons": [
+      1,
+      2,
+      5,
+      10
+    ],
+    "priority": "SECONDARY",
+    "no_post_hoc_T_as_primary_endpoint": true
+  }
+}

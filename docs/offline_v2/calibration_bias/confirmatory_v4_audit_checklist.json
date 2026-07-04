@@ -1,0 +1,24 @@
+{
+  "for": "Claude C independent audit",
+  "must_verify": [
+    "train/val/test nominals exactly {-0.04..+0.04}/{-0.01,+0.01}/{-0.035,+0.035}",
+    "candidate bank {-0.04,0,+0.04}; probe fixed -0.04; K=1",
+    "blocks 9/6/9; sessions 45/12/18=75; full-task trials 300",
+    "probe and candidate(-0.04) are DISTINCT full-task trials; probe outcome not reused as candidate label",
+    "history allowlist == features.probe_vector fields (8); static allowlist == features.static_features (8)",
+    "secret denylist enforced; feature cache excludes secret",
+    "DeepSets hyperparameters/seeds == power-verified values; no confirmatory hp search",
+    "K0 and K1 capacity-matched (same model, empty vs 1-probe history)",
+    "best-single train/val only, tie-break frozen, not hardcoded",
+    "test sealed until models frozen; seal/unseal executable; post-unseal changes forbidden",
+    "primary estimator: per-block avg over 2 nominals then 5 seeds; unit=test block",
+    "primary event CI_lower>=0.15 (2000 test-block bootstrap); threshold not lowered; comparator unchanged",
+    "seed gate >=4/5>=0.15 and none<0 is a PRIMARY necessary gate",
+    "collision rule frozen (nonzero-N confounded def + intention-to-analyze primary + sensitivity)",
+    "technical-invalidation list frozen; legitimate failures never invalid; no rerun on task outcome",
+    "no 306/capability/synthetic reuse in confirmatory training",
+    "claim scope wording matches; probe term correct; positive-control boundary stated",
+    "markdown and JSON consistent"
+  ],
+  "deliverable_gate": "C must return GO before A implements the generator; this phase authorizes nothing"
+}
