@@ -1,0 +1,90 @@
+{
+  "audit": "band_edge_runtime_reliability_reaudit_v1",
+  "auditor": "Claude B (independent, read-only)",
+  "prior_audit_commit": "630d81cde51e6ed6c2732ca91ee8da2d9f508436",
+  "prior_verdict": "MODIFY_RUNTIME",
+
+  "verdict": "AUTHORIZE_306_EXPLORATORY_RUN",
+  "authorizes_306": true,
+  "authorized_runtime_commit": "e447f00728b9b3dd26cbc85ecc3f0c2de17822f5",
+  "authorized_runtime_branch": "experiment/runtime-calibration-band-edge-reliability-v1",
+  "authorized_config_sha256": "2f20429b5273cb7d269ae0e78f6361e98d2d7cd138b55324549b36a98a2dac86",
+  "authorized_science_manifest_sha256": "e2c8216ed2b2bae19d03815ed922eaf49a6870afce72d7d3fb544e98cd7c86ba",
+  "authorized_episode_count": 306,
+  "authorized_blocks": 18,
+  "authorized_offsets_per_block": 17,
+  "authorized_run_count": 1,
+  "authorized_master_seed": 8801150,
+
+  "resume_allowed": true,
+  "same_manifest_required": true,
+  "clean_source_required": true,
+  "test_hooks_forbidden": true,
+  "smoke_only_must_be_false": true,
+  "confirmatory_authorized": false,
+  "preregistration_v4_authorized": false,
+
+  "isaac_launched": false,
+  "new_runtime_data_generated": false,
+  "ran_306": false,
+
+  "section_verdicts": {
+    "s3_persistence": "PASS",
+    "s4_resume_skip_completed": "PASS",
+    "s5_invalid_record_fail_fast": "PASS",
+    "s6_dirty_source_policy": "PASS",
+    "s7_hard_self_check": "PASS",
+    "s8_pytest_collection": "PASS",
+    "s9_science_freeze_unchanged": "PASS",
+    "s10_pre_authorization_checks": "PASS"
+  },
+
+  "evidence": {
+    "config_sha256_matches_frozen": true,
+    "plan_rebuilds_306_18x17_no_probes_nominal0": true,
+    "offsets_match_frozen_grid": true,
+    "residuals_equal_draw_block_residuals": true,
+    "planned_episode_id_is_pure_identity": true,
+    "plan_diff_is_single_identity_field": true,
+    "resume_smoke": {
+      "first_pass_committed": 3, "resumed_skipped": 3, "resumed_executed": 3,
+      "total_unique": 6, "duplicates": 0,
+      "science_manifest_sha_identical_across_passes": "24fced220c1ecd26dc69b92864175c7a2008422271e3b5bc85d2acf35463ef2a",
+      "no_resample": true, "final_status": "COMPLETE", "self_check_ok": true,
+      "independently_reverified_load_and_hard_self_check": true
+    },
+    "forced_invalid_smoke": {
+      "injected_at": "b01_o-0.050", "invalid_record_written": false,
+      "injected_record_absent_from_records_dir": true, "prior_valid_retained": true,
+      "subsequent_episodes_executed": false, "run_status": "FAILED", "non_zero_exit": true,
+      "error_artifact_present": true
+    },
+    "dirty_source_classifier": {
+      "frozen_config_change_refused": true, "source_code_change_refused": true,
+      "only_output_change_allowed": true, "no_allow_dirty_bypass_for_full": true
+    },
+    "pytest": {"runtime_test_files_collected": 3, "runtime_test_functions": 6,
+               "total_collected": 99, "runtime_tests_passed": 6,
+               "b_frozen_calibration_bias_passed": 59, "no_regression": true,
+               "if_name_main_only": false}
+  },
+
+  "collision_threshold_frozen": false,
+  "collision_threshold_rule": "306 run records only RAW contact quantities; B selects the threshold post-run by the pre-frozen rule (never from confirmatory data) and reports full + collision-sensitivity; A performs no in-run classification or tuning",
+
+  "science_freeze_unchanged": ["18_blocks", "17_offsets", "306_episodes", "nominal_bias_y=0",
+    "residual_distribution(sigma=0.005,[-0.01,0.01])", "master_seed=8801150", "frozen_manifest_order",
+    "nuisance_values", "skill_parameters", "damping=3.0", "target=0.20", "success_definition",
+    "collision_backend", "instrumentation_scientific_definitions"],
+
+  "authorized_scope": "one full 306-episode exploratory band-edge characterization run using the frozen manifest/config and the clean source commit e447f00; resume within the same run dir + same manifest is allowed",
+  "forbidden": ["change the science plan", "a second 306 run with a different seed",
+    "confirmatory generator or data", "learned-selector power", "preregistration v4",
+    "675-episode confirmatory run", "any mid-run parameter/threshold/stop-rule tuning"],
+
+  "remaining_blockers": [],
+  "minor_notes": [
+    "an UNPARSEABLE committed *.json is treated as absent + deterministically re-executed (not INVALID); atomic rename makes half-written committed files impossible and re-exec is no-resample, so this is safe (self-healing), not a blocker",
+    "smoke artifacts carry source_commit 630d81c (they ran before the final e447f00 commit; dirty allowed for smoke) — the FULL run must and does enforce clean e447f00"
+  ]
+}
