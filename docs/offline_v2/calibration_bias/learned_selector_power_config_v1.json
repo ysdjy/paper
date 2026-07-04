@@ -1,0 +1,145 @@
+{
+  "experiment": "learned_selector_power_v1",
+  "offline_synthetic_only": true,
+  "not_confirmatory": true,
+  "design": "A_three_point",
+  "candidate_bank": [
+    -0.04,
+    0.0,
+    0.04
+  ],
+  "train_nominals": [
+    -0.04,
+    -0.02,
+    0.0,
+    0.02,
+    0.04
+  ],
+  "val_nominals": [
+    -0.01,
+    0.01
+  ],
+  "test_nominals": [
+    -0.03,
+    0.03
+  ],
+  "probe": {
+    "K1_first_probe_offset": -0.04,
+    "semantics": "repeated-task deployment diagnostic full-task trial"
+  },
+  "residual": {
+    "sigma": 0.005,
+    "support": [
+      -0.01,
+      0.01
+    ],
+    "per_block_once": true,
+    "shared_within_block": true,
+    "blocks_independent": true
+  },
+  "outcome_model": {
+    "form": "hard_threshold success=1[|actual+offset|<=tau]",
+    "tau_primary": 0.03425,
+    "tau_sensitivity": [
+      0.0342,
+      0.03425,
+      0.0343
+    ],
+    "tau_isotonic_sensitivity_only": 0.0325,
+    "no_fabricated_soft_scale": true
+  },
+  "models": {
+    "B0": "base-rate",
+    "B1_K0": "DeepSets empty history (capacity-matched)",
+    "B2_K1": "DeepSets + fixed probe history",
+    "oracle": "state-aware knows actual_bias (structural upper bound only)",
+    "deepsets_hp": {
+      "d_hid": 32,
+      "d_emb": 16,
+      "lr": 0.01,
+      "max_epochs": 200,
+      "patience": 25,
+      "l2": 0.0001
+    },
+    "model_seeds": [
+      1103,
+      2207,
+      3301,
+      4409,
+      5519
+    ],
+    "real_models_v2_DeepSets": true,
+    "no_hand_classifier": true
+  },
+  "legal_inputs": [
+    "x",
+    "g",
+    "theta(offset)",
+    "H_K1(probe outcome)"
+  ],
+  "forbidden_inputs": [
+    "nominal_bias",
+    "residual_bias",
+    "actual_bias",
+    "eff_signed",
+    "abs_eff",
+    "block_id",
+    "block_seed",
+    "residual_seed",
+    "future_candidate_outcomes",
+    "test_split_identity",
+    "oracle_action",
+    "hidden_state_label"
+  ],
+  "best_single_rule": "train+val only; max mean success; tie->max mean margin; tie->min|offset|; test never used",
+  "seed_aggregation": "per test block avg over 5 model seeds selected success, then mean gain over test blocks",
+  "primary_ci": "block bootstrap over test nuisance blocks, n_boot 2000, 95%",
+  "power_event": "CI_lower(Delta_success)>=0.15 AND mean>0 AND oracle>=0.85 AND non-degenerate AND seed_stability(>=4/5 seed gains>=0.15, none<0)",
+  "seed_stability_gate": ">=4/5 model seeds point gain>=0.15 and none<0",
+  "monte_carlo": {
+    "reps_primary": 200,
+    "reps_grid": 150,
+    "min_allowed": 200,
+    "conservative_failure": "non-converged replicate counts as power failure"
+  },
+  "block_grid": [
+    [
+      9,
+      6,
+      9
+    ],
+    [
+      12,
+      9,
+      12
+    ],
+    [
+      18,
+      9,
+      18
+    ]
+  ],
+  "block_selection_rule": "smallest total-block design meeting power at ALL 3 primary taus; tie->larger test then larger train",
+  "power_acceptance": "estimated learned power>=0.85 AND 95% MC binomial CI lower>=0.80",
+  "net_voi": {
+    "one_shot": "gross_success_VOI - lambda_time*probe_time",
+    "probe_time_s": 16.58,
+    "lambda_time": 0.02,
+    "amortization_horizons": [
+      1,
+      2,
+      5,
+      10
+    ],
+    "horizon_from_deployment_semantics_not_results": true
+  },
+  "taus_run_primary": [
+    0.0342,
+    0.03425,
+    0.0343
+  ],
+  "taus_run_grid": [
+    0.03425,
+    0.0343
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "verdict": "REDESIGN_MODEL_OR_CLAIM",
+  "selected_design": null,
+  "primary_9_6_9_passes": false,
+  "reason": "K1 learns history (K1~0.99 vs K0~0.82, increment ~0.17) but the pre-registered event CI_lower(gain over best-single)>=0.15 is unreachable at any reasonable block count -- even the ORACLE structural power stays <=0.11 (per-block gain ~0.18, SD ~0.4 -> needs hundreds of test blocks). Threshold/claim problem, not learnability or block count.",
+  "max_learned_power": 0.075,
+  "max_structural_power": 0.107,
+  "mean_history_increment_k1_minus_k0": 0.1642,
+  "net_voi": {
+    "one_shot_net_voi": -0.1644,
+    "gross_voi_success": 0.1672,
+    "probe_time_cost": 0.3316,
+    "amortized_net_voi_by_horizon": {
+      "1": -0.1644,
+      "2": 0.0028,
+      "5": 0.5045,
+      "10": 1.3406
+    }
+  },
+  "recommended_claim_scope": "Option 1 (success / history-increment primary); relax the strict gain-over-best-single CI event OR move test biases further from the edge (e.g. +-0.035) for a larger, lower-variance gain. NOT INCREASE_BLOCK_COUNTS (oracle also fails).",
+  "preregistration_v4_generated": false,
+  "runtime_or_confirmatory_data_generated": false,
+  "best_single_stability": {
+    "design": [
+      9,
+      6,
+      9
+    ],
+    "tau": 0.03425,
+    "n_reps": 50,
+    "best_single_offset_distribution": {
+      "0.0": 50
+    },
+    "mostly_zero": true,
+    "switches_to_pm004": false
+  }
+}

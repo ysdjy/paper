@@ -1,0 +1,41 @@
+{
+  "design": [
+    9,
+    6,
+    9
+  ],
+  "tau": 0.03425,
+  "n_reps": 50,
+  "model_seeds": [
+    1103,
+    2207,
+    3301,
+    4409,
+    5519
+  ],
+  "per_seed_mean_gain": [
+    0.1544,
+    0.1389,
+    0.1389,
+    0.1422,
+    0.1622
+  ],
+  "per_seed_frac_gain_ge_0.15": [
+    0.5,
+    0.44,
+    0.44,
+    0.42,
+    0.54
+  ],
+  "per_seed_frac_gain_negative": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "mean_seeds_passing_per_rep": 2.34,
+  "frac_reps_seed_stable_ge4of5": 0.44,
+  "mean_k1": 0.9851,
+  "mean_k0": 0.8378
+}

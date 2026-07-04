@@ -1,0 +1,250 @@
+{
+  "provenance": {
+    "python": "3.11.15",
+    "numpy": "1.26.0",
+    "torch": "2.7.0+cu128",
+    "reps_primary": 200,
+    "reps_grid": 150,
+    "n_boot": 2000,
+    "deepsets_hp": {
+      "d_hid": 32,
+      "d_emb": 16,
+      "lr": 0.01,
+      "max_epochs": 200,
+      "patience": 25,
+      "l2": 0.0001
+    },
+    "model_seeds": [
+      1103,
+      2207,
+      3301,
+      4409,
+      5519
+    ],
+    "gain_min": 0.15,
+    "power_min": 0.85,
+    "power_ci_lower_min": 0.8
+  },
+  "learned": [
+    {
+      "train_blocks": 9,
+      "val_blocks": 6,
+      "test_blocks": 9,
+      "tau": 0.0342,
+      "n_reps": 200,
+      "power": 0.075,
+      "power_ci95": [
+        0.038495822156909214,
+        0.11150417784309077
+      ],
+      "mean_learned_gain": 0.16905555555555551,
+      "mean_k1_success": 0.9837777777777778,
+      "mean_k0_success": 0.8147222222222221,
+      "mean_best_single_success": 0.8147222222222221,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.16905555555555551,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.59,
+      "passes_power": false
+    },
+    {
+      "train_blocks": 9,
+      "val_blocks": 6,
+      "test_blocks": 9,
+      "tau": 0.03425,
+      "n_reps": 200,
+      "power": 0.075,
+      "power_ci95": [
+        0.038495822156909214,
+        0.11150417784309077
+      ],
+      "mean_learned_gain": 0.16722222222222222,
+      "mean_k1_success": 0.9847222222222223,
+      "mean_k0_success": 0.8175,
+      "mean_best_single_success": 0.8175,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.16722222222222222,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.58,
+      "passes_power": false
+    },
+    {
+      "train_blocks": 9,
+      "val_blocks": 6,
+      "test_blocks": 9,
+      "tau": 0.0343,
+      "n_reps": 200,
+      "power": 0.065,
+      "power_ci95": [
+        0.03083325886186978,
+        0.09916674113813023
+      ],
+      "mean_learned_gain": 0.16505555555555554,
+      "mean_k1_success": 0.9853333333333333,
+      "mean_k0_success": 0.8202777777777779,
+      "mean_best_single_success": 0.8202777777777779,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.16505555555555554,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.59,
+      "passes_power": false
+    },
+    {
+      "train_blocks": 12,
+      "val_blocks": 9,
+      "test_blocks": 12,
+      "tau": 0.03425,
+      "n_reps": 150,
+      "power": 0.05333333333333334,
+      "power_ci95": [
+        0.017374271836907942,
+        0.08929239482975873
+      ],
+      "mean_learned_gain": 0.161,
+      "mean_k1_success": 0.9873888888888888,
+      "mean_k0_success": 0.826388888888889,
+      "mean_best_single_success": 0.826388888888889,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.161,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.5266666666666666,
+      "passes_power": false
+    },
+    {
+      "train_blocks": 12,
+      "val_blocks": 9,
+      "test_blocks": 12,
+      "tau": 0.0343,
+      "n_reps": 150,
+      "power": 0.05333333333333334,
+      "power_ci95": [
+        0.017374271836907942,
+        0.08929239482975873
+      ],
+      "mean_learned_gain": 0.15983333333333336,
+      "mean_k1_success": 0.9878888888888889,
+      "mean_k0_success": 0.8280555555555557,
+      "mean_best_single_success": 0.8280555555555557,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.15983333333333336,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.54,
+      "passes_power": false
+    },
+    {
+      "train_blocks": 18,
+      "val_blocks": 9,
+      "test_blocks": 18,
+      "tau": 0.03425,
+      "n_reps": 150,
+      "power": 0.05333333333333334,
+      "power_ci95": [
+        0.017374271836907942,
+        0.08929239482975873
+      ],
+      "mean_learned_gain": 0.16566666666666668,
+      "mean_k1_success": 0.9915925925925926,
+      "mean_k0_success": 0.825925925925926,
+      "mean_best_single_success": 0.825925925925926,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.16566666666666668,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.5266666666666666,
+      "passes_power": false
+    },
+    {
+      "train_blocks": 18,
+      "val_blocks": 9,
+      "test_blocks": 18,
+      "tau": 0.0343,
+      "n_reps": 150,
+      "power": 0.04,
+      "power_ci95": [
+        0.008640000000000002,
+        0.07136
+      ],
+      "mean_learned_gain": 0.1615185185185185,
+      "mean_k1_success": 0.9920740740740742,
+      "mean_k0_success": 0.8305555555555554,
+      "mean_best_single_success": 0.8305555555555554,
+      "mean_oracle_success": 1.0,
+      "mean_history_increment": 0.1615185185185185,
+      "frac_converged": 1.0,
+      "frac_seed_stable": 0.5066666666666667,
+      "passes_power": false
+    }
+  ],
+  "structural": [
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0342,
+      "power": 0.065,
+      "mean_gain": 0.18444444444444444
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.03425,
+      "power": 0.06,
+      "mean_gain": 0.1825
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0343,
+      "power": 0.06,
+      "mean_gain": 0.17916666666666667
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.03425,
+      "power": 0.10666666666666667,
+      "mean_gain": 0.1938888888888889
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0343,
+      "power": 0.1,
+      "mean_gain": 0.19055555555555556
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.03425,
+      "power": 0.07333333333333333,
+      "mean_gain": 0.1796296296296296
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0343,
+      "power": 0.07333333333333333,
+      "mean_gain": 0.17814814814814814
+    }
+  ],
+  "elapsed_min": 94.8
+}
