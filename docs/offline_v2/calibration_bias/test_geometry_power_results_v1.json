@@ -1,0 +1,557 @@
+[
+  {
+    "train_blocks": 12,
+    "val_blocks": 9,
+    "test_blocks": 12,
+    "tau": 0.03425,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 0.994,
+    "learned_power_ci95": [
+      0.9872307603972086,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.52755,
+    "mean_struct_gain": 0.5645833333333332,
+    "mean_k1_success": 0.9629666666666667,
+    "mean_k0_success": 0.4354166666666666,
+    "mean_best_single_success": 0.4354166666666666,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.52755,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.994,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 12,
+    "val_blocks": 9,
+    "test_blocks": 12,
+    "tau": 0.0342,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 0.994,
+    "learned_power_ci95": [
+      0.9872307603972086,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5306833333333334,
+    "mean_struct_gain": 0.5696666666666668,
+    "mean_k1_success": 0.9610166666666665,
+    "mean_k0_success": 0.43033333333333335,
+    "mean_best_single_success": 0.43033333333333335,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5306833333333334,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.994,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 12,
+    "val_blocks": 9,
+    "test_blocks": 12,
+    "tau": 0.0343,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 0.994,
+    "learned_power_ci95": [
+      0.9872307603972086,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.52595,
+    "mean_struct_gain": 0.56125,
+    "mean_k1_success": 0.9646999999999999,
+    "mean_k0_success": 0.43875,
+    "mean_best_single_success": 0.43875,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.52595,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.994,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 18,
+    "val_blocks": 9,
+    "test_blocks": 18,
+    "tau": 0.03425,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 1.0,
+    "learned_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5305222222222222,
+    "mean_struct_gain": 0.5625555555555556,
+    "mean_k1_success": 0.9679666666666666,
+    "mean_k0_success": 0.4374444444444445,
+    "mean_best_single_success": 0.4374444444444445,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5305222222222222,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 1.0,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 18,
+    "val_blocks": 9,
+    "test_blocks": 18,
+    "tau": 0.0342,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 1.0,
+    "learned_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.533611111111111,
+    "mean_struct_gain": 0.5669444444444444,
+    "mean_k1_success": 0.9666666666666668,
+    "mean_k0_success": 0.4330555555555556,
+    "mean_best_single_success": 0.4330555555555556,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.533611111111111,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 1.0,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 18,
+    "val_blocks": 9,
+    "test_blocks": 18,
+    "tau": 0.0343,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 1.0,
+    "learned_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5268999999999999,
+    "mean_struct_gain": 0.5584444444444443,
+    "mean_k1_success": 0.9684555555555555,
+    "mean_k0_success": 0.4415555555555556,
+    "mean_best_single_success": 0.4415555555555556,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5268999999999999,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 1.0,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.03425,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 0.986,
+    "learned_power_ci95": [
+      0.9757015101689617,
+      0.9962984898310383
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5198444444444444,
+    "mean_struct_gain": 0.5636666666666666,
+    "mean_k1_success": 0.9561777777777778,
+    "mean_k0_success": 0.43633333333333335,
+    "mean_best_single_success": 0.43633333333333335,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5198444444444444,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.988,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.03425,
+    "test_nominals": [
+      -0.034,
+      0.034
+    ],
+    "n_reps": 500,
+    "learned_power": 0.964,
+    "learned_power_ci95": [
+      0.9476709530957866,
+      0.9803290469042133
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.4423777777777778,
+    "mean_struct_gain": 0.47955555555555557,
+    "mean_k1_success": 0.9628222222222224,
+    "mean_k0_success": 0.5204444444444444,
+    "mean_best_single_success": 0.5204444444444444,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.4423777777777778,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.972,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "s034",
+    "is_primary": false
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.03425,
+    "test_nominals": [
+      -0.036,
+      0.036
+    ],
+    "n_reps": 500,
+    "learned_power": 0.998,
+    "learned_power_ci95": [
+      0.9940839219619625,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5957333333333333,
+    "mean_struct_gain": 0.646,
+    "mean_k1_success": 0.9497333333333333,
+    "mean_k0_success": 0.354,
+    "mean_best_single_success": 0.354,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5957333333333333,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.998,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "s036",
+    "is_primary": false
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.0342,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 0.986,
+    "learned_power_ci95": [
+      0.9757015101689617,
+      0.9962984898310383
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5226666666666667,
+    "mean_struct_gain": 0.5681111111111111,
+    "mean_k1_success": 0.9545555555555556,
+    "mean_k0_success": 0.431888888888889,
+    "mean_best_single_success": 0.431888888888889,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5226666666666667,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.988,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.0342,
+    "test_nominals": [
+      -0.034,
+      0.034
+    ],
+    "n_reps": 500,
+    "learned_power": 0.966,
+    "learned_power_ci95": [
+      0.9501145657660862,
+      0.9818854342339137
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.4450888888888889,
+    "mean_struct_gain": 0.4837777777777778,
+    "mean_k1_success": 0.9613111111111111,
+    "mean_k0_success": 0.5162222222222221,
+    "mean_best_single_success": 0.5162222222222221,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.4450888888888889,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.974,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "s034",
+    "is_primary": false
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.0342,
+    "test_nominals": [
+      -0.036,
+      0.036
+    ],
+    "n_reps": 500,
+    "learned_power": 0.998,
+    "learned_power_ci95": [
+      0.9940839219619625,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5968,
+    "mean_struct_gain": 0.6491111111111111,
+    "mean_k1_success": 0.9476888888888889,
+    "mean_k0_success": 0.3508888888888889,
+    "mean_best_single_success": 0.3508888888888889,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5968,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.998,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "s036",
+    "is_primary": false
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.0343,
+    "test_nominals": [
+      -0.035,
+      0.035
+    ],
+    "n_reps": 500,
+    "learned_power": 0.984,
+    "learned_power_ci95": [
+      0.9730016228106143,
+      0.9949983771893857
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5171555555555556,
+    "mean_struct_gain": 0.5601111111111111,
+    "mean_k1_success": 0.9570444444444445,
+    "mean_k0_success": 0.43988888888888894,
+    "mean_best_single_success": 0.43988888888888894,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5171555555555556,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.986,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "p035",
+    "is_primary": true
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.0343,
+    "test_nominals": [
+      -0.034,
+      0.034
+    ],
+    "n_reps": 500,
+    "learned_power": 0.958,
+    "learned_power_ci95": [
+      0.9404175873327919,
+      0.975582412667208
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.4381555555555556,
+    "mean_struct_gain": 0.4745555555555556,
+    "mean_k1_success": 0.9636,
+    "mean_k0_success": 0.5254444444444444,
+    "mean_best_single_success": 0.5254444444444444,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.4381555555555556,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.968,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "s034",
+    "is_primary": false
+  },
+  {
+    "train_blocks": 9,
+    "val_blocks": 6,
+    "test_blocks": 9,
+    "tau": 0.0343,
+    "test_nominals": [
+      -0.036,
+      0.036
+    ],
+    "n_reps": 500,
+    "learned_power": 0.996,
+    "learned_power_ci95": [
+      0.9904673813794913,
+      1.0
+    ],
+    "struct_power": 1.0,
+    "struct_power_ci95": [
+      1.0,
+      1.0
+    ],
+    "mean_learned_gain": 0.5917111111111111,
+    "mean_struct_gain": 0.6406666666666666,
+    "mean_k1_success": 0.9510444444444445,
+    "mean_k0_success": 0.3593333333333334,
+    "mean_best_single_success": 0.3593333333333334,
+    "mean_oracle_success": 1.0,
+    "mean_history_increment": 0.5917111111111111,
+    "frac_converged": 1.0,
+    "frac_seed_stable": 0.998,
+    "best_single_offset_counts": {
+      "-0.04": 0,
+      "0.0": 500,
+      "0.04": 0
+    },
+    "geom_key": "s036",
+    "is_primary": false
+  }
+]

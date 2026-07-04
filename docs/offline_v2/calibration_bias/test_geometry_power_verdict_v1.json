@@ -1,0 +1,74 @@
+{
+  "verdict": "POWER_SUFFICIENT_FOR_PREREG_V4",
+  "primary_geometry": [
+    -0.035,
+    0.035
+  ],
+  "gain_threshold": 0.15,
+  "learned_power_bar": {
+    "power_min": 0.85,
+    "ci_lower_min": 0.8
+  },
+  "min_passing_design": [
+    9,
+    6,
+    9
+  ],
+  "9_6_9_passes_all_primary_taus": true,
+  "9_6_9_per_tau": {
+    "0.0342": {
+      "learned_power": 0.986,
+      "learned_power_ci95": [
+        0.9757015101689617,
+        0.9962984898310383
+      ],
+      "struct_power": 1.0,
+      "passes": true
+    },
+    "0.03425": {
+      "learned_power": 0.986,
+      "learned_power_ci95": [
+        0.9757015101689617,
+        0.9962984898310383
+      ],
+      "struct_power": 1.0,
+      "passes": true
+    },
+    "0.0343": {
+      "learned_power": 0.984,
+      "learned_power_ci95": [
+        0.9730016228106143,
+        0.9949983771893857
+      ],
+      "struct_power": 1.0,
+      "passes": true
+    }
+  },
+  "k1_beats_k0": true,
+  "mean_history_increment_range": [
+    0.5171555555555556,
+    0.533611111111111
+  ],
+  "struct_power_all_high": true,
+  "threshold_not_lowered": true,
+  "primary_comparator_unchanged": "B2_K1_success - train/val-only best_single_success",
+  "net_voi_reference_design": [
+    9,
+    6,
+    9
+  ],
+  "net_voi": {
+    "gross_voi_1task": 0.5198444444444444,
+    "probe_cost": 0.33159999999999995,
+    "net_voi_1task": 0.1882444444444445,
+    "break_even_T": 0.6378831274312827,
+    "horizon": {
+      "1": 0.1882444444444445,
+      "2": 0.708088888888889,
+      "5": 2.267622222222222,
+      "10": 4.866844444444444
+    }
+  },
+  "no_preregistration_v4": true,
+  "no_runtime_or_confirmatory_data": true
+}

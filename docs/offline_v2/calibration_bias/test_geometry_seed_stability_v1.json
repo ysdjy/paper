@@ -1,0 +1,95 @@
+{
+  "gate": ">=4/5 seeds point-gain>=0.15 and none<0",
+  "per_config": [
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.03425,
+      "frac_seed_stable": 0.994,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0342,
+      "frac_seed_stable": 0.994,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0343,
+      "frac_seed_stable": 0.994,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.03425,
+      "frac_seed_stable": 1.0,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0342,
+      "frac_seed_stable": 1.0,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0343,
+      "frac_seed_stable": 1.0,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.03425,
+      "frac_seed_stable": 0.988,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0342,
+      "frac_seed_stable": 0.988,
+      "frac_converged": 1.0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0343,
+      "frac_seed_stable": 0.986,
+      "frac_converged": 1.0
+    }
+  ]
+}

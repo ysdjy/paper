@@ -1,0 +1,49 @@
+{
+  "phase": "test-geometry learned-selector power (offline)",
+  "branch": "experiment/offline-calibration-test-geometry-power-v1",
+  "base_commit": "46d03afb41f514e87e69180c7543c1b01389ce2c",
+  "frozen_inherited": {
+    "candidate_bank": [-0.04, 0.0, 0.04],
+    "train_nominals": [-0.04, -0.02, 0.0, 0.02, 0.04],
+    "val_nominals": [-0.01, 0.01],
+    "probe_offset": -0.04,
+    "residual": {"dist": "TruncatedNormal", "mean": 0.0, "sigma": 0.005, "support": [-0.01, 0.01]},
+    "tau_point": 0.03425,
+    "tau_sensitivity": [0.0342, 0.03425, 0.0343],
+    "tau_isotonic_anchor_only": 0.0325,
+    "model": "models_v2.DeepSets",
+    "deepsets_hp": {"d_hid": 32, "d_emb": 16, "lr": 0.01, "max_epochs": 200, "patience": 25, "l2": 1e-4},
+    "model_seeds": [1103, 2207, 3301, 4409, 5519]
+  },
+  "new_test_geometry": {
+    "primary_test_nominal": [-0.035, 0.035],
+    "sensitivity_test_nominals": {"tight": [-0.034, 0.034], "wide": [-0.036, 0.036]},
+    "primary_only_no_swap": true,
+    "test_actual_support": {"-0.035": [-0.045, -0.025], "0.035": [0.025, 0.045]},
+    "train_actual_support": [-0.05, 0.05],
+    "test_support_within_train": true,
+    "framing_allowed": "unseen nominal deployment conditions; actual hidden state inside training support",
+    "framing_forbidden": "unseen hidden state"
+  },
+  "block_grid": [[9, 6, 9], [12, 9, 12], [18, 9, 18]],
+  "monte_carlo": {"reps_primary": 500, "reps_sensitivity": 500, "n_boot": 2000,
+                  "non_converged_counts_as_failure": true},
+  "acceptance": {
+    "primary_comparator": "B2_K1_selected_success - train/val-only best_single_success",
+    "gain_threshold": 0.15,
+    "gain_threshold_lowered": false,
+    "power_event": ["CI_lower(delta) >= 0.15", "mean delta > 0", "oracle_success >= 0.85",
+                    "best_single non-degenerate", ">=4/5 seed point gains >= 0.15", "no seed point gain < 0"],
+    "power_pass": {"learned_power_min": 0.85, "learned_power_ci_lower_min": 0.80,
+                   "required_at_all_taus": [0.0342, 0.03425, 0.0343]},
+    "sample_size_rule": "smallest total-block design passing at ALL primary taus; tie -> larger test, then larger train"
+  },
+  "probe_cost": {"probe_time_s": 16.58, "lambda_time": 0.02, "horizons": [1, 2, 5, 10],
+                 "primary_claim_priority": "history-conditioned diagnostic improves action-selection success"},
+  "geometry_audit_gate": "test_geometry_geometry_audit_v1.json (PASSED -> proceed; else GEOMETRY_REDESIGN_FAILED)",
+  "translation_equivalence": "ADDITIVE_TRANSLATION_EQUIVALENCE_SUPPORTED (read-only; no new Isaac data)",
+  "hard_constraints": ["no Isaac", "no runtime/confirmatory episodes", "no confirmatory generator",
+                       "no preregistration v4", "306 raw data + runtime + capability map untouched"],
+  "verdict_options": ["POWER_SUFFICIENT_FOR_PREREG_V4", "INCREASE_BLOCK_COUNTS", "CLAIM_REDESIGN_REQUIRED",
+                      "NEW_RUNTIME_VALIDATION_REQUIRED", "STOP_CURRENT_CONFIRMATORY_CONCEPT"]
+}
