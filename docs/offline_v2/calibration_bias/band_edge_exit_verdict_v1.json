@@ -1,0 +1,34 @@
+{
+  "verdict": "MODIFY_RESIDUAL_OR_DESIGN",
+  "criteria": {
+    "boundary_mixed_labels_0.025_0.035": true,
+    "residual_induces_block_label_variation": false,
+    "edge_center_scale_estimable": false,
+    "no_severe_asymmetry": true,
+    "contact_sensor_available": true,
+    "instrumentation_complete": true,
+    "edge_not_collision_driven": true,
+    "data_integrity_ok": true
+  },
+  "key_numbers": {
+    "edge_center": 0.03425649764168779,
+    "edge_scale": 1.0000000000000003e-05,
+    "edge_center_ci": [
+      0.03412055239237174,
+      0.034516588050524585
+    ],
+    "isotonic_crossing": 0.0325,
+    "boundary_success_rate": 0.9306
+  },
+  "provenance": {
+    "python": "3.11.15",
+    "numpy": "1.26.0",
+    "analysis_git_commit": "742ff4db986bff52ecce140fb44f7637a2bfc5d5",
+    "analysis_dirty": true,
+    "input_episodes_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+    "bootstrap_seed": 320295137,
+    "n_boot": 2000,
+    "bin_width": 0.005,
+    "ci": 0.95
+  }
+}

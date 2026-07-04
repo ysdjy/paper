@@ -1,0 +1,41 @@
+{
+  "provenance": {
+    "python": "3.11.15",
+    "numpy": "1.26.0",
+    "analysis_git_commit": "742ff4db986bff52ecce140fb44f7637a2bfc5d5",
+    "analysis_dirty": true,
+    "input_episodes_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+    "bootstrap_seed": 320295137,
+    "n_boot": 2000,
+    "bin_width": 0.005,
+    "ci": 0.95
+  },
+  "ok": true,
+  "checks": {
+    "run_status_COMPLETE": true,
+    "self_check_ok": true,
+    "episode_count_306": true,
+    "unique_ids_306": true,
+    "unique_block_offset_306": true,
+    "blocks_18": true,
+    "each_block_17": true,
+    "offset_grid_matches_frozen": true,
+    "nominal_bias_0": true,
+    "no_probes": true,
+    "no_smoke": true,
+    "all_planned_no_unplanned": true,
+    "config_sha256_match_frozen": true,
+    "science_sha256_match_frozen": true,
+    "episodes_sha256_match_frozen": true,
+    "code_commit_e447f00": true,
+    "schema_leakage_all_valid": true,
+    "matched_block_valid": true,
+    "instrumentation_complete": true,
+    "contact_sensor_available_all": true,
+    "records_match_episodes": true,
+    "identities_actual_eff_abseff": true
+  },
+  "n_episodes": 306,
+  "n_success": 211,
+  "n_failure": 95
+}

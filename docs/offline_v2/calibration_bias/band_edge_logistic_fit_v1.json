@@ -1,0 +1,38 @@
+{
+  "converged": true,
+  "edge_center": 0.03425649764168779,
+  "edge_scale": 1.0000000000000003e-05,
+  "center_ci": [
+    0.03412055239237174,
+    0.034516588050524585
+  ],
+  "scale_ci": [
+    1.0000000000000003e-05,
+    2.856611089012941e-05
+  ],
+  "n_valid_boot": 2000,
+  "n_boot": 2000,
+  "predicted_success_prob": {
+    "0.01": 1.0,
+    "0.015": 1.0,
+    "0.02": 1.0,
+    "0.025": 1.0,
+    "0.03": 1.0,
+    "0.035": 0.0,
+    "0.04": 0.0,
+    "0.05": 0.0
+  },
+  "separation_note": null,
+  "scale_identifiable": false,
+  "provenance": {
+    "python": "3.11.15",
+    "numpy": "1.26.0",
+    "analysis_git_commit": "742ff4db986bff52ecce140fb44f7637a2bfc5d5",
+    "analysis_dirty": true,
+    "input_episodes_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+    "bootstrap_seed": 320295137,
+    "n_boot": 2000,
+    "bin_width": 0.005,
+    "ci": 0.95
+  }
+}

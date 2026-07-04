@@ -1,0 +1,605 @@
+{
+  "all": [
+    {
+      "bin_lo": 0.0,
+      "bin_hi": 0.005,
+      "bin_center": 0.0025,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.005,
+      "bin_hi": 0.01,
+      "bin_center": 0.0075,
+      "n_episodes": 26,
+      "n_blocks": 18,
+      "n_success": 26,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.01,
+      "bin_hi": 0.015,
+      "bin_center": 0.0125,
+      "n_episodes": 28,
+      "n_blocks": 18,
+      "n_success": 28,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.015,
+      "bin_hi": 0.02,
+      "bin_center": 0.0175,
+      "n_episodes": 36,
+      "n_blocks": 18,
+      "n_success": 36,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.02,
+      "bin_hi": 0.025,
+      "bin_center": 0.0225,
+      "n_episodes": 36,
+      "n_blocks": 18,
+      "n_success": 36,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.025,
+      "bin_hi": 0.03,
+      "bin_center": 0.0275,
+      "n_episodes": 36,
+      "n_blocks": 18,
+      "n_success": 36,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.03,
+      "bin_hi": 0.035,
+      "bin_center": 0.0325,
+      "n_episodes": 36,
+      "n_blocks": 18,
+      "n_success": 31,
+      "n_failure": 5,
+      "success_rate": 0.8611,
+      "ci_low": 0.75,
+      "ci_high": 0.9444,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 5
+      },
+      "failure_phases": {
+        "PULL": 5
+      }
+    },
+    {
+      "bin_lo": 0.035,
+      "bin_hi": 0.04,
+      "bin_center": 0.0375,
+      "n_episodes": 28,
+      "n_blocks": 18,
+      "n_success": 0,
+      "n_failure": 28,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 25,
+        "POSITION_TIMEOUT": 3
+      },
+      "failure_phases": {
+        "PULL": 25,
+        "APPROACH": 3
+      }
+    },
+    {
+      "bin_lo": 0.04,
+      "bin_hi": 0.045,
+      "bin_center": 0.0425,
+      "n_episodes": 26,
+      "n_blocks": 18,
+      "n_success": 0,
+      "n_failure": 26,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 26
+      },
+      "failure_phases": {
+        "APPROACH": 26
+      }
+    },
+    {
+      "bin_lo": 0.045,
+      "bin_hi": 0.05,
+      "bin_center": 0.0475,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 0,
+      "n_failure": 18,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 18
+      },
+      "failure_phases": {
+        "APPROACH": 18
+      }
+    },
+    {
+      "bin_lo": 0.05,
+      "bin_hi": 0.055,
+      "bin_center": 0.0525,
+      "n_episodes": 10,
+      "n_blocks": 10,
+      "n_success": 0,
+      "n_failure": 10,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 10
+      },
+      "failure_phases": {
+        "APPROACH": 10
+      }
+    },
+    {
+      "bin_lo": 0.055,
+      "bin_hi": 0.06,
+      "bin_center": 0.0575,
+      "n_episodes": 8,
+      "n_blocks": 8,
+      "n_success": 0,
+      "n_failure": 8,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 5,
+        "HANDLE_DETACHED": 3
+      },
+      "failure_phases": {
+        "APPROACH": 5,
+        "PULL": 3
+      }
+    }
+  ],
+  "neg_direction": [
+    {
+      "bin_lo": 0.0,
+      "bin_hi": 0.005,
+      "bin_center": 0.0025,
+      "n_episodes": 10,
+      "n_blocks": 10,
+      "n_success": 10,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.005,
+      "bin_hi": 0.01,
+      "bin_center": 0.0075,
+      "n_episodes": 12,
+      "n_blocks": 12,
+      "n_success": 12,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.01,
+      "bin_hi": 0.015,
+      "bin_center": 0.0125,
+      "n_episodes": 14,
+      "n_blocks": 14,
+      "n_success": 14,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.015,
+      "bin_hi": 0.02,
+      "bin_center": 0.0175,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.02,
+      "bin_hi": 0.025,
+      "bin_center": 0.0225,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.025,
+      "bin_hi": 0.03,
+      "bin_center": 0.0275,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.03,
+      "bin_hi": 0.035,
+      "bin_center": 0.0325,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 14,
+      "n_failure": 4,
+      "success_rate": 0.7778,
+      "ci_low": 0.5556,
+      "ci_high": 0.9444,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 4
+      },
+      "failure_phases": {
+        "PULL": 4
+      }
+    },
+    {
+      "bin_lo": 0.035,
+      "bin_hi": 0.04,
+      "bin_center": 0.0375,
+      "n_episodes": 14,
+      "n_blocks": 14,
+      "n_success": 0,
+      "n_failure": 14,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 11,
+        "POSITION_TIMEOUT": 3
+      },
+      "failure_phases": {
+        "PULL": 11,
+        "APPROACH": 3
+      }
+    },
+    {
+      "bin_lo": 0.04,
+      "bin_hi": 0.045,
+      "bin_center": 0.0425,
+      "n_episodes": 14,
+      "n_blocks": 14,
+      "n_success": 0,
+      "n_failure": 14,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 14
+      },
+      "failure_phases": {
+        "APPROACH": 14
+      }
+    },
+    {
+      "bin_lo": 0.045,
+      "bin_hi": 0.05,
+      "bin_center": 0.0475,
+      "n_episodes": 8,
+      "n_blocks": 8,
+      "n_success": 0,
+      "n_failure": 8,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 8
+      },
+      "failure_phases": {
+        "APPROACH": 8
+      }
+    },
+    {
+      "bin_lo": 0.05,
+      "bin_hi": 0.055,
+      "bin_center": 0.0525,
+      "n_episodes": 6,
+      "n_blocks": 6,
+      "n_success": 0,
+      "n_failure": 6,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 6
+      },
+      "failure_phases": {
+        "APPROACH": 6
+      }
+    },
+    {
+      "bin_lo": 0.055,
+      "bin_hi": 0.06,
+      "bin_center": 0.0575,
+      "n_episodes": 4,
+      "n_blocks": 4,
+      "n_success": 0,
+      "n_failure": 4,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 2,
+        "HANDLE_DETACHED": 2
+      },
+      "failure_phases": {
+        "APPROACH": 2,
+        "PULL": 2
+      }
+    }
+  ],
+  "pos_direction": [
+    {
+      "bin_lo": 0.0,
+      "bin_hi": 0.005,
+      "bin_center": 0.0025,
+      "n_episodes": 8,
+      "n_blocks": 8,
+      "n_success": 8,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.005,
+      "bin_hi": 0.01,
+      "bin_center": 0.0075,
+      "n_episodes": 14,
+      "n_blocks": 14,
+      "n_success": 14,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.01,
+      "bin_hi": 0.015,
+      "bin_center": 0.0125,
+      "n_episodes": 14,
+      "n_blocks": 14,
+      "n_success": 14,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.015,
+      "bin_hi": 0.02,
+      "bin_center": 0.0175,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.02,
+      "bin_hi": 0.025,
+      "bin_center": 0.0225,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.025,
+      "bin_hi": 0.03,
+      "bin_center": 0.0275,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 18,
+      "n_failure": 0,
+      "success_rate": 1.0,
+      "ci_low": 1.0,
+      "ci_high": 1.0,
+      "failure_reasons": {},
+      "failure_phases": {}
+    },
+    {
+      "bin_lo": 0.03,
+      "bin_hi": 0.035,
+      "bin_center": 0.0325,
+      "n_episodes": 18,
+      "n_blocks": 18,
+      "n_success": 17,
+      "n_failure": 1,
+      "success_rate": 0.9444,
+      "ci_low": 0.8333,
+      "ci_high": 1.0,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 1
+      },
+      "failure_phases": {
+        "PULL": 1
+      }
+    },
+    {
+      "bin_lo": 0.035,
+      "bin_hi": 0.04,
+      "bin_center": 0.0375,
+      "n_episodes": 14,
+      "n_blocks": 14,
+      "n_success": 0,
+      "n_failure": 14,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 14
+      },
+      "failure_phases": {
+        "PULL": 14
+      }
+    },
+    {
+      "bin_lo": 0.04,
+      "bin_hi": 0.045,
+      "bin_center": 0.0425,
+      "n_episodes": 12,
+      "n_blocks": 12,
+      "n_success": 0,
+      "n_failure": 12,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 12
+      },
+      "failure_phases": {
+        "APPROACH": 12
+      }
+    },
+    {
+      "bin_lo": 0.045,
+      "bin_hi": 0.05,
+      "bin_center": 0.0475,
+      "n_episodes": 10,
+      "n_blocks": 10,
+      "n_success": 0,
+      "n_failure": 10,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 10
+      },
+      "failure_phases": {
+        "APPROACH": 10
+      }
+    },
+    {
+      "bin_lo": 0.05,
+      "bin_hi": 0.055,
+      "bin_center": 0.0525,
+      "n_episodes": 4,
+      "n_blocks": 4,
+      "n_success": 0,
+      "n_failure": 4,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "POSITION_TIMEOUT": 4
+      },
+      "failure_phases": {
+        "APPROACH": 4
+      }
+    },
+    {
+      "bin_lo": 0.055,
+      "bin_hi": 0.06,
+      "bin_center": 0.0575,
+      "n_episodes": 4,
+      "n_blocks": 4,
+      "n_success": 0,
+      "n_failure": 4,
+      "success_rate": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "failure_reasons": {
+        "HANDLE_DETACHED": 1,
+        "POSITION_TIMEOUT": 3
+      },
+      "failure_phases": {
+        "PULL": 1,
+        "APPROACH": 3
+      }
+    }
+  ],
+  "provenance": {
+    "python": "3.11.15",
+    "numpy": "1.26.0",
+    "analysis_git_commit": "742ff4db986bff52ecce140fb44f7637a2bfc5d5",
+    "analysis_dirty": true,
+    "input_episodes_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+    "bootstrap_seed": 320295137,
+    "n_boot": 2000,
+    "bin_width": 0.005,
+    "ci": 0.95
+  }
+}

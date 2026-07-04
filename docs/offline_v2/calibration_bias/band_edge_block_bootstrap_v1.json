@@ -1,0 +1,37 @@
+{
+  "logistic_center": {
+    "point": 0.03425649764168779,
+    "ci": [
+      0.03412055239237174,
+      0.034516588050524585
+    ]
+  },
+  "logistic_scale": {
+    "point": 1.0000000000000003e-05,
+    "ci": [
+      1.0000000000000003e-05,
+      2.856611089012941e-05
+    ]
+  },
+  "isotonic_crossing": {
+    "point": 0.0325,
+    "ci": [
+      0.0325,
+      0.0325
+    ]
+  },
+  "n_boot": 2000,
+  "resample_unit": "block",
+  "seed": 320295137,
+  "provenance": {
+    "python": "3.11.15",
+    "numpy": "1.26.0",
+    "analysis_git_commit": "742ff4db986bff52ecce140fb44f7637a2bfc5d5",
+    "analysis_dirty": true,
+    "input_episodes_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+    "bootstrap_seed": 320295137,
+    "n_boot": 2000,
+    "bin_width": 0.005,
+    "ci": 0.95
+  }
+}
