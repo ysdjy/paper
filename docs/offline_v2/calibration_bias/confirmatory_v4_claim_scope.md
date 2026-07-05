@@ -49,3 +49,13 @@ disclosed positive control for a mechanism, not a benchmark of general capabilit
   hidden-state support.
 - **Does not license:** online/low-cost/non-destructive framing; unseen-hidden-state claims; continuous or
   open-ended action selection; transfer to other tasks; or treating Net VOI as the primary contribution.
+
+## 7. Multitask heads are auxiliary (FINAL-004 — claim boundary)
+> The task-outcome-error and elapsed-time regression heads are auxiliary multitask training signals.
+> Candidate selection and the primary endpoint use predicted/observed success only. This experiment neither
+> identifies nor claims that multidimensional error/time prediction outperforms a success-only predictor.
+
+This is a **claim boundary only**: the multi-head model is not removed, the loss is unchanged, and no
+success-only ablation is added. The error/time heads remain auxiliary training signals; the selection rule
+and the primary contrast are success-based (argmax `p_success` / observed `y.success`). Multidimensional
+prediction superiority over a success-only predictor is **not** part of this preregistered claim.

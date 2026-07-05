@@ -121,15 +121,39 @@ bootstrap_seed })`. Step 8 final analysis verifies: train/val records match the 
 records match the test phase hash, model hashes match `model_analysis_freeze`, and the combined plan hash
 matches — else **`EXPERIMENT_INVALID_MANIFEST_INTEGRITY`**.
 
-### 2.3 Other required manifest fields
+### 2.3 Other required manifest fields (FINAL-003: layered hash set; no singular manifest_hash)
 ```
-seed_root, seed_derivation, subseed_derivation   # the frozen rules above
-manifest_hash        # sha256 of the fully-resolved manifest (pre-run)
-config_hash          # sha256 of confirmatory_v4_config.json
-code_commit          # git commit of the analysis code
-generator_commit     # git commit of the generator (future, post-GO)
-environment_versions # python/torch/numpy/isaac versions, GPU/driver, OS
+seed_root, seed_derivation, subseed_derivation    # the frozen rules above
+planned_structure_sha256                          # structure-only (identities + episode ids)
+train_validation_manifest_sha256                  # full deep-validated train/validation phase manifest (228)
+test_manifest_sha256                              # full deep-validated test phase manifest (72)
+model_analysis_freeze_sha256                      # 10 model hashes + best-single artifact + code + bootstrap seed
+combined_experiment_plan_sha256                   # Step-6 anchor over both phase manifests + freeze + commits
+config_sha256                                     # sha256 of the RAW bytes of confirmatory_v4_config.json
+protocol_commit                                   # prereg / batch-fix commit (frozen at generator Step 0)
+generator_commit                                  # generator commit (future, post-GO; Step 0)
+runtime_commit                                    # runtime code commit (Step 0)
+analysis_code_sha256                              # analysis code hash (Step 5)
+environment_versions                              # python/torch/numpy/isaac versions, GPU/driver, OS
 ```
+
+### 2.3b Freeze-source table (when each integrity value becomes knowable)
+| field | source | knowable |
+|---|---|---|
+| `config_sha256` | raw bytes of the active `confirmatory_v4_config.json` | **now** (`canonical_config_sha256()`) |
+| `schema_version` | `confirmatory_v4_phase_manifest_v1` (frozen) | **now** |
+| `planned_structure_sha256` | `confirmatory_v4_identity.canonical_planned_structure_hash()` | **now** |
+| `frozen_seeds` | `preregistration_v4.frozen_seeds()` (15 exact ints) | **now** |
+| `deterministic_environment` | `deterministic_environment_manifest_contract` (exact) | **now** |
+| `protocol_commit` | final prereg / batch-fix commit | generator Step 0 |
+| `generator_commit` | future generator commit | Step 0 |
+| `runtime_commit` | runtime code commit | Step 0 |
+| `model_analysis_freeze_sha256` | after train/val + 10 checkpoints | Step 5 |
+| `test_manifest_sha256` | after Step 5 | Step 6 |
+| `combined_experiment_plan_sha256` | over both phase manifests + freeze + commits | Step 6 |
+
+Future commit fields keep **40-hex format** validation now; they are pinned to concrete values at generator
+Step 0 (never hard-coded to a non-existent commit).
 
 ## 3. Construction order (pre-run, deterministic; FIX4 — Scheme-2 phase-layered)
 Two phase manifests are resolved and hashed separately (NOT one 300-trial serialization):
@@ -149,9 +173,9 @@ Two phase manifests are resolved and hashed separately (NOT one 300-trial serial
 ## 4. Per-trial provenance (recorded, not chosen at run time)
 Each executed trial records: `episode_id`, `planned_episode_id`, `session_id`, `block_id`,
 `nuisance_block_id`, `episode_role` (probe|candidate), `candidate_index`, `probe_index`, `reset_index`,
-`order_in_session`, `git_commit`, `dirty_worktree`, `full_reset_verified`, `config_sha256`,
-`science_manifest_sha256`, `code_commit`. (These fields already exist in the 306 schema, confirming the
-runtime can emit them.)
+`order_in_session`, `runtime_commit`, `dirty_worktree`, `full_reset_verified`, `config_sha256`,
+`science_manifest_sha256` (= the trial's PHASE full-manifest hash). (These fields already exist in the 306
+schema, confirming the runtime can emit them.)
 
 ## 5. Integrity checks (any failure → EXPERIMENT_INVALID_MANIFEST_INTEGRITY / technical-invalid; see §2.6, analysis plan §9)
 - **Per-record phase anchor (FIX4):** each **train/validation** record `science_manifest_sha256 ==

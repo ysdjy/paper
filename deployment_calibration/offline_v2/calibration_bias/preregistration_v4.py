@@ -347,6 +347,11 @@ CLAIM_SCOPE = {
                               "action spaces, arbitrary tasks, or long-horizon autonomous adaptation"),
     "primary_claim": "diagnostic history improves subsequent action-selection success",
     "net_value_is_secondary": True,
+    "multitask_heads_auxiliary": ("The task-outcome-error and elapsed-time regression heads are auxiliary "
+                                  "multitask training signals. Candidate selection and the primary endpoint "
+                                  "use predicted/observed success only. This experiment neither identifies "
+                                  "nor claims that multidimensional error/time prediction outperforms a "
+                                  "success-only predictor."),
 }
 
 DATA_ISOLATION = {
@@ -509,7 +514,22 @@ DETERMINISM_ENV = {
     "library_versions_recorded_in": "model_analysis_freeze.json",
 }
 
-STATUS = "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT"
+# FINAL-002: EXACT deterministic-environment contract that a resolved phase manifest's
+# `deterministic_environment` field must equal (key set + value + type; no extra key; no GPU). This is the
+# machine form validated by confirmatory_v4_manifest_integrity (deterministic_environment_contract()).
+DETERMINISM_MANIFEST_CONTRACT = {
+    "device": "cpu",
+    "torch_set_num_threads": 1,
+    "torch_set_num_interop_threads": 1,
+    "torch_use_deterministic_algorithms": True,
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+}
+# FINAL-002: frozen phase-manifest schema version (kept in sync with manifest_integrity).
+PHASE_MANIFEST_SCHEMA_VERSION = "confirmatory_v4_phase_manifest_v1"
+
+STATUS = "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION"
 
 
 def preregistration_dict():
@@ -557,6 +577,21 @@ def preregistration_dict():
         "planned_identity_format": PLANNED_IDENTITY_FORMAT, "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
         "manifest_integrity": MANIFEST_INTEGRITY,
         "determinism_env": DETERMINISM_ENV,
+        "deterministic_environment_manifest_contract": DETERMINISM_MANIFEST_CONTRACT,
+        "phase_manifest_schema_version": PHASE_MANIFEST_SCHEMA_VERSION,
+        "order_resolution": {  # FINAL-001
+            "module": "confirmatory_v4_identity",
+            "rule": "SHA256-derived integer key + stable lexicographic sort + canonical-index tie-break; "
+                    "NO random/RNG/hash()/dict-iteration order",
+            "resolvers": ["resolve_order", "resolve_block_order", "resolve_session_order",
+                          "resolve_candidate_order", "resolve_phase_execution_plan"],
+            "block_order_key": "subseed(<split>_block_order_seed, block_identity + '|domain=block_order')",
+            "candidate_order_key": "subseed(candidate_order_seed, trial_identity(candidate) + '|domain=candidate_order')",
+            "execution_order": "phase split order -> resolve_block_order -> resolve_session_order -> probe first "
+                               "-> resolve_candidate_order; validator checks execution_order_index == plan index",
+            "manifest_recomputed_and_exact_checked": ["block_order_key", "candidate_order_keys",
+                                                      "resolved_candidate_order", "execution_order_index"],
+        },
         "hard_constraints": ["no Isaac", "no confirmatory generator", "no manifest instance",
                              "no confirmatory data", "no run authorization",
                              "306/runtime/models_v2/capability-map/prior-prereg/C-audit untouched"],
@@ -572,8 +607,17 @@ def preregistration_dict():
 
 def audit_checklist():
     return {
-        "for": "Claude C final re-audit of preregistration v4 FIX4",
+        "for": "Claude C one-shot frozen-issue regression of preregistration v4 (FINAL-001..005 batch fix)",
         "must_verify": [
+            "FINAL-001: frozen seed->order resolution (resolve_order/block/session/candidate/phase-plan); "
+            "validator recomputes block_order_key/candidate_order_keys/resolved_candidate_order/"
+            "execution_order_index; no random/RNG/hash()/dict-iteration",
+            "FINAL-002: exact config_sha256==canonical_config_sha256(), schema_version, determinism contract "
+            "(key set + value + type; no extra; no GPU); future commits 40-hex until Step 0",
+            "FINAL-003: manifest_spec stale manifest_hash/config_hash/code_commit removed -> layered set + "
+            "freeze-source table; per-trial runtime_commit",
+            "FINAL-004: multitask heads auxiliary; selection + primary use success only; no multidim claim",
+            "FINAL-005: snapshot_manifest final_head_commit/audited_snapshot_commit=b983b7e (no self-ref)",
             "FIX3 BLOCKER I: sole production entry select_best_single_confirmatory (one param, no override "
             "kwargs, __all__ frozen); completeness 45/12 -> 135/36 -> 171, globally-unique session_id, strict "
             "bool, no probe/test, bank not overridable; generic core private; bridge 4500/4500",
@@ -629,6 +673,8 @@ def emit(docs_dir=None):
            "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
            "manifest_integrity": MANIFEST_INTEGRITY,
            "determinism_env": DETERMINISM_ENV,
+           "deterministic_environment_manifest_contract": DETERMINISM_MANIFEST_CONTRACT,
+           "phase_manifest_schema_version": PHASE_MANIFEST_SCHEMA_VERSION,
            "manifest_fields": MANIFEST_FIELDS, "voi": VOI, "status": STATUS}
     with open(os.path.join(docs_dir, "confirmatory_v4_config.json"), "w") as f:
         json.dump(cfg, f, indent=2)

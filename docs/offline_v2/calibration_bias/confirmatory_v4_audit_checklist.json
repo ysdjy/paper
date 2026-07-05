@@ -1,6 +1,11 @@
 {
-  "for": "Claude C final re-audit of preregistration v4 FIX4",
+  "for": "Claude C one-shot frozen-issue regression of preregistration v4 (FINAL-001..005 batch fix)",
   "must_verify": [
+    "FINAL-001: frozen seed->order resolution (resolve_order/block/session/candidate/phase-plan); validator recomputes block_order_key/candidate_order_keys/resolved_candidate_order/execution_order_index; no random/RNG/hash()/dict-iteration",
+    "FINAL-002: exact config_sha256==canonical_config_sha256(), schema_version, determinism contract (key set + value + type; no extra; no GPU); future commits 40-hex until Step 0",
+    "FINAL-003: manifest_spec stale manifest_hash/config_hash/code_commit removed -> layered set + freeze-source table; per-trial runtime_commit",
+    "FINAL-004: multitask heads auxiliary; selection + primary use success only; no multidim claim",
+    "FINAL-005: snapshot_manifest final_head_commit/audited_snapshot_commit=b983b7e (no self-ref)",
     "FIX3 BLOCKER I: sole production entry select_best_single_confirmatory (one param, no override kwargs, __all__ frozen); completeness 45/12 -> 135/36 -> 171, globally-unique session_id, strict bool, no probe/test, bank not overridable; generic core private; bridge 4500/4500",
     "FIX3 BLOCKER II: PlannedTrialKey validates the frozen design domain (block range, per-split nominal via isclose(abs_tol=1e-12)+canonicalize, probe/candidate offsets, non-bool int, NaN/Inf, attempt in {0,1}, PID regex); all builders/subseeds routed through it; 300 identities unchanged",
     "FIX3 BLOCKER III: canonical_planned_structure_hash (structure only) vs full phase-manifest hashes (228/72) in confirmatory_v4_manifest_integrity covering residual/nuisance/order/seeds/env/commits; self-hash handling; combined_experiment_plan_sha256; per-record science_manifest_sha256 by phase",

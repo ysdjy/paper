@@ -35,7 +35,7 @@ def _pre():
 
 
 def test_status_is_fix4():
-    assert P.STATUS == "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT"
+    assert P.STATUS == "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION"
     assert _pre()["status"] == P.STATUS and _pre()["power_recertification_required"] is False
 
 
@@ -99,48 +99,8 @@ def test_bridge_invariance_still_holds_subset():
 
 # ================= BLOCKER b: deep manifest validator =================
 def _valid_manifest(phase):
-    splits = MI.PHASE_SPLITS[phase]
-    rows = [r for r in ID.enumerate_trials() if r["split"] in splits]
-    blocks, seen_b = [], set()
-    for r in rows:
-        key = (r["split"], r["block_index"])
-        if key in seen_b:
-            continue
-        seen_b.add(key)
-        sp, bi = key
-        blocks.append({"split": sp, "block_index": bi, "canonical_block_identity": ID.block_identity(sp, bi),
-                       "residual_value": 0.001, "nuisance_values": {"joint_delta": 0.0},
-                       "residual_subseed": ID.block_residual_subseed(sp, bi),
-                       "nuisance_subseed": ID.block_nuisance_subseed(sp, bi),
-                       "block_order_key": ID.block_residual_subseed(sp, bi)})
-    sessions, seen_s = [], set()
-    for r in rows:
-        sid = r["canonical_session_identity"]
-        if sid in seen_s:
-            continue
-        seen_s.add(sid)
-        sp, bi, nom = r["split"], r["block_index"], r["nominal"]
-        sessions.append({"canonical_session_identity": sid, "split": sp, "block_index": bi, "nominal_bias": nom,
-                         "session_order_key": ID.session_order_subseed(sp, bi, nom),
-                         "nominal_order_key": ID.nominal_order_subseed(sp, bi, nom),
-                         "resolved_candidate_order": [-0.04, 0.0, 0.04]})
-    trials = []
-    for ei, r in enumerate(rows):
-        sp, bi, nom, role, off = r["split"], r["block_index"], r["nominal"], r["role"], r["offset"]
-        tid = ID.trial_identity(sp, bi, nom, role, off)
-        pid = ID.planned_episode_id(tid)
-        trials.append({"canonical_trial_identity": tid, "planned_episode_id": pid,
-                       "session_ref": r["canonical_session_identity"], "role": role, "offset": off,
-                       "trial_init_subseed": ID.trial_init_subseed(sp, bi, nom, role, off),
-                       "execution_order_index": ei, "resume_key": pid})
-    exp = MI.PHASES[phase]
-    return {"schema_version": "1", "phase": phase, "protocol_commit": "0" * 40, "generator_commit": "1" * 40,
-            "runtime_commit": "2" * 40, "config_sha256": "a" * 64,
-            "planned_structure_sha256": ID.canonical_planned_structure_hash(), "frozen_seeds": P.frozen_seeds(),
-            "deterministic_environment": {"device": "cpu"}, "environment_versions": {"torch": "x"},
-            "counts": {"blocks": exp["blocks"], "sessions": exp["sessions"], "trials": exp["trials"]},
-            "execution_order_definition": "probe-first per session", "manifest_algorithm_version": MI.MANIFEST_ALGORITHM_VERSION,
-            "blocks": blocks, "sessions": sessions, "trials": trials}
+    # FINAL-001/002: use the shared deep-valid reference builder (resolved order + frozen values)
+    return MI.reference_phase_manifest(phase)
 
 
 def test_valid_phase_manifests_pass_and_hash():
@@ -290,7 +250,7 @@ def test_no_generator_manifest_checkpoint_data():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT" in md
+    assert "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION" in md
 
 
 def test_306_hash_unchanged():

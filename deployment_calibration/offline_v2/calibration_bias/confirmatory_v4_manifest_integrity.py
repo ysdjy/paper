@@ -37,6 +37,8 @@ PHASE_TRIAL_SPLIT_COUNTS = {"train_validation": {"train": 180, "validation": 48}
 STRUCTURE_HASH_SEMANTICS = ("planned identities + planned_episode_ids ONLY; excludes residual/nuisance/"
                             "execution-order/seeds/environment/generator-commit; NOT a full-manifest anchor")
 MANIFEST_ALGORITHM_VERSION = "confirmatory_v4_full_manifest_v1"
+# FINAL-002: frozen phase-manifest schema version (exact-checked)
+PHASE_MANIFEST_SCHEMA_VERSION = "confirmatory_v4_phase_manifest_v1"
 SELF_HASH_FIELD = "integrity.full_manifest_sha256"          # flat top-level key; nested {"integrity":{}} forbidden
 FROZEN_BOOTSTRAP_SEED = 9014517173581927929
 RESIDUAL_LO, RESIDUAL_HI = -0.01, 0.01
@@ -51,8 +53,9 @@ REQUIRED_TOP_LEVEL = ("schema_version", "phase", "protocol_commit", "generator_c
 ALLOWED_TOP_LEVEL = set(REQUIRED_TOP_LEVEL) | {"blocks", "sessions", "trials", SELF_HASH_FIELD}
 REQUIRED_BLOCK = ("split", "block_index", "canonical_block_identity", "residual_value", "nuisance_values",
                   "residual_subseed", "nuisance_subseed", "block_order_key")
+# FINAL-001: candidate_order_keys added (recomputed + exact-checked)
 REQUIRED_SESSION = ("canonical_session_identity", "split", "block_index", "nominal_bias",
-                    "session_order_key", "nominal_order_key", "resolved_candidate_order")
+                    "session_order_key", "nominal_order_key", "candidate_order_keys", "resolved_candidate_order")
 REQUIRED_TRIAL = ("canonical_trial_identity", "planned_episode_id", "session_ref", "role", "offset",
                   "trial_init_subseed", "execution_order_index", "resume_key")
 
@@ -65,6 +68,26 @@ def canonical_planned_structure_hash() -> str:
     """Re-exported structure-only hash (see confirmatory_v4_identity). NOT a full-manifest anchor."""
     from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_identity as ID
     return ID.canonical_planned_structure_hash()
+
+
+def _repo_root():
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    return os.path.abspath(os.path.join(here, "..", "..", ".."))
+
+
+def canonical_config_sha256() -> str:
+    """FINAL-002: sha256 of the RAW bytes of the active confirmatory_v4_config.json (Git UTF-8 bytes; not
+    re-serialized). The config file must NOT store its own hash (no self-reference)."""
+    import os
+    p = os.path.join(_repo_root(), "docs", "offline_v2", "calibration_bias", "confirmatory_v4_config.json")
+    return hashlib.sha256(open(p, "rb").read()).hexdigest()
+
+
+def deterministic_environment_contract() -> dict:
+    """FINAL-002: the exact deterministic-environment contract from the active config (frozen constant)."""
+    from deployment_calibration.offline_v2.calibration_bias import preregistration_v4 as PRE
+    return dict(PRE.DETERMINISM_MANIFEST_CONTRACT)
 
 
 def _canonical(payload) -> str:
@@ -153,23 +176,32 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
                     _err(f"{name} unexpected field {k!r}")
     _recurse_finite(manifest)
 
-    # ---- top-level frozen values ----
+    # ---- top-level frozen values (FINAL-002: knowable-now values EXACT-checked) ----
     if manifest["manifest_algorithm_version"] != MANIFEST_ALGORITHM_VERSION:
         _err("manifest_algorithm_version mismatch")
+    if manifest["schema_version"] != PHASE_MANIFEST_SCHEMA_VERSION:
+        _err(f"schema_version != frozen {PHASE_MANIFEST_SCHEMA_VERSION!r}")
     if manifest["frozen_seeds"] != PRE.frozen_seeds():
         _err("frozen_seeds != preregistered frozen seeds")
     if not _SHA256_RE.match(str(manifest["config_sha256"])):
         _err("config_sha256 not 64 lowercase hex")
+    if manifest["config_sha256"] != canonical_config_sha256():          # EXACT (raw config bytes)
+        _err("config_sha256 != canonical_config_sha256() (raw active config bytes)")
     if not _SHA256_RE.match(str(manifest["planned_structure_sha256"])):
         _err("planned_structure_sha256 not 64 lowercase hex")
     if manifest["planned_structure_sha256"] != ID.canonical_planned_structure_hash():
         _err("planned_structure_sha256 != canonical_planned_structure_hash()")
-    for c in ("protocol_commit", "generator_commit", "runtime_commit"):
+    for c in ("protocol_commit", "generator_commit", "runtime_commit"):   # future-frozen: 40-hex format now
         if not _GIT_SHA_RE.match(str(manifest[c])):
             _err(f"{c} not a 40-hex git sha")
-    if not isinstance(manifest["deterministic_environment"], dict) or \
-            str(manifest["deterministic_environment"].get("device", "")).lower() != "cpu":
-        _err("deterministic_environment.device must be 'cpu'")
+    # deterministic environment: EXACT contract (key set + value + TYPE; no extra key; no GPU)
+    de = manifest["deterministic_environment"]
+    contract = deterministic_environment_contract()
+    if not isinstance(de, dict) or set(de) != set(contract):
+        _err("deterministic_environment key set != frozen deterministic_environment_manifest_contract")
+    for k, v in contract.items():
+        if type(de[k]) is not type(v) or de[k] != v:     # type-strict (rejects True-for-1 etc.)
+            _err(f"deterministic_environment[{k!r}] != frozen contract value/type")
 
     # ---- blocks: composition, uniqueness, identity recompute, residual/subseeds ----
     blk_by_key = {}
@@ -191,6 +223,8 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
             _err("duplicate canonical_block_identity")
         blk_ident.add(b["canonical_block_identity"])
         _int_nonbool(b["block_order_key"], "block_order_key")
+        if b["block_order_key"] != ID.block_order_key(split, bi):        # FINAL-001: recompute from seed
+            _err(f"block_order_key mismatch for {split} {bi}")
         if b["block_order_key"] in blk_order:
             _err("duplicate block_order_key")
         blk_order.add(b["block_order_key"])
@@ -235,12 +269,16 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
         if s["session_order_key"] in sess_order:
             _err("duplicate session_order_key")
         sess_order.add(s["session_order_key"])
+        # FINAL-001: candidate order is the EXACT seed-resolved permutation, not any bank permutation
         rco = s["resolved_candidate_order"]
         if not isinstance(rco, list) or len(rco) != len(ID.CANDIDATE_BANK):
             _err("resolved_candidate_order must be a length-3 list")
         rco_c = [_canon_bank(v) for v in rco]
-        if sorted(rco_c) != sorted(ID.CANDIDATE_BANK):
-            _err("resolved_candidate_order is not a bank permutation")
+        if tuple(rco_c) != ID.resolve_candidate_order(split, bi, nom):
+            _err("resolved_candidate_order != ID.resolve_candidate_order(...) (seed-determined order)")
+        cok = s["candidate_order_keys"]
+        if cok != ID.candidate_order_key_map(split, bi, nom):
+            _err("candidate_order_keys != ID.candidate_order_key_map(...)")
         sess_by_ident[ident] = s
         sess_split_count[split] = sess_split_count.get(split, 0) + 1
     if sess_split_count != PHASE_SESSION_SPLIT_COUNTS[phase]:
@@ -278,7 +316,7 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
         if t["trial_init_subseed"] != ID.trial_init_subseed(split, bi, nom, role, off):
             _err("trial_init_subseed mismatch")
         _int_nonbool(t["execution_order_index"], "execution_order_index")
-        exec_idx.append(t["execution_order_index"])
+        exec_idx.append((tid, t["execution_order_index"]))
         per_session.setdefault(sref, []).append((role, off, t["execution_order_index"]))
         tri_split_count[split] = tri_split_count.get(split, 0) + 1
         planned_trial_idents.add(tid)
@@ -298,10 +336,15 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
         if min(c[2] for c in cands) <= probes[0][2]:
             _err(f"session {sref}: probe must execute before its candidates")
 
-    # execution order: unique, complete 0..N-1
+    # execution order: FINAL-001 — must equal the seed-resolved phase execution plan (not merely 0..N-1)
     n = len(trials)
-    if sorted(exec_idx) != list(range(n)):
+    if sorted(i for _, i in exec_idx) != list(range(n)):
         _err(f"execution_order_index must be a complete unique 0..{n - 1}")
+    plan_index = {tid: i for i, tid in enumerate(ID.resolve_phase_execution_plan(phase))}
+    for tid, ei in exec_idx:
+        if plan_index.get(tid) != ei:
+            _err(f"execution_order_index {ei} != resolve_phase_execution_plan index {plan_index.get(tid)} "
+                 f"for {tid}")
 
     # planned-structure subset: the trials are exactly this phase's slice of the 300 planned identities
     phase_planned = {r["canonical_trial_identity"] for r in ID.enumerate_trials()
@@ -327,6 +370,62 @@ def _canon_probe(v):
     if not _isclose(v, ID.PROBE_OFFSET):
         _err(f"probe offset {v!r} != -0.04")
     return ID.PROBE_OFFSET
+
+
+def reference_phase_manifest(phase, *, protocol_commit="0" * 40, generator_commit="1" * 40,
+                             runtime_commit="2" * 40, environment_versions=None):
+    """IN-MEMORY reference of a fully-resolved, deep-valid phase manifest, built from the frozen identity +
+    seed modules. FINAL-001/002 companion: used by tests and as the unambiguous shape reference for the
+    (future, post-GO) generator author. This is NOT a formal manifest instance — nothing is written to disk,
+    no Isaac is run, and the commit fields are placeholder 40-hex until the generator freeze (Step 0). The
+    resolved orders, subseeds, config hash, schema version and determinism contract are the REAL frozen
+    values, so `validate_fully_resolved_phase_manifest` accepts the result."""
+    from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_identity as ID
+    from deployment_calibration.offline_v2.calibration_bias import preregistration_v4 as PRE
+    if phase not in PHASES:
+        _err(f"unknown phase {phase!r}")
+    splits = PHASE_SPLITS[phase]
+    blocks, sessions, trials = [], [], []
+    for split in splits:
+        for bi in ID.BLOCKS[split]:
+            blocks.append({"split": split, "block_index": bi,
+                           "canonical_block_identity": ID.block_identity(split, bi),
+                           "residual_value": 0.001, "nuisance_values": {"joint_delta": 0.0},
+                           "residual_subseed": ID.block_residual_subseed(split, bi),
+                           "nuisance_subseed": ID.block_nuisance_subseed(split, bi),
+                           "block_order_key": ID.block_order_key(split, bi)})
+            for nom in ID.NOMINALS[split]:
+                sessions.append({"canonical_session_identity": ID.session_identity(split, bi, nom),
+                                 "split": split, "block_index": bi, "nominal_bias": nom,
+                                 "session_order_key": ID.session_order_subseed(split, bi, nom),
+                                 "nominal_order_key": ID.nominal_order_subseed(split, bi, nom),
+                                 "candidate_order_keys": ID.candidate_order_key_map(split, bi, nom),
+                                 "resolved_candidate_order": list(ID.resolve_candidate_order(split, bi, nom))})
+    plan = ID.resolve_phase_execution_plan(phase)
+    idx = {tid: i for i, tid in enumerate(plan)}
+    # map each canonical trial identity to (split, block, nominal, role, offset) via the planned structure
+    meta = {r["canonical_trial_identity"]: r for r in ID.enumerate_trials() if r["split"] in splits}
+    for tid in plan:
+        r = meta[tid]
+        pid = ID.planned_episode_id(tid)
+        trials.append({"canonical_trial_identity": tid, "planned_episode_id": pid,
+                       "session_ref": ID.session_identity(r["split"], r["block_index"], r["nominal"]),
+                       "role": r["role"], "offset": r["offset"],
+                       "trial_init_subseed": ID.trial_init_subseed(r["split"], r["block_index"], r["nominal"],
+                                                                   r["role"], r["offset"]),
+                       "execution_order_index": idx[tid], "resume_key": pid})
+    exp = PHASES[phase]
+    return {"schema_version": PHASE_MANIFEST_SCHEMA_VERSION, "phase": phase,
+            "protocol_commit": protocol_commit, "generator_commit": generator_commit,
+            "runtime_commit": runtime_commit, "config_sha256": canonical_config_sha256(),
+            "planned_structure_sha256": ID.canonical_planned_structure_hash(), "frozen_seeds": PRE.frozen_seeds(),
+            "deterministic_environment": deterministic_environment_contract(),
+            "environment_versions": environment_versions or {"torch": "2.7.0+cu128", "numpy": "1.26.0"},
+            "counts": {"blocks": exp["blocks"], "sessions": exp["sessions"], "trials": exp["trials"]},
+            "execution_order_definition": "split order -> resolve_block_order -> resolve_session_order -> "
+                                          "probe first -> resolve_candidate_order",
+            "manifest_algorithm_version": MANIFEST_ALGORITHM_VERSION,
+            "blocks": blocks, "sessions": sessions, "trials": trials}
 
 
 def fully_resolved_phase_manifest_hash(manifest) -> str:

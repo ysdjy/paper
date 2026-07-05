@@ -8,9 +8,31 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT`.** This phase authorizes nothing — Claude C
+**Status: `PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION`.** This phase authorizes nothing — Claude C
 must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, checkpoint, confirmatory data, or run authorization is produced here.
+
+## 0z. One-shot batch fix (Claude C frozen issue list FINAL-001..005)
+- **FINAL-001** — the only legal manifest ordering is now a frozen SHA256-derived-key + stable sort +
+  canonical-index tie-break (`confirmatory_v4_identity.resolve_order` / `resolve_block_order` /
+  `resolve_session_order` / `resolve_candidate_order` / `resolve_phase_execution_plan`; new `block_order_key`
+  domain `block_order`, `candidate_order_keys`). The deep validator now **recomputes and exact-checks**
+  `block_order_key`, `candidate_order_keys`, `resolved_candidate_order`, and `execution_order_index ==
+  resolve_phase_execution_plan(phase)` index (not merely 0..N-1). No random/RNG/`hash()`/dict-iteration order.
+- **FINAL-002** — the validator now **exact-checks** the knowable-now integrity values: `config_sha256 ==
+  canonical_config_sha256()` (raw config bytes), `schema_version == confirmatory_v4_phase_manifest_v1`, and
+  `deterministic_environment ==` the frozen `deterministic_environment_manifest_contract` (key set + value +
+  type; no extra key; no GPU). Future commit fields stay 40-hex-format-only until generator Step 0
+  (freeze-source table in `confirmatory_v4_manifest_spec.md` §2.3b).
+- **FINAL-003** — `confirmatory_v4_manifest_spec.md` §2.3 stale singular `manifest_hash`/`config_hash`/
+  `code_commit` replaced by the layered `*_sha256` set; per-trial `code_commit` → `runtime_commit`.
+- **FINAL-004** — added the multitask-heads-auxiliary disclaimer (§16b; `confirmatory_v4_claim_scope.md` §7):
+  selection + primary use success only; no claim that multidimensional error/time prediction beats a
+  success-only predictor. Model/loss unchanged.
+- **FINAL-005** — snapshot manifest disambiguated (`final_head_commit`/`audited_snapshot_commit` = `b983b7e…`,
+  `metadata_payload_commit` = `1abaa72…`); no self-reference to any batch-fix HEAD.
+- `power_recertification_required = false` (guards/validators/hashes/docs only; no change to legal-input
+  selection, design, model, estimator, or 306 data).
 
 ## 0aaa. Fix4 changes (resolving Claude C's four fix3-reaudit blockers)
 - **a `BLOCKER_BEST_SINGLE_OFFSET_DOMAIN_NOT_STRICT`** — the selector now canonicalizes each candidate
@@ -272,6 +294,14 @@ Split-isolation and leakage tests included.
 The 3-point candidate bank is a **constructed positive-control skill library** frozen by the independent
 exploration phase, to validate the history-conditioned action-selection mechanism. It is **not** a claim over
 arbitrary continuous action spaces, arbitrary tasks, or long-horizon autonomous adaptation.
+
+### 16b. Multitask heads are auxiliary (FINAL-004)
+> The task-outcome-error and elapsed-time regression heads are auxiliary multitask training signals.
+> Candidate selection and the primary endpoint use predicted/observed success only. This experiment neither
+> identifies nor claims that multidimensional error/time prediction outperforms a success-only predictor.
+
+The multi-head model, loss, and training are unchanged (no success-only ablation is added); this is a claim
+boundary, not a design change, and does not affect power. See `confirmatory_v4_claim_scope.md` §7.
 
 ## 17. GO / FAIL / INVALID (§21) — FIX1
 ```

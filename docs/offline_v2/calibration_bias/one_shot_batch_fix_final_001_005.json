@@ -1,0 +1,64 @@
+{
+  "status": "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION",
+  "previous_status": "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT",
+  "one_shot_audit_commit": "01ac19d287e2106ecddd9662dad7351f4d621361",
+  "audited_snapshot_commit": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+  "fix4_source_commit": "f8fedd45d2c0e2f9587ae8740c61a1b9eedb64ea",
+  "power_cert_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "verdict_addressed": "ONE_SHOT_BATCH_FIX_REQUIRED",
+  "issue_list_frozen": true,
+  "power_recertification_required": false,
+  "scope": "FINAL-001..005 ONLY; no new issue IDs; no change to power/bank/geometry/model/estimator/306",
+  "issues": {
+    "FINAL-001": {
+      "type": "pre_generator_blocker", "fixed": true,
+      "module": "confirmatory_v4_identity",
+      "resolvers": ["resolve_order", "block_order_key", "resolve_block_order", "resolve_session_order",
+                    "candidate_item_order_key", "candidate_order_key_map", "resolve_candidate_order",
+                    "resolve_phase_execution_plan"],
+      "rule": "SHA256-derived integer key + stable lexicographic sort + canonical-index tie-break; no random/RNG/hash()/dict-iteration",
+      "validator_exact_checks": ["block_order_key", "candidate_order_keys", "resolved_candidate_order",
+                                 "execution_order_index == resolve_phase_execution_plan index"],
+      "new_domain_labels": ["block_order"]
+    },
+    "FINAL-002": {
+      "type": "pre_manifest_blocker", "fixed": true,
+      "canonical_config_sha256": "sha256 of raw active confirmatory_v4_config.json bytes; config stores no self-hash",
+      "phase_manifest_schema_version": "confirmatory_v4_phase_manifest_v1",
+      "deterministic_environment_manifest_contract": {
+        "device": "cpu", "torch_set_num_threads": 1, "torch_set_num_interop_threads": 1,
+        "torch_use_deterministic_algorithms": true, "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"},
+      "exact_checks": ["config_sha256 == canonical_config_sha256()", "schema_version exact",
+                       "deterministic_environment == contract (key set + value + type; no extra; no GPU)"],
+      "future_frozen": ["protocol_commit", "generator_commit", "runtime_commit (40-hex format until Step 0)"]
+    },
+    "FINAL-003": {
+      "type": "docs_nonblocking", "fixed": true,
+      "file": "confirmatory_v4_manifest_spec.md",
+      "removed": ["singular manifest_hash", "config_hash", "code_commit"],
+      "added": ["layered *_sha256 field set", "freeze-source table §2.3b", "runtime_commit in per-trial provenance"]
+    },
+    "FINAL-004": {
+      "type": "science_claim_nonblocking", "fixed": true,
+      "files": ["confirmatory_v4_claim_scope.md §7", "preregistration_v4.md §16b"],
+      "disclaimer": "error/time heads are auxiliary; selection + primary use success only; no multidimensional-superiority claim",
+      "model_loss_unchanged": true, "no_success_only_ablation_added": true
+    },
+    "FINAL-005": {
+      "type": "snapshot_traceability_nonblocking", "fixed": true,
+      "file": "final_snapshot_v1/snapshot_manifest.json",
+      "metadata_payload_commit": "1abaa72d43cb7c6ff6251c5b9ca2db16856cbea6",
+      "final_head_commit": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+      "audited_snapshot_commit": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+      "no_self_reference_to_batchfix_head": true
+    }
+  },
+  "unchanged": ["power_result", "candidate_bank", "test_geometry_pm035", "model+hp+seeds",
+                "primary_estimator", "0.15_CI", "75_sessions_300_trials", "306_data"],
+  "new_files": ["one_shot_batch_fix_final_001_005.md", "one_shot_batch_fix_final_001_005.json",
+                "test_one_shot_batch_fix_final_001_005.py"],
+  "c_audit_files_unmodified": true,
+  "no_generator": true, "no_formal_manifest_instance": true, "no_checkpoint": true,
+  "no_runtime_or_confirmatory_data": true, "no_run_authorization": true
+}

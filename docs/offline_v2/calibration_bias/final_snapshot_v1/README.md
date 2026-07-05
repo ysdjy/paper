@@ -27,9 +27,15 @@ Full lineage in `commit_lineage.md`: 306 source → band-edge analysis → redes
 Every commit is a linear ancestor of the snapshot.
 
 ## Metadata files
+**Commit disambiguation (FINAL-005):** the audited snapshot is `final_head_commit` /
+`audited_snapshot_commit` = `b983b7e9…` (the frozen Fix4 snapshot HEAD). `metadata_payload_commit` =
+`1abaa72d…` is the phase-1 metadata commit (its parent). These point to the **historical** frozen snapshot,
+**not** to any later batch-fix HEAD; the `tracked_file_hashes.sha256` / inventory describe the audited
+snapshot tree only.
+
 | file | contents |
 |---|---|
-| `snapshot_manifest.json` | machine summary + final snapshot commit SHA |
+| `snapshot_manifest.json` | machine summary + disambiguated final_head/metadata_payload/audited commits |
 | `active_file_map.json` | the 13 active files + evidence/historical, with sha256 + git blob sha |
 | `repository_file_inventory.txt` | `git ls-files` (1154 tracked files) |
 | `repository_tree.txt` | `find` tree (excludes `./.git`) |

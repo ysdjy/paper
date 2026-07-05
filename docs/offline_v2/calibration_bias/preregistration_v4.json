@@ -1,6 +1,6 @@
 {
   "title": "Confirmatory Preregistration v4 FIX4 -- calibration-bias diagnostic history & action selection",
-  "status": "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT",
+  "status": "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION",
   "base_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
   "audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
   "v4_original_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
@@ -49,7 +49,8 @@
     ],
     "positive_control_note": "the 3-point candidate bank is a constructed positive-control skill library frozen by the independent exploration phase, to validate the history-conditioned action-selection mechanism; NOT a claim over arbitrary continuous action spaces, arbitrary tasks, or long-horizon autonomous adaptation",
     "primary_claim": "diagnostic history improves subsequent action-selection success",
-    "net_value_is_secondary": true
+    "net_value_is_secondary": true,
+    "multitask_heads_auxiliary": "The task-outcome-error and elapsed-time regression heads are auxiliary multitask training signals. Candidate selection and the primary endpoint use predicted/observed success only. This experiment neither identifies nor claims that multidimensional error/time prediction outperforms a success-only predictor."
   },
   "design": {
     "candidate_bank": [
@@ -855,6 +856,36 @@
     "deterministic_unsupported": "a required deterministic op raising RuntimeError -> model_fit_failure_count; same-seed infra retry at most once; still failing -> EXPERIMENT_INVALID_MODEL_FIT",
     "no_gpu_switch": "switching to GPU voids the protocol; may not silently disable determinism",
     "library_versions_recorded_in": "model_analysis_freeze.json"
+  },
+  "deterministic_environment_manifest_contract": {
+    "device": "cpu",
+    "torch_set_num_threads": 1,
+    "torch_set_num_interop_threads": 1,
+    "torch_use_deterministic_algorithms": true,
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "phase_manifest_schema_version": "confirmatory_v4_phase_manifest_v1",
+  "order_resolution": {
+    "module": "confirmatory_v4_identity",
+    "rule": "SHA256-derived integer key + stable lexicographic sort + canonical-index tie-break; NO random/RNG/hash()/dict-iteration order",
+    "resolvers": [
+      "resolve_order",
+      "resolve_block_order",
+      "resolve_session_order",
+      "resolve_candidate_order",
+      "resolve_phase_execution_plan"
+    ],
+    "block_order_key": "subseed(<split>_block_order_seed, block_identity + '|domain=block_order')",
+    "candidate_order_key": "subseed(candidate_order_seed, trial_identity(candidate) + '|domain=candidate_order')",
+    "execution_order": "phase split order -> resolve_block_order -> resolve_session_order -> probe first -> resolve_candidate_order; validator checks execution_order_index == plan index",
+    "manifest_recomputed_and_exact_checked": [
+      "block_order_key",
+      "candidate_order_keys",
+      "resolved_candidate_order",
+      "execution_order_index"
+    ]
   },
   "hard_constraints": [
     "no Isaac",

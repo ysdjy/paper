@@ -199,6 +199,103 @@ def trial_init_subseed(split, block_index, nominal, role, offset):
     return _sub("master_seed", trial_identity(split, block_index, nominal, role, offset), DOMAIN_TRIAL_INIT)
 
 
+# ==================== FINAL-001: frozen seed -> canonical order resolution ====================
+# The ONLY legal ordering: SHA256-derived integer key + stable lexicographic sort + canonical-index
+# tie-break. NO random.shuffle, NO RNG, NO Python hash(), NO dict/set iteration order. A manifest's order
+# is uniquely determined by the frozen seeds + canonical identity, so a generator cannot pick any legal
+# permutation.
+DOMAIN_BLOCK_ORDER = "block_order"
+_KEY_MODULUS = 2 ** 63 - 1
+
+
+def resolve_order(items, *, key_fn, canonical_index_fn):
+    """Return tuple(items) sorted by (key_fn(item), canonical_index_fn(item)).
+
+    items must be unique; key_fn(item) a non-bool int in [0, 2**63-1); canonical_index_fn(item) unique
+    (deterministic tie-break). Any input permutation yields the same output; key collisions are resolved
+    stably by the canonical index."""
+    items = list(items)
+    seen_item, seen_ci = set(), set()
+    decorated = []
+    for it in items:
+        if it in seen_item:
+            raise ValueError(f"resolve_order: duplicate item {it!r}")
+        seen_item.add(it)
+        k = key_fn(it)
+        if isinstance(k, bool) or not isinstance(k, int) or not (0 <= k < _KEY_MODULUS):
+            raise ValueError(f"resolve_order: key for {it!r} must be a non-bool int in [0,2**63-1), got {k!r}")
+        ci = canonical_index_fn(it)
+        if ci in seen_ci:
+            raise ValueError(f"resolve_order: duplicate canonical index {ci!r}")
+        seen_ci.add(ci)
+        decorated.append((k, ci, it))
+    decorated.sort(key=lambda t: (t[0], t[1]))
+    return tuple(t[2] for t in decorated)
+
+
+def block_order_key(split, block_index):
+    return _sub(f"{split}_block_order_seed", block_identity(split, block_index), DOMAIN_BLOCK_ORDER)
+
+
+def resolve_block_order(split):
+    """Canonical execution order of block indices within a split (by block_order_key, then block index)."""
+    s = _v_split(split)
+    return resolve_order(list(BLOCKS[s]), key_fn=lambda bi: block_order_key(s, bi),
+                         canonical_index_fn=lambda bi: bi)
+
+
+def resolve_session_order(split, block_index):
+    """Canonical execution order of nominals (sessions) within a block: sort by
+    (session_order_key, nominal_order_key, canonical nominal index in NOMINALS[split])."""
+    s = _v_split(split); b = _v_block(s, block_index)
+    noms = list(NOMINALS[s])
+    ci = {round(float(n), 6): i for i, n in enumerate(noms)}
+    # composite key packed into two-level sort via resolve_order on a surrogate (session_order_key primary)
+    def kfn(n):
+        return session_order_subseed(s, b, n)
+    # secondary tie-break: (nominal_order_key, canonical nominal index) -> encode in canonical_index_fn
+    def cifn(n):
+        return (nominal_order_subseed(s, b, n), ci[round(float(n), 6)])
+    return resolve_order(noms, key_fn=kfn, canonical_index_fn=cifn)
+
+
+def candidate_item_order_key(split, block_index, nominal, offset):
+    tid = trial_identity(split, block_index, nominal, "candidate", offset)
+    return PRE.subseed(PRE.seed("candidate_order_seed"), f"{tid}{FIELD_SEP}domain{KV_SEP}{DOMAIN_CANDIDATE_ORDER}")
+
+
+def candidate_order_key_map(split, block_index, nominal):
+    return {fmt_m(o): candidate_item_order_key(split, block_index, nominal, o) for o in CANDIDATE_BANK}
+
+
+def resolve_candidate_order(split, block_index, nominal):
+    """Canonical execution order of the 3 candidate offsets (by candidate_item_order_key, then bank index)."""
+    s = _v_split(split); b = _v_block(s, block_index)
+    nom = _canon_numeric(nominal, NOMINALS[s], f"{s} nominal")
+    bank_idx = {round(float(o), 6): i for i, o in enumerate(CANDIDATE_BANK)}
+    return resolve_order(list(CANDIDATE_BANK),
+                         key_fn=lambda o: candidate_item_order_key(s, b, nom, o),
+                         canonical_index_fn=lambda o: bank_idx[round(float(o), 6)])
+
+
+def resolve_phase_execution_plan(phase):
+    """Canonical_trial_identity sequence in EXACT execution order for a phase.
+    split order (train,validation for train_validation; test for test) -> resolve_block_order ->
+    resolve_session_order -> probe first, then resolve_candidate_order."""
+    splits = ("train", "validation") if phase == "train_validation" else ("test",) if phase == "test" \
+        else None
+    if splits is None:
+        raise ValueError(f"unknown phase {phase!r}")
+    plan = []
+    for split in splits:
+        for b in resolve_block_order(split):
+            for nom in resolve_session_order(split, b):
+                plan.append(trial_identity(split, b, nom, "probe", PROBE_OFFSET))
+                for off in resolve_candidate_order(split, b, nom):
+                    plan.append(trial_identity(split, b, nom, "candidate", off))
+    return tuple(plan)
+
+
 # ---------------- enumerate the frozen planned structure (in-memory only) ----------------
 def enumerate_trials():
     """All 300 planned trials as dicts, in canonical STORAGE order. No manifest instance is written."""

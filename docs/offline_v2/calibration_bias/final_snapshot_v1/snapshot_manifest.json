@@ -3,7 +3,9 @@
   "repository": "ysdjy/paper",
   "branch": "audit/offline-calibration-prereg-v4-final-snapshot-v1",
   "source_fix4_commit": "f8fedd45d2c0e2f9587ae8740c61a1b9eedb64ea",
-  "snapshot_commit": "1abaa72d43cb7c6ff6251c5b9ca2db16856cbea6",
+  "metadata_payload_commit": "1abaa72d43cb7c6ff6251c5b9ca2db16856cbea6",
+  "final_head_commit": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+  "audited_snapshot_commit": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
   "working_tree_clean": true,
   "submodules_clean": true,
   "active_protocol_status": "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT",
@@ -30,5 +32,6 @@
     "B: deep validator checks resolved_candidate_order/block_order_key as permutation/unique, not recomputed from subseed; execution_order not cross-checked vs order keys; no candidate_order_key field",
     "C: config_sha/commits/schema_version/full determinism-env are format-or-presence checks, not exact-frozen-value (some knowable only at generation freeze)",
     "D: C historical audit tests show expected xfail->XPASS flips + superseded PASS (not active failures)"
-  ]
+  ],
+  "final_snapshot_note": "These commits point to the HISTORICAL frozen Fix4 snapshot audited by Claude C; they do NOT point to the one-shot batch-fix HEAD. The original tracked_file_hashes/inventory describe the audited snapshot tree, NOT this batch-fix tree."
 }
