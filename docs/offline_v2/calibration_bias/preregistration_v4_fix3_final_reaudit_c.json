@@ -1,0 +1,101 @@
+{
+  "verdict": "MODIFY_PREREGISTRATION_V4_FIX3",
+  "auditor": "Claude C (independent, read-only, adversarial, final re-audit)",
+  "audited_commit": "7304530eb07d926b96f3e4cbd878ac50fa1d4633",
+  "prior_reaudit_commit": "83d860693bc788c0423d9e76d1c058df32218e8b",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "authorizes_generator_implementation": false,
+  "authorizes_generator_smoke": false,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "power_recertification_note": "All open items are input-guard / validator-depth / hash-required-field / doc-consistency hardening. The scientific selection on legal inputs, the estimator, model, geometry, residual, and effect are unchanged; bank/nominals/9-6-9/probe/HP/seeds/comparator/bootstrap/0.15/claim-scope/300-trials untouched.",
+  "resolved": [
+    {
+      "blocker": "BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED",
+      "status": "RESOLVED",
+      "evidence": "PlannedTrialKey.__post_init__ + _canon_numeric validate the frozen domain with isclose(rel_tol=0, abs_tol=1e-12) and reject bool/non-numeric/NaN/Inf; verified reject block=99, validation block=6, train nominal=0.5, test nominal=0.0346 (won't legalize to 0.035), probe offset=+0.02, candidate offset=+0.07, block=-1, attempt out of {0,1}. All builders/subseeds route through the validated key. 300 canonical strings + 300 unique PIDs unchanged."
+    },
+    {
+      "item": "Blocker I partial (single entry + 45/12 + invariance)",
+      "status": "RESOLVED (offset-domain gap remains -> new_blockers)",
+      "evidence": "config implementation = confirmatory_v4_selection.select_best_single_confirmatory (one positional param, no override kwargs); __all__ = [select_best_single_confirmatory, ObservedCandidateOutcome, BestSingleInputError]; _select_best_single_core private (not in __all__, not referenced by active config). Composition gate enforces train 45 / val 12 -> 135 / 36 -> 171, globally-unique session_id, no probe/test, strict bool; verified reject 57+0, 44+13, cross-split dup sid. Selection order-invariant and secret-perturbation-invariant (offset AND artifact hash); offset 0 not hardcoded (selects +0.04 when it wins)."
+    },
+    {
+      "item": "Blocker III partial (hash layering + coverage)",
+      "status": "RESOLVED (validator/combined/stale-doc gaps remain -> new_blockers)",
+      "evidence": "canonical_manifest_hash renamed to canonical_planned_structure_hash with structure-only docstring; confirmatory_v4_manifest_integrity defines planned_structure / train_validation (228) / test (72) / model_analysis_freeze / combined_experiment_plan hashes; full hash deep-copies and covers all resolved fields (mutating residual changes the full hash; structure hash unaffected)."
+    },
+    {
+      "item": "determinism (fix2 minor)",
+      "status": "RESOLVED",
+      "evidence": "config machine-freezes device==cpu, set_num_threads(1)/set_num_interop_threads(1)/use_deterministic_algorithms(True)/OMP,MKL,OPENBLAS=1, set before any torch op, deterministic-op-unavailable -> model-fit INVALID, no GPU switch."
+    }
+  ],
+  "new_blockers": [
+    {
+      "id": "BLOCKER_BEST_SINGLE_OFFSET_DOMAIN_NOT_STRICT",
+      "severity": "blocker",
+      "summary": "The production selector canonicalizes offsets with _round_offset(x)=round(float(x),3) and compares to the rounded bank. Verified ACCEPTED (smuggled into the bank): grasp_offset_local_y = +0.0004 (->0.0), numeric string '0.0' (->0.0 via float()), -0.0396 (->-0.04), +0.0404 (->+0.04). NaN raised a raw KeyError (not a clean BestSingleInputError). The identity module already does this correctly (isclose abs_tol=1e-12, reject bool/str/non-finite); the selector does not.",
+      "files": ["deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_selection.py : _round_offset, _project_records, _check_confirmatory_completeness"],
+      "minimal_fix": "In the selector, canonicalize each offset like confirmatory_v4_identity._canon_numeric: reject bool and non-(int/float), reject non-finite, and require math.isclose(offset, bank_value, rel_tol=0, abs_tol=1e-12) to a frozen bank value (not round(.,3)); else EXPERIMENT_INVALID_BEST_SINGLE_INPUT.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_FULL_MANIFEST_VALIDATOR_SHALLOW",
+      "severity": "blocker",
+      "summary": "validate_fully_resolved_phase_manifest checks only phase, required-key PRESENCE, list lengths, and counts. It performs NO semantic validation. Verified: a train_validation manifest with 228 IDENTICAL/duplicate trials, all-'train' blocks (wrong 9-train+6-val composition), and planned_episode_id inconsistent with canonical_trial_identity VALIDATES and yields a 'valid' full hash. This is the exact 5.4 integrity-blocker condition (also subsumes 4.1: the validator does not recompute planned_episode_id from canonical_trial_identity).",
+      "files": ["deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_manifest_integrity.py : validate_fully_resolved_phase_manifest"],
+      "minimal_fix": "Add (or explicitly freeze as required generator-validator rules): per-phase split composition (train_validation = 9 train + 6 val blocks / 45 train + 12 val sessions; test = 9 test blocks / 18 sessions); block/session/trial uniqueness; 4 trials/session = probe + 3 candidates with the bank; planned_episode_id == planned_episode_id(canonical_trial_identity); referential integrity (each trial's session/block exist); residual shared within a block; nuisance shared within a block; execution_order_index unique/complete/no gaps; resolved_candidate_order is a bank permutation; subseeds recomputed from frozen identity+seed; resume_key == planned_episode_id; planned_structure_sha256 == frozen structure hash; frozen seeds/config/protocol version match; all numerics finite; reject unexpected/stray fields (incl. a nested 'integrity' block). A shape-only hash of a duplicated manifest must not be accepted as a scientific integrity anchor.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_COMBINED_HASH_OPTIONAL_FIELDS",
+      "severity": "blocker",
+      "summary": "combined_experiment_plan_hash declares analysis_code_sha256=None and bootstrap_seed=None as defaults and does NOT include them in the required-non-None check. Verified: the combined hash computes successfully with both omitted.",
+      "files": ["deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_manifest_integrity.py : combined_experiment_plan_hash"],
+      "minimal_fix": "Make analysis_code_sha256 and bootstrap_seed REQUIRED (raise EXPERIMENT_INVALID_MANIFEST_INTEGRITY when None/empty) and format-validate all hash-hex fields and the integer bootstrap_seed.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_ACTIVE_MANIFEST_SPEC_STALE",
+      "severity": "blocker",
+      "summary": "The ACTIVE confirmatory_v4_manifest_spec.md retains pre-fix3 semantics that conflict with the new phase-layered design: §3.2 'subseed(<split>_residual_seed, \"block=<i>\")' (the code actually keys subseed on the canonical block_identity + '|domain=residual'); §5 'science_manifest_sha256 on each trial == frozen manifest_hash' (contradicts lines 93-98 that correctly bind it to the PHASE hash). config/preregistration_v4 manifest_fields still list singular 'manifest_hash'.",
+      "files": ["docs/offline_v2/calibration_bias/confirmatory_v4_manifest_spec.md : §3.2 (block=<i>), §5 (== frozen manifest_hash)",
+                "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : manifest_fields ['manifest_hash']",
+                "docs/offline_v2/calibration_bias/preregistration_v4.json : manifest_fields ['manifest_hash']"],
+      "minimal_fix": "Replace the block=<i> subseed example with the canonical block_identity()+'|domain=residual' form; replace 'science_manifest_sha256 == frozen manifest_hash' with 'science_manifest_sha256 == its phase full-manifest hash (train_validation_manifest_sha256 / test_manifest_sha256)'; replace the singular manifest_hash field with the layered set (planned_structure_sha256, train_validation_manifest_sha256, test_manifest_sha256, model_analysis_freeze_sha256, combined_experiment_plan_sha256).",
+      "power_recert_needed": false
+    }
+  ],
+  "minor_issues": [
+    {
+      "id": "SELF_HASH_FLAT_DOT_KEY_FRAGILE",
+      "summary": "SELF_HASH_FIELD is the flat dot-key 'integrity.full_manifest_sha256'; code and manifest_spec agree (flat), so it is internally consistent. But the shallow validator hashes a stray NESTED {'integrity': {...}} block as scientific content instead of rejecting it. Pin the flat convention in the JSON schema + tests and have the (deepened) validator reject any nested 'integrity' object / unexpected self-hash placement (folds into BLOCKER_FULL_MANIFEST_VALIDATOR_SHALLOW)."
+    }
+  ],
+  "verified_pass": {
+    "single_production_entry": "PASS - one param, no override kwargs, __all__ frozen, core private",
+    "split_composition_45_12": "PASS - 45/12/135/36/171 enforced; rejects 57+0, 44+13, cross-split dup",
+    "order_secret_invariance": "PASS - offset + artifact hash invariant to shuffle + secret perturbation",
+    "identity_domain": "PASS - PlannedTrialKey strict (isclose 1e-12); 300 unique",
+    "hash_layering_and_coverage": "PASS - structure renamed; phase hashes 228/72; full hash covers resolved fields",
+    "determinism": "PASS - machine-frozen flags",
+    "power_inputs_unchanged": "PASS - POWER_SUFFICIENT_FOR_PREREG_V4 stands",
+    "status_consistency": "PASS - PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT (5 files); FIX2 refs only in historical summaries"
+  },
+  "tests": {
+    "b_fix3_suite": "test_preregistration_v4_fix3.py -> 26 passed (env_isaaclab)",
+    "c_final_reaudit_suite": "test_preregistration_v4_fix3_final_reaudit_c.py -> 7 passed, 4 xfailed (the 4 new blockers)"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/preregistration_v4_fix3_final_reaudit_c.md",
+    "docs/offline_v2/calibration_bias/preregistration_v4_fix3_final_reaudit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_preregistration_v4_fix3_final_reaudit_c.py"
+  ]
+}
