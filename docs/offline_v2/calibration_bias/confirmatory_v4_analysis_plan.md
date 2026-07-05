@@ -27,20 +27,22 @@ before unsealing test. Machine form: `PRIMARY`/`SECONDARY`/`BOOTSTRAP`/`SEED_GAT
 | training failure | **FIX1:** an analysis-stage event in the `model_fit_failure_count` namespace (§9); NOT a runtime trial, NOT part of the 300-trial invalid budget |
 | explicit hyperparameters | **FIX1:** generator/training must pass all HP explicitly; constructor defaults `max_epochs=300, patience=30` differ from frozen `200/25` and must not be relied on |
 
-## 2. Best-single (train + validation only) — FIX2: observed-outcome-only production selector
-Production implementation: `confirmatory_v4_selection.select_best_single` — reads **only** observed
-candidate outcomes (`split, session_id, trial_role, theta.grasp_offset_local_y, y.success,
-planned_episode_id`) and **never** tau/nominal/residual/actual/eff/oracle/test/success-model. Rule (equal
-denominators): (1) max integer **observed_success_count** per offset → (2) tie: min |offset| → (3) tie:
-earliest in bank order `{-0.04, 0.00, +0.04}`. **Input completeness** (else
-`EXPERIMENT_INVALID_BEST_SINGLE_INPUT`): exactly 171 candidate records, 57 sessions, 3/session, offset set
-`{-0.04,0,+0.04}`, no dup `(session,offset)`, unique `planned_episode_id`, split ∈ {train,validation},
-`y.success` bool — no missing record may be ignored, the denominator may not change. Saves per-candidate
-score, tie-break trace, final offset, `n_trials_per_offset`, `success_count_per_offset`, hashes.
-`learned_selector_power.best_single_legal` (which reconstructs the label from the secret) is a
-`SIMULATION_ONLY_REFERENCE`, **not** production. **Test never participates.** Offset 0 is not hardcoded.
-Production == simulation on 4500/4500 frozen configs (`production_best_single_bridge_invariance_v1`); the
-fix1 tie-break was dead code (`best_single_tiebreak_invariance_v1`) → **no power recertification**.
+## 2. Best-single (train + validation only) — FIX3: single guarded production entry
+Production entry: `confirmatory_v4_selection.select_best_single_confirmatory(observed_candidate_records)` —
+**one** business parameter, no override kwargs, `__all__` frozen to the three public names; the generic
+override-capable logic is **private** (`_select_best_single_core`, bridge/tests only). Reads **only**
+observed candidate outcomes (`split, session_id, trial_role, theta.grasp_offset_local_y, y.success,
+planned_episode_id`); **never** tau/nominal/residual/actual/eff/oracle/test/success-model. Rule (equal
+denominators, 57/offset): (1) max integer **observed_success_count** → (2) tie: min |offset| → (3) tie:
+earliest in bank order. **Completeness gate** (else `EXPERIMENT_INVALID_BEST_SINGLE_INPUT`; no warning, no
+drop, no denominator change): exactly 171 records, **train 45 / validation 12 sessions**, **135 / 36
+records**, 57 globally-unique sessions, `session_id` globally unique, 3/session, offset set `{-0.04,0,+0.04}`,
+no dup `(split,session_id,offset)`, unique `planned_episode_id`, split ∈ {train,validation}, `y.success`
+strict bool, no probe/test, bank not overridable. Saves the split counts, per-candidate score, tie-break
+trace, final offset, `n_trials_per_offset`, `success_count_per_offset`, hashes.
+`learned_selector_power.best_single_legal` is a `SIMULATION_ONLY_REFERENCE`, **not** production. **Test never
+participates.** Offset 0 is not hardcoded. Production == simulation on 4500/4500 frozen configs
+(`production_best_single_bridge_invariance_v1`) → **no power recertification**.
 
 ### 2b. Deterministic model environment (FIX2, frozen)
 `device=CPU`; `torch.set_num_threads(1)`; `torch.set_num_interop_threads(1)`;

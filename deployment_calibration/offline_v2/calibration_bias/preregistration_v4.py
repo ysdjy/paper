@@ -281,19 +281,31 @@ BEST_SINGLE = {
     "forbidden_inputs": ["nominal bias", "residual bias", "actual bias", "eff_signed", "abs_eff",
                          "tau-|eff| / secret continuous margin", "oracle action", "test outcomes"],
     "no_new_observable_continuous_tiebreak": True,
-    "implementation": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single",
+    "implementation": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single_confirmatory",
+    "production_entry": {"function": "select_best_single_confirmatory", "business_params": ["observed_candidate_records"],
+                         "no_override_kwargs": True, "validate_completeness": True,
+                         "expected_candidate_records": 171, "candidate_bank_overridable": False,
+                         "__all__": ["select_best_single_confirmatory", "ObservedCandidateOutcome",
+                                     "BestSingleInputError"],
+                         "private_generic_core_not_referenced": "_select_best_single_core (bridge/tests only)"},
     "production_reads_only": ["split", "session_id", "trial_role", "theta.grasp_offset_local_y",
                               "y.success", "planned_episode_id"],
     "production_forbidden_inputs": ["tau", "nominal", "residual", "actual bias", "eff", "oracle",
                                     "test records", "success model"],
-    "selection_algorithm": "equal denominators -> integer observed_success_count per offset; max count; "
-                           "tie -> min|offset|; tie -> earliest in bank order",
-    "input_completeness": {"train_val_sessions": 57, "candidate_records": 171,
-                           "checks": ["exactly 171 records", "57 unique sessions", "3 candidates/session",
-                                      "offset set == {-0.04,0,+0.04}", "no dup (session,offset)",
-                                      "unique planned_episode_id", "split in {train,validation}",
-                                      "y.success present and bool"],
-                           "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT"},
+    "selection_algorithm": "equal denominators (57/offset) -> integer observed_success_count per offset; "
+                           "max count; tie -> min|offset|; tie -> earliest in bank order",
+    "input_completeness": {"train_sessions": 45, "validation_sessions": 12, "total_sessions": 57,
+                           "train_candidate_records": 135, "validation_candidate_records": 36,
+                           "candidate_records": 171,
+                           "checks": ["exactly 171 records", "train sessions = 45", "validation sessions = 12",
+                                      "train candidate records = 135", "validation candidate records = 36",
+                                      "57 globally-unique sessions", "session_id globally unique (no cross-split)",
+                                      "3 candidates/session", "offset set == {-0.04,0,+0.04}",
+                                      "no dup (split,session_id,offset)", "unique planned_episode_id",
+                                      "split in {train,validation}", "y.success present and strict Python bool",
+                                      "no probe/test records", "candidate_bank not overridable"],
+                           "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+                           "no_warning_no_drop_no_denominator_change": True},
     "simulation_only_reference": "learned_selector_power.best_single_legal (reconstructs label from secret; "
                                  "NOT production; retained as the bridge baseline only)",
     "bridge_invariance": "production_best_single_bridge_invariance_v1.json (4500/4500 configs agree -> no "
@@ -384,39 +396,90 @@ PLANNED_IDENTITY_FORMAT = {
     "domain_labels": ["residual", "nuisance", "session_order", "nominal_order", "candidate_order", "trial_init"],
     "domain_subseed_rule": "subseed(<seed>, canonical_identity + '|domain=<label>')",
     "storage_sort": "split(train=0,validation=1,test=2) -> block asc -> nominal asc -> role(probe=0,candidate=1) -> offset asc",
-    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, UTF-8, no trailing newline",
+    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False, UTF-8, no trailing newline",
     "planned_trials_total": 300, "planned_ids_unique": True,
+    # FIX3 BLOCKER 2: the builder validates the frozen design DOMAIN (not only string format)
+    "domain_validation": {
+        "validated_key": "confirmatory_v4_identity.PlannedTrialKey (__post_init__ validates + canonicalizes)",
+        "block_index": "non-bool int; train 0..8, validation 0..5, test 0..8",
+        "per_split_nominal": {"train": [-0.04, -0.02, 0.0, 0.02, 0.04], "validation": [-0.01, 0.01],
+                              "test": [-0.035, 0.035]},
+        "numeric_match": "math.isclose(rel_tol=0.0, abs_tol=1e-12) then canonicalize to the exact frozen value; "
+                         "finite only; NaN/Inf rejected; formatting rounding cannot legalize (0.0346 rejected)",
+        "role_offset": "probe -> offset -0.040; candidate -> offset in {-0.040,+0.000,+0.040}",
+        "attempt_index": "non-bool int in {0,1}; planned_episode_id must match ^v4ep-[0-9a-f]{24}$",
+        "subseeds_go_through_validated_identity": True,
+    },
 }
 
-# ============================ FIX2 minor: frozen deterministic model environment ============================
+# ============================ FIX3 BLOCKER 3: manifest integrity hash layers (distinct) ============================
+MANIFEST_INTEGRITY = {
+    "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_manifest_integrity",
+    "planned_structure_sha256": "STRUCTURE ONLY: planned identities + planned_episode_ids; NOT a full-manifest anchor "
+                                "(confirmatory_v4_identity.canonical_planned_structure_hash)",
+    "phases": {"train_validation": {"blocks": 15, "sessions": 57, "trials": 228},
+               "test": {"blocks": 9, "sessions": 18, "trials": 72}, "total_trials": 300},
+    "train_validation_manifest_sha256": "full fully-resolved train/validation phase manifest (228 trials); "
+                                        "Step 1; every train/val record.science_manifest_sha256 = this",
+    "test_manifest_sha256": "full fully-resolved test phase manifest (72 trials); Step 6; every test "
+                            "record.science_manifest_sha256 = this",
+    "model_analysis_freeze_sha256": "10 model hashes + best-single artifact + feature/analysis code + bootstrap seed",
+    "combined_experiment_plan_sha256": "Step-6 anchor over both phase manifests + model/analysis freeze + commits + config",
+    "full_hash_covers": {"top": list(("schema_version", "phase", "protocol_commit", "generator_commit",
+                                      "runtime_commit", "config_sha256", "planned_structure_sha256",
+                                      "frozen_seeds", "deterministic_environment", "environment_versions",
+                                      "counts", "execution_order_definition", "manifest_algorithm_version")),
+                         "block": ["split", "block_index", "canonical_block_identity", "residual_value",
+                                   "nuisance_values", "residual_subseed", "nuisance_subseed", "block_order_key"],
+                         "session": ["canonical_session_identity", "split", "block_index", "nominal_bias",
+                                     "session_order_key", "nominal_order_key", "resolved_candidate_order"],
+                         "trial": ["canonical_trial_identity", "planned_episode_id", "role", "offset",
+                                   "trial_init_subseed", "execution_order_index", "resume_key"]},
+    "self_hash_field": "integrity.full_manifest_sha256 (excluded from its own payload; nothing else excluded)",
+    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False; UTF-8; lowercase sha256",
+    "structure_hash_not_equal_full_manifest_hash": True,
+    "final_analysis_checks": ["train/val records match train_validation_manifest_sha256",
+                              "test records match test_manifest_sha256", "model hashes match freeze",
+                              "combined_experiment_plan_sha256 matches"],
+    "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+}
+
+# ============================ FIX3: deterministic model environment (machine-checkable) ============================
 DETERMINISM_ENV = {
-    "device": "CPU",
+    "device": "cpu",
     "torch.set_num_threads": 1,
     "torch.set_num_interop_threads": 1,
     "torch.use_deterministic_algorithms": True,
     "env": {"OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"},
+    "setup_order": ["set OMP/MKL/OPENBLAS + threads + deterministic_algorithms BEFORE any torch op",
+                    "then initialize the model"],
     "explicit_hyperparameters_required": True,
     "no_constructor_defaults": True,
-    "deterministic_unsupported": "if a required deterministic op is unavailable -> model-fit INVALID",
-    "no_gpu_switch": "switching to GPU voids the protocol; may not claim the same protocol",
+    "deterministic_unsupported": "a required deterministic op raising RuntimeError -> model_fit_failure_count; "
+                                 "same-seed infra retry at most once; still failing -> EXPERIMENT_INVALID_MODEL_FIT",
+    "no_gpu_switch": "switching to GPU voids the protocol; may not silently disable determinism",
     "library_versions_recorded_in": "model_analysis_freeze.json",
 }
 
-STATUS = "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT"
+STATUS = "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT"
 
 
 def preregistration_dict():
     return {
-        "title": "Confirmatory Preregistration v4 FIX1 -- calibration-bias diagnostic history & action selection",
+        "title": "Confirmatory Preregistration v4 FIX3 -- calibration-bias diagnostic history & action selection",
         "status": STATUS,
         "base_commit": BASE_COMMIT, "audit_commit": AUDIT_COMMIT, "v4_original_commit": V4_COMMIT,
+        "reaudit_commit_addressed": "83d860693bc788c0423d9e76d1c058df32218e8b (Claude C final reaudit)",
         "power_certification": "test_geometry_power_verdict_v1.json = POWER_SUFFICIENT_FOR_PREREG_V4",
         "power_recertification_required": False,
-        "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX1 (Claude C 2nd pass, 21b676b)",
+        "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX2 (Claude C final reaudit, 83d8606)",
         "blockers_fixed": ["A BLOCKER_SECRET_TIEBREAK (fix1)", "B BLOCKER_SEEDS_NOT_FROZEN (fix1)",
                            "C BLOCKER_SEAL_SCHEME_NOT_UNIQUE (fix1)", "D BLOCKER_MODEL_FAILURE_SEMANTICS (fix1)",
                            "1 BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT (fix2)",
-                           "2 BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN (fix2)"],
+                           "2 BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN (fix2)",
+                           "I BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE (fix3)",
+                           "II BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED (fix3)",
+                           "III BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY (fix3)"],
         "claim_scope": CLAIM_SCOPE,
         "design": {"candidate_bank": list(CANDIDATE_BANK), "train_nominals": list(TRAIN_NOMINALS),
                    "val_nominals": list(VAL_NOMINALS), "test_nominals": list(TEST_NOMINALS),
@@ -440,6 +503,7 @@ def preregistration_dict():
         "seal_scheme": SEAL_SCHEME, "seal_unseal": SEAL_UNSEAL, "access_control": ACCESS_CONTROL,
         "post_unseal_forbidden": POST_UNSEAL_FORBIDDEN,
         "planned_identity_format": PLANNED_IDENTITY_FORMAT, "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
+        "manifest_integrity": MANIFEST_INTEGRITY,
         "determinism_env": DETERMINISM_ENV,
         "hard_constraints": ["no Isaac", "no confirmatory generator", "no manifest instance",
                              "no confirmatory data", "no run authorization",
@@ -456,17 +520,20 @@ def preregistration_dict():
 
 def audit_checklist():
     return {
-        "for": "Claude C final re-audit of preregistration v4 FIX2",
+        "for": "Claude C final re-audit of preregistration v4 FIX3",
         "must_verify": [
-            "FIX2 BLOCKER 1: best_single.implementation = confirmatory_v4_selection.select_best_single "
-            "(observed y.success only; no tau/nominal/residual/eff/oracle/test); best_single_legal demoted "
-            "to SIMULATION_ONLY_REFERENCE; bridge invariance 4500/4500 (production==simulation)",
-            "FIX2 BLOCKER 2: canonical planned identity fully frozen (block/session/trial templates, +.3f "
-            "padding, +0.000 zero, planned_episode_id=v4ep-<sha256[:24]>, domain subseeds, storage sort, "
-            "canonical JSON); 300 planned ids unique; module confirmatory_v4_identity",
-            "FIX2 minor: deterministic env pinned (CPU, 1 thread, use_deterministic_algorithms, OMP/MKL/"
-            "OPENBLAS=1); explicit HP; no GPU switch",
-            "input completeness: 171 records / 57 sessions / 3 per session -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+            "FIX3 BLOCKER I: sole production entry select_best_single_confirmatory (one param, no override "
+            "kwargs, __all__ frozen); completeness 45/12 -> 135/36 -> 171, globally-unique session_id, strict "
+            "bool, no probe/test, bank not overridable; generic core private; bridge 4500/4500",
+            "FIX3 BLOCKER II: PlannedTrialKey validates the frozen design domain (block range, per-split "
+            "nominal via isclose(abs_tol=1e-12)+canonicalize, probe/candidate offsets, non-bool int, NaN/Inf, "
+            "attempt in {0,1}, PID regex); all builders/subseeds routed through it; 300 identities unchanged",
+            "FIX3 BLOCKER III: canonical_planned_structure_hash (structure only) vs full phase-manifest hashes "
+            "(228/72) in confirmatory_v4_manifest_integrity covering residual/nuisance/order/seeds/env/commits; "
+            "self-hash handling; combined_experiment_plan_sha256; per-record science_manifest_sha256 by phase",
+            "FIX3 minor: determinism machine config device=='cpu'; RuntimeError->model_fit->retry<=1->INVALID",
+            "FIX2 BLOCKER 1/2 remain: production selector observed-only; canonical identity frozen; bridge 4500/4500",
+            "input completeness: 45/12 -> 135/36 -> 171 -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
             "BLOCKER A (fix1): best_single rule observable-only; no secret margin",
             "BLOCKER B: all 15 randomization seeds are exact ints from the frozen SHA256 rule; subseed rule frozen",
             "BLOCKER C: exactly ONE seal scheme (model-freeze-before-test-generation); no either/or; early-access INVALID",
@@ -504,6 +571,7 @@ def emit(docs_dir=None):
            "seal_scheme": SEAL_SCHEME, "access_control": ACCESS_CONTROL,
            "planned_identity_format": PLANNED_IDENTITY_FORMAT,
            "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
+           "manifest_integrity": MANIFEST_INTEGRITY,
            "determinism_env": DETERMINISM_ENV,
            "manifest_fields": MANIFEST_FIELDS, "voi": VOI, "status": STATUS}
     with open(os.path.join(docs_dir, "confirmatory_v4_config.json"), "w") as f:

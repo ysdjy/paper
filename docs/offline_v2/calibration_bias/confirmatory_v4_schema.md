@@ -63,7 +63,7 @@ x.initial_mechanism_joint_pos, x.gripper_width, (x.member == "sektion_cabinet") 
 `STATIC_DIM == 8`. These are the only candidate-decision inputs a deployable model may read.
 
 ## 6b. Production best-single input allowlist (FIX2)
-The confirmatory production selector `confirmatory_v4_selection.select_best_single` projects each raw
+The confirmatory production selector `confirmatory_v4_selection.select_best_single_confirmatory` (single guarded entry, 45/12 -> 135/36 -> 171) projects each raw
 train/validation **candidate** record to `ObservedCandidateOutcome` reading ONLY:
 `split, session_id, trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id`. It never reads
 tau/nominal/residual/actual bias/eff/oracle/test records/success-model (secret audit fields may exist on the

@@ -1,19 +1,23 @@
 {
-  "title": "Confirmatory Preregistration v4 FIX1 -- calibration-bias diagnostic history & action selection",
-  "status": "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT",
+  "title": "Confirmatory Preregistration v4 FIX3 -- calibration-bias diagnostic history & action selection",
+  "status": "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT",
   "base_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
   "audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
   "v4_original_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
+  "reaudit_commit_addressed": "83d860693bc788c0423d9e76d1c058df32218e8b (Claude C final reaudit)",
   "power_certification": "test_geometry_power_verdict_v1.json = POWER_SUFFICIENT_FOR_PREREG_V4",
   "power_recertification_required": false,
-  "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX1 (Claude C 2nd pass, 21b676b)",
+  "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX2 (Claude C final reaudit, 83d8606)",
   "blockers_fixed": [
     "A BLOCKER_SECRET_TIEBREAK (fix1)",
     "B BLOCKER_SEEDS_NOT_FROZEN (fix1)",
     "C BLOCKER_SEAL_SCHEME_NOT_UNIQUE (fix1)",
     "D BLOCKER_MODEL_FAILURE_SEMANTICS (fix1)",
     "1 BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT (fix2)",
-    "2 BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN (fix2)"
+    "2 BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN (fix2)",
+    "I BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE (fix3)",
+    "II BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED (fix3)",
+    "III BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY (fix3)"
   ],
   "claim_scope": {
     "confirmatory_question": "whether, when the hidden deployment calibration state is stable across repeated tasks, the history from ONE fixed full-task-level diagnostic trial lets a capacity-matched history-conditioned selector pick a better discrete action parameter on UNSEEN nominal deployment conditions and raise subsequent task success",
@@ -329,7 +333,23 @@
       "test outcomes"
     ],
     "no_new_observable_continuous_tiebreak": true,
-    "implementation": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single",
+    "implementation": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single_confirmatory",
+    "production_entry": {
+      "function": "select_best_single_confirmatory",
+      "business_params": [
+        "observed_candidate_records"
+      ],
+      "no_override_kwargs": true,
+      "validate_completeness": true,
+      "expected_candidate_records": 171,
+      "candidate_bank_overridable": false,
+      "__all__": [
+        "select_best_single_confirmatory",
+        "ObservedCandidateOutcome",
+        "BestSingleInputError"
+      ],
+      "private_generic_core_not_referenced": "_select_best_single_core (bridge/tests only)"
+    },
     "production_reads_only": [
       "split",
       "session_id",
@@ -348,21 +368,33 @@
       "test records",
       "success model"
     ],
-    "selection_algorithm": "equal denominators -> integer observed_success_count per offset; max count; tie -> min|offset|; tie -> earliest in bank order",
+    "selection_algorithm": "equal denominators (57/offset) -> integer observed_success_count per offset; max count; tie -> min|offset|; tie -> earliest in bank order",
     "input_completeness": {
-      "train_val_sessions": 57,
+      "train_sessions": 45,
+      "validation_sessions": 12,
+      "total_sessions": 57,
+      "train_candidate_records": 135,
+      "validation_candidate_records": 36,
       "candidate_records": 171,
       "checks": [
         "exactly 171 records",
-        "57 unique sessions",
+        "train sessions = 45",
+        "validation sessions = 12",
+        "train candidate records = 135",
+        "validation candidate records = 36",
+        "57 globally-unique sessions",
+        "session_id globally unique (no cross-split)",
         "3 candidates/session",
         "offset set == {-0.04,0,+0.04}",
-        "no dup (session,offset)",
+        "no dup (split,session_id,offset)",
         "unique planned_episode_id",
         "split in {train,validation}",
-        "y.success present and bool"
+        "y.success present and strict Python bool",
+        "no probe/test records",
+        "candidate_bank not overridable"
       ],
-      "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT"
+      "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+      "no_warning_no_drop_no_denominator_change": true
     },
     "simulation_only_reference": "learned_selector_power.best_single_legal (reconstructs label from secret; NOT production; retained as the bridge baseline only)",
     "bridge_invariance": "production_best_single_bridge_invariance_v1.json (4500/4500 configs agree -> no power recert)",
@@ -596,17 +628,118 @@
     ],
     "domain_subseed_rule": "subseed(<seed>, canonical_identity + '|domain=<label>')",
     "storage_sort": "split(train=0,validation=1,test=2) -> block asc -> nominal asc -> role(probe=0,candidate=1) -> offset asc",
-    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, UTF-8, no trailing newline",
+    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False, UTF-8, no trailing newline",
     "planned_trials_total": 300,
-    "planned_ids_unique": true
+    "planned_ids_unique": true,
+    "domain_validation": {
+      "validated_key": "confirmatory_v4_identity.PlannedTrialKey (__post_init__ validates + canonicalizes)",
+      "block_index": "non-bool int; train 0..8, validation 0..5, test 0..8",
+      "per_split_nominal": {
+        "train": [
+          -0.04,
+          -0.02,
+          0.0,
+          0.02,
+          0.04
+        ],
+        "validation": [
+          -0.01,
+          0.01
+        ],
+        "test": [
+          -0.035,
+          0.035
+        ]
+      },
+      "numeric_match": "math.isclose(rel_tol=0.0, abs_tol=1e-12) then canonicalize to the exact frozen value; finite only; NaN/Inf rejected; formatting rounding cannot legalize (0.0346 rejected)",
+      "role_offset": "probe -> offset -0.040; candidate -> offset in {-0.040,+0.000,+0.040}",
+      "attempt_index": "non-bool int in {0,1}; planned_episode_id must match ^v4ep-[0-9a-f]{24}$",
+      "subseeds_go_through_validated_identity": true
+    }
   },
   "identity_template": {
     "block": "v4|split={split}|block={block_index:02d}",
     "session": "v4|split={split}|block={block_index:02d}|nominal={nominal:+.3f}",
     "trial": "v4|split={split}|block={block_index:02d}|nominal={nominal:+.3f}|role={role}|offset={offset:+.3f}"
   },
+  "manifest_integrity": {
+    "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_manifest_integrity",
+    "planned_structure_sha256": "STRUCTURE ONLY: planned identities + planned_episode_ids; NOT a full-manifest anchor (confirmatory_v4_identity.canonical_planned_structure_hash)",
+    "phases": {
+      "train_validation": {
+        "blocks": 15,
+        "sessions": 57,
+        "trials": 228
+      },
+      "test": {
+        "blocks": 9,
+        "sessions": 18,
+        "trials": 72
+      },
+      "total_trials": 300
+    },
+    "train_validation_manifest_sha256": "full fully-resolved train/validation phase manifest (228 trials); Step 1; every train/val record.science_manifest_sha256 = this",
+    "test_manifest_sha256": "full fully-resolved test phase manifest (72 trials); Step 6; every test record.science_manifest_sha256 = this",
+    "model_analysis_freeze_sha256": "10 model hashes + best-single artifact + feature/analysis code + bootstrap seed",
+    "combined_experiment_plan_sha256": "Step-6 anchor over both phase manifests + model/analysis freeze + commits + config",
+    "full_hash_covers": {
+      "top": [
+        "schema_version",
+        "phase",
+        "protocol_commit",
+        "generator_commit",
+        "runtime_commit",
+        "config_sha256",
+        "planned_structure_sha256",
+        "frozen_seeds",
+        "deterministic_environment",
+        "environment_versions",
+        "counts",
+        "execution_order_definition",
+        "manifest_algorithm_version"
+      ],
+      "block": [
+        "split",
+        "block_index",
+        "canonical_block_identity",
+        "residual_value",
+        "nuisance_values",
+        "residual_subseed",
+        "nuisance_subseed",
+        "block_order_key"
+      ],
+      "session": [
+        "canonical_session_identity",
+        "split",
+        "block_index",
+        "nominal_bias",
+        "session_order_key",
+        "nominal_order_key",
+        "resolved_candidate_order"
+      ],
+      "trial": [
+        "canonical_trial_identity",
+        "planned_episode_id",
+        "role",
+        "offset",
+        "trial_init_subseed",
+        "execution_order_index",
+        "resume_key"
+      ]
+    },
+    "self_hash_field": "integrity.full_manifest_sha256 (excluded from its own payload; nothing else excluded)",
+    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False; UTF-8; lowercase sha256",
+    "structure_hash_not_equal_full_manifest_hash": true,
+    "final_analysis_checks": [
+      "train/val records match train_validation_manifest_sha256",
+      "test records match test_manifest_sha256",
+      "model hashes match freeze",
+      "combined_experiment_plan_sha256 matches"
+    ],
+    "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY"
+  },
   "determinism_env": {
-    "device": "CPU",
+    "device": "cpu",
     "torch.set_num_threads": 1,
     "torch.set_num_interop_threads": 1,
     "torch.use_deterministic_algorithms": true,
@@ -615,10 +748,14 @@
       "MKL_NUM_THREADS": "1",
       "OPENBLAS_NUM_THREADS": "1"
     },
+    "setup_order": [
+      "set OMP/MKL/OPENBLAS + threads + deterministic_algorithms BEFORE any torch op",
+      "then initialize the model"
+    ],
     "explicit_hyperparameters_required": true,
     "no_constructor_defaults": true,
-    "deterministic_unsupported": "if a required deterministic op is unavailable -> model-fit INVALID",
-    "no_gpu_switch": "switching to GPU voids the protocol; may not claim the same protocol",
+    "deterministic_unsupported": "a required deterministic op raising RuntimeError -> model_fit_failure_count; same-seed infra retry at most once; still failing -> EXPERIMENT_INVALID_MODEL_FIT",
+    "no_gpu_switch": "switching to GPU voids the protocol; may not silently disable determinism",
     "library_versions_recorded_in": "model_analysis_freeze.json"
   },
   "hard_constraints": [

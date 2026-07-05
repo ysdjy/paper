@@ -75,12 +75,52 @@ Examples: `v4|split=test|block=08|nominal=+0.035|role=probe|offset=-0.040` →
 probe from the candidate at −0.04. The manifest stores `canonical_block_identity`,
 `canonical_session_identity`, `canonical_trial_identity`, `planned_episode_id` per trial.
 
-### 2.5 Canonical storage order & manifest hash (frozen)
+### 2.5 Canonical storage order (frozen)
 Storage/hash order (distinct from execution order, which follows the order seeds):
 `split rank (train=0, validation=1, test=2) → block asc → nominal asc → role (probe=0, candidate=1) →
-offset asc`. Canonical JSON: `sort_keys=True, separators=(",",":"), ensure_ascii=False`, UTF-8, no trailing
-newline; `manifest_hash = sha256(lowercase hex)`. Reproducible via
-`confirmatory_v4_identity.canonical_manifest_hash()`.
+offset asc`. Canonical JSON: `sort_keys=True, separators=(",",":"), ensure_ascii=False, allow_nan=False`,
+UTF-8, no trailing newline; SHA256 lowercase hex.
+
+### 2.6 FIX3 — hash LAYERS: structure hash ≠ full-manifest integrity hash (BLOCKER 3)
+The old `canonical_manifest_hash()` is **structure-only** and is renamed
+`confirmatory_v4_identity.canonical_planned_structure_hash()`:
+> covers ONLY planned identities + `planned_episode_id`s; **does NOT** cover residual/nuisance/
+> execution-order/seeds/environment/generator-commit. It is **not** a fully-resolved manifest anchor.
+
+The fully-resolved manifest integrity lives in `confirmatory_v4_manifest_integrity`, with **phase-specific**
+full manifests under seal Scheme 2:
+```
+train_validation phase : 15 blocks, 57 sessions, 228 trials  (probe + 3 candidates)  -> train_validation_manifest_sha256   (Step 1)
+test phase             :  9 blocks, 18 sessions,  72 trials                          -> test_manifest_sha256               (Step 6)
+total                  : 300 trials
+```
+Every runtime record's `science_manifest_sha256` = **its phase's** full-manifest hash (train/val records →
+`train_validation_manifest_sha256`; test records → `test_manifest_sha256`).
+
+`fully_resolved_phase_manifest_hash(manifest)` validates then hashes **everything** (deep-copied, canonical
+JSON, `allow_nan=False`) except the self field `integrity.full_manifest_sha256`; nothing scientific is
+excluded. Covered fields:
+- **top-level**: schema_version, phase, protocol/prereg commit, generator commit, runtime commit,
+  config_sha256, planned_structure_sha256, frozen seeds, deterministic environment, environment/library
+  versions, block/session/trial counts, execution-order definition, manifest algorithm version.
+- **block**: split, block index, canonical block identity, exact residual value, all resolved nuisance
+  values, residual/nuisance subseeds, block/order keys.
+- **session**: canonical session identity, split/block, nominal bias, session/nominal order keys, resolved
+  candidate order.
+- **trial**: canonical trial identity, planned_episode_id, role, offset, trial-init subseed,
+  execution-order index, resume key.
+
+Mutating any of residual / nuisance / session-execution-order / candidate-order / trial-execution-index /
+trial-init subseed / frozen seed / config hash / generator commit / runtime commit / environment / planned
+identity **changes** the full hash; changing only residual/nuisance/order leaves the **structure** hash
+unchanged (they are different layers, verified by tests).
+
+### 2.7 Combined experiment-plan hash (Step 6)
+`combined_experiment_plan_sha256 = sha256(canonical{ protocol_commit, config_sha256, generator_commit,
+train_validation_manifest_sha256, model_analysis_freeze_sha256, test_manifest_sha256, analysis_code_sha256,
+bootstrap_seed })`. Step 8 final analysis verifies: train/val records match the train/val phase hash, test
+records match the test phase hash, model hashes match `model_analysis_freeze`, and the combined plan hash
+matches — else **`EXPERIMENT_INVALID_MANIFEST_INTEGRITY`**.
 
 ### 2.3 Other required manifest fields
 ```

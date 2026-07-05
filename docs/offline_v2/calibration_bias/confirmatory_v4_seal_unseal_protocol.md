@@ -16,7 +16,7 @@ STEP 0  PRE-RUN FREEZE
         algorithm, the schema, the generator commit (future, post-GO), the train/val/test PLANNED structure,
         and the test split identities + nominal sets. No test outcomes exist.
 
-STEP 1  GENERATE TRAIN/VAL MANIFEST
+STEP 1  GENERATE TRAIN/VAL MANIFEST  (compute train_validation_manifest_sha256; 228 trials)
         deterministically from the frozen config + seeds; save its hash. No resample.
 
 STEP 2  RUN TRAIN/VAL TRIALS
@@ -26,7 +26,7 @@ STEP 3  FREEZE TRAIN/VAL DATA
         integrity validation, leakage validation, dataset hashes, train/val lock file.
 
 STEP 4  SELECT BEST-SINGLE + TRAIN MODELS   (train + validation only)
-        apply the PRODUCTION selector confirmatory_v4_selection.select_best_single (observed y.success only,
+        apply the PRODUCTION selector confirmatory_v4_selection.select_best_single_confirmatory (single entry, observed y.success only,
         no secret; input-completeness gate -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT); train DeepSets K0 and K1
         for each of the 5 model seeds (10 checkpoints) under the frozen deterministic env (CPU, 1 thread,
         use_deterministic_algorithms, OMP/MKL/OPENBLAS=1, explicit HP); ALL 10 must be valid (analysis-plan
@@ -37,7 +37,7 @@ STEP 5  FREEZE ANALYSIS  (before ANY test trial)
         final-analysis code hash, bootstrap seed, collision sensitivity rule, exclusion/invalidation rules
         -> write model_analysis_freeze.json.
 
-STEP 6  GENERATE TEST MANIFEST   (ONLY after Step 5 passes)
+STEP 6  GENERATE TEST MANIFEST  (compute test_manifest_sha256; 72 trials; then combined_experiment_plan_sha256)   (ONLY after Step 5 passes)
         one-shot, deterministic, from the frozen test seeds + manifest algorithm + generator commit + config;
         save the test manifest hash. No reselecting seeds, no generate-many-and-pick, no change to test
         geometry / block count / nominal / order / residual rules.

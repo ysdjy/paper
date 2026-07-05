@@ -1,5 +1,6 @@
 {
-  "comparison": "production observed-outcome selector (confirmatory_v4_selection.select_best_single) vs SIMULATION_ONLY_REFERENCE (learned_selector_power.best_single_legal)",
+  "comparison": "production observed-outcome selection (confirmatory_v4_selection._select_best_single_core, same logic as select_best_single_confirmatory) vs SIMULATION_ONLY_REFERENCE (learned_selector_power.best_single_legal)",
+  "production_entry": "select_best_single_confirmatory (bridge uses the private core with validate_completeness=False because grid designs != 171 records)",
   "total_configs_checked": 4500,
   "mismatch_count": 0,
   "agree_all": true,
@@ -112,5 +113,5 @@
     }
   ],
   "power_recertification_required": false,
-  "note": "production selector reads ONLY observed y.success; simulation reference reconstructs from secret nominal/residual/tau. Identical selection everywhere -> the secret path was non-decisive; no power recert."
+  "note": "production selector reads ONLY observed y.success; identical selection everywhere -> no power recert."
 }

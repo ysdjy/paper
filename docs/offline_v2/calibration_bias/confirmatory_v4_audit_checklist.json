@@ -1,10 +1,12 @@
 {
-  "for": "Claude C final re-audit of preregistration v4 FIX2",
+  "for": "Claude C final re-audit of preregistration v4 FIX3",
   "must_verify": [
-    "FIX2 BLOCKER 1: best_single.implementation = confirmatory_v4_selection.select_best_single (observed y.success only; no tau/nominal/residual/eff/oracle/test); best_single_legal demoted to SIMULATION_ONLY_REFERENCE; bridge invariance 4500/4500 (production==simulation)",
-    "FIX2 BLOCKER 2: canonical planned identity fully frozen (block/session/trial templates, +.3f padding, +0.000 zero, planned_episode_id=v4ep-<sha256[:24]>, domain subseeds, storage sort, canonical JSON); 300 planned ids unique; module confirmatory_v4_identity",
-    "FIX2 minor: deterministic env pinned (CPU, 1 thread, use_deterministic_algorithms, OMP/MKL/OPENBLAS=1); explicit HP; no GPU switch",
-    "input completeness: 171 records / 57 sessions / 3 per session -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+    "FIX3 BLOCKER I: sole production entry select_best_single_confirmatory (one param, no override kwargs, __all__ frozen); completeness 45/12 -> 135/36 -> 171, globally-unique session_id, strict bool, no probe/test, bank not overridable; generic core private; bridge 4500/4500",
+    "FIX3 BLOCKER II: PlannedTrialKey validates the frozen design domain (block range, per-split nominal via isclose(abs_tol=1e-12)+canonicalize, probe/candidate offsets, non-bool int, NaN/Inf, attempt in {0,1}, PID regex); all builders/subseeds routed through it; 300 identities unchanged",
+    "FIX3 BLOCKER III: canonical_planned_structure_hash (structure only) vs full phase-manifest hashes (228/72) in confirmatory_v4_manifest_integrity covering residual/nuisance/order/seeds/env/commits; self-hash handling; combined_experiment_plan_sha256; per-record science_manifest_sha256 by phase",
+    "FIX3 minor: determinism machine config device=='cpu'; RuntimeError->model_fit->retry<=1->INVALID",
+    "FIX2 BLOCKER 1/2 remain: production selector observed-only; canonical identity frozen; bridge 4500/4500",
+    "input completeness: 45/12 -> 135/36 -> 171 -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
     "BLOCKER A (fix1): best_single rule observable-only; no secret margin",
     "BLOCKER B: all 15 randomization seeds are exact ints from the frozen SHA256 rule; subseed rule frozen",
     "BLOCKER C: exactly ONE seal scheme (model-freeze-before-test-generation); no either/or; early-access INVALID",

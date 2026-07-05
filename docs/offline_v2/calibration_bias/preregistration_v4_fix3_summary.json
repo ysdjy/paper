@@ -1,0 +1,66 @@
+{
+  "status": "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT",
+  "previous_status": "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT",
+  "reaudit_commit": "83d860693bc788c0423d9e76d1c058df32218e8b",
+  "fix2_commit": "48976e4918a11406daf805f6f6451ea8272b72d5",
+  "power_cert_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX2",
+  "power_recertification_required": false,
+  "blockers": {
+    "I_BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE": {
+      "fixed": true,
+      "production_entry": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single_confirmatory",
+      "business_params": ["observed_candidate_records"],
+      "no_override_kwargs": true,
+      "__all__": ["select_best_single_confirmatory", "ObservedCandidateOutcome", "BestSingleInputError"],
+      "split_composition": {"train_sessions": 45, "validation_sessions": 12, "total_sessions": 57,
+                            "train_records": 135, "validation_records": 36, "total_records": 171},
+      "private_generic_core": "_select_best_single_core (bridge/tests only; not in __all__)",
+      "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+      "bridge_invariance": {"total": 4500, "mismatch": 0, "agree_all": true}
+    },
+    "II_BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED": {
+      "fixed": true,
+      "validated_key": "confirmatory_v4_identity.PlannedTrialKey",
+      "rejects": ["block=-1", "block=99", "validation block=6", "train nominal=0.5", "validation nominal=0.0",
+                  "test nominal=0.03", "test nominal=0.0346", "probe offset=+0.02", "candidate offset=+0.07",
+                  "role=other", "NaN/Inf", "bool block/attempt", "attempt=-1", "attempt=2", "malformed PID"],
+      "numeric_match": "math.isclose(rel_tol=0.0, abs_tol=1e-12) then canonicalize",
+      "attempt_range": [0, 1],
+      "pid_regex": "^v4ep-[0-9a-f]{24}$",
+      "300_identities_unchanged_and_unique": true
+    },
+    "III_BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY": {
+      "fixed": true,
+      "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_manifest_integrity",
+      "structure_hash_renamed": "canonical_planned_structure_hash",
+      "phases": {"train_validation": {"blocks": 15, "sessions": 57, "trials": 228},
+                 "test": {"blocks": 9, "sessions": 18, "trials": 72}, "total_trials": 300},
+      "hash_layers": ["planned_structure_sha256", "train_validation_manifest_sha256", "test_manifest_sha256",
+                      "model_analysis_freeze_sha256", "combined_experiment_plan_sha256"],
+      "full_hash_covers": ["residual", "nuisance", "execution_order", "seeds", "environment", "commits"],
+      "self_hash_field": "integrity.full_manifest_sha256",
+      "per_record_anchor": "science_manifest_sha256 == its phase full-manifest hash",
+      "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+      "structure_hash_not_equal_full_manifest_hash": true
+    }
+  },
+  "determinism_env": {
+    "device": "cpu", "torch.set_num_threads": 1, "torch.set_num_interop_threads": 1,
+    "torch.use_deterministic_algorithms": true,
+    "env": {"OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"},
+    "deterministic_unsupported": "RuntimeError -> model_fit_failure_count -> <=1 infra retry -> EXPERIMENT_INVALID_MODEL_FIT",
+    "no_gpu_switch": true
+  },
+  "unchanged": ["candidate_bank", "test_geometry_pm035", "model+hyperparameters+seeds", "primary_comparator",
+                "0.15_CI_threshold", "75_sessions_300_trials", "power_result", "fix1_fix2_resolutions"],
+  "new_files": ["confirmatory_v4_manifest_integrity.py", "preregistration_v4_fix3_summary.md",
+                "preregistration_v4_fix3_summary.json", "test_preregistration_v4_fix3.py"],
+  "updated_files": ["confirmatory_v4_selection.py", "confirmatory_v4_identity.py", "preregistration_v4.py",
+                    "10 active v4 docs", "production_best_single_bridge_invariance_v1.json"],
+  "no_generator": true,
+  "no_formal_manifest_instance": true,
+  "no_checkpoint": true,
+  "no_runtime_or_confirmatory_data": true,
+  "no_run_authorization": true
+}

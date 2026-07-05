@@ -12,6 +12,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+import re
+from dataclasses import dataclass
+from typing import Literal
 
 from deployment_calibration.offline_v2.calibration_bias import preregistration_v4 as PRE
 
@@ -44,6 +48,11 @@ DOMAIN_CANDIDATE_ORDER = "candidate_order"
 DOMAIN_TRIAL_INIT = "trial_init"
 
 
+MAX_ATTEMPT_INDEX = 1                    # initial attempt (0) + at most 1 retry (1)
+PID_RE = re.compile(r"^v4ep-[0-9a-f]{24}$")
+_ABS_TOL = 1e-12
+
+
 def fmt_m(x) -> str:
     """Signed fixed-point metres, exactly 3 decimals; +0.000 for zero; negative zero normalized to +0.000."""
     s = f"{float(x):+.3f}"
@@ -52,29 +61,95 @@ def fmt_m(x) -> str:
     return s
 
 
-def _check_split(split):
+# ---------------- FIX3 BLOCKER 2: frozen-design DOMAIN validation ----------------
+def _v_split(split) -> str:
     if split not in SPLITS:
-        raise ValueError(f"bad split {split!r}")
+        raise ValueError(f"illegal split {split!r} (allowed {SPLITS})")
+    return split
 
 
-def _check_role(role):
+def _v_block(split, block_index) -> int:
+    if isinstance(block_index, bool) or not isinstance(block_index, int):
+        raise ValueError(f"block_index must be a non-bool int, got {block_index!r}")
+    if block_index not in BLOCKS[split]:
+        raise ValueError(f"block_index {block_index} out of range for split {split!r} "
+                         f"({min(BLOCKS[split])}..{max(BLOCKS[split])})")
+    return block_index
+
+
+def _canon_numeric(value, allowed, what):
+    """finite; match one frozen allowed value by isclose(abs_tol=1e-12); return the EXACT frozen value.
+    Formatting rounding may NOT turn an illegal value legal (e.g. 0.0346 -> +0.035)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{what} must be a real number, got {value!r}")
+    fv = float(value)
+    if not math.isfinite(fv):
+        raise ValueError(f"{what} must be finite, got {value!r}")
+    for a in allowed:
+        if math.isclose(fv, a, rel_tol=0.0, abs_tol=_ABS_TOL):
+            return a
+    raise ValueError(f"illegal {what} {value!r} (allowed {tuple(allowed)})")
+
+
+def _v_role(role) -> str:
     if role not in ROLES:
-        raise ValueError(f"bad role {role!r}")
+        raise ValueError(f"illegal role {role!r} (allowed {ROLES})")
+    return role
+
+
+def _canon_offset(role, offset):
+    if role == "probe":
+        return _canon_numeric(offset, (PROBE_OFFSET,), "probe offset")
+    return _canon_numeric(offset, CANDIDATE_BANK, "candidate offset")
+
+
+@dataclass(frozen=True)
+class PlannedTrialKey:
+    """Validated + canonicalized planned identity. __post_init__ enforces the frozen design domain; every
+    public identity/subseed API is built from this key so a generator can never hand-craft an illegal string."""
+    split: Literal["train", "validation", "test"]
+    block_index: int
+    nominal_m: float
+    role: Literal["probe", "candidate"]
+    offset_m: float
+
+    def __post_init__(self):
+        s = _v_split(self.split)
+        b = _v_block(s, self.block_index)
+        nom = _canon_numeric(self.nominal_m, NOMINALS[s], f"{s} nominal")
+        role = _v_role(self.role)
+        off = _canon_offset(role, self.offset_m)
+        object.__setattr__(self, "split", s)
+        object.__setattr__(self, "block_index", b)
+        object.__setattr__(self, "nominal_m", nom)
+        object.__setattr__(self, "role", role)
+        object.__setattr__(self, "offset_m", off)
+
+    def block_str(self) -> str:
+        return f"{PREFIX}{FIELD_SEP}split{KV_SEP}{self.split}{FIELD_SEP}block{KV_SEP}{self.block_index:02d}"
+
+    def session_str(self) -> str:
+        return f"{self.block_str()}{FIELD_SEP}nominal{KV_SEP}{fmt_m(self.nominal_m)}"
+
+    def trial_str(self) -> str:
+        return (f"{self.session_str()}{FIELD_SEP}role{KV_SEP}{self.role}"
+                f"{FIELD_SEP}offset{KV_SEP}{fmt_m(self.offset_m)}")
 
 
 def block_identity(split, block_index) -> str:
-    _check_split(split)
-    return f"{PREFIX}{FIELD_SEP}split{KV_SEP}{split}{FIELD_SEP}block{KV_SEP}{int(block_index):02d}"
+    s = _v_split(split); b = _v_block(s, block_index)
+    return f"{PREFIX}{FIELD_SEP}split{KV_SEP}{s}{FIELD_SEP}block{KV_SEP}{b:02d}"
 
 
 def session_identity(split, block_index, nominal) -> str:
-    return f"{block_identity(split, block_index)}{FIELD_SEP}nominal{KV_SEP}{fmt_m(nominal)}"
+    s = _v_split(split); b = _v_block(s, block_index)
+    nom = _canon_numeric(nominal, NOMINALS[s], f"{s} nominal")
+    return f"{block_identity(s, b)}{FIELD_SEP}nominal{KV_SEP}{fmt_m(nom)}"
 
 
 def trial_identity(split, block_index, nominal, role, offset) -> str:
-    _check_role(role)
-    return (f"{session_identity(split, block_index, nominal)}"
-            f"{FIELD_SEP}role{KV_SEP}{role}{FIELD_SEP}offset{KV_SEP}{fmt_m(offset)}")
+    # full domain validation + canonicalization via the validated key
+    return PlannedTrialKey(split, block_index, nominal, role, offset).trial_str()
 
 
 def planned_episode_id(trial_identity_str) -> str:
@@ -83,7 +158,13 @@ def planned_episode_id(trial_identity_str) -> str:
 
 
 def attempt_id(planned_episode_id_str, attempt_index) -> str:
-    return f"{planned_episode_id_str}{FIELD_SEP}attempt{KV_SEP}{int(attempt_index):02d}"
+    if not PID_RE.match(planned_episode_id_str or ""):
+        raise ValueError(f"malformed planned_episode_id {planned_episode_id_str!r}")
+    if isinstance(attempt_index, bool) or not isinstance(attempt_index, int):
+        raise ValueError(f"attempt_index must be a non-bool int, got {attempt_index!r}")
+    if attempt_index < 0 or attempt_index > MAX_ATTEMPT_INDEX:
+        raise ValueError(f"attempt_index {attempt_index} out of range 0..{MAX_ATTEMPT_INDEX}")
+    return f"{planned_episode_id_str}{FIELD_SEP}attempt{KV_SEP}{attempt_index:02d}"
 
 
 # ---------------- domain subseeds (identity-addressed, order-independent) ----------------
@@ -153,9 +234,16 @@ def canonical_json(obj) -> str:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
-def canonical_manifest_hash():
+def canonical_planned_structure_hash():
+    """STRUCTURE-ONLY hash: covers ONLY planned identities + planned_episode_ids. It does NOT cover
+    residual/nuisance/execution-order/seeds/environment/generator-commit. It is NOT a fully-resolved
+    manifest integrity anchor (see confirmatory_v4_manifest_integrity for the phase full-manifest hashes)."""
     rows = [[r["canonical_trial_identity"], r["planned_episode_id"]] for r in canonical_manifest_rows()]
     return hashlib.sha256(canonical_json(rows).encode(ENCODING)).hexdigest()
+
+
+# deprecated alias (structure-only; do NOT treat as a full-manifest hash)
+canonical_manifest_hash = canonical_planned_structure_hash
 
 
 IDENTITY_TEMPLATE = {

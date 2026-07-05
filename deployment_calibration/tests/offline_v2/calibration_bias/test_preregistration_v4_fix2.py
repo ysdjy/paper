@@ -33,7 +33,7 @@ def _pre():
 
 # ---------------- status ----------------
 def test_status_is_fix2():
-    assert P.STATUS == "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT"
+    assert P.STATUS == "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT"
     assert _pre()["status"] == P.STATUS
     assert _pre()["power_recertification_required"] is False
 
@@ -41,16 +41,18 @@ def test_status_is_fix2():
 # ================= BLOCKER 1: production best-single is observed-only =================
 def test_active_config_points_to_production_not_simulation():
     impl = _cfg()["best_single"]["implementation"]
-    assert impl.endswith("confirmatory_v4_selection.select_best_single")
+    # fix3: the production entry is the guarded single-param confirmatory selector
+    assert impl.endswith("confirmatory_v4_selection.select_best_single_confirmatory")
     assert "best_single_legal" not in impl
 
 
 def test_production_selector_signature_has_no_tau():
     import re
-    sig = inspect.signature(S.select_best_single)
+    sig = inspect.signature(S.select_best_single_confirmatory)
     assert "tau" not in sig.parameters
     src = "\n".join(inspect.getsource(fn) for fn in
-                    (S.select_best_single, S._project, S._core_select, S._check_completeness))
+                    (S.select_best_single_confirmatory, S._project_records, S._count_select,
+                     S._check_confirmatory_completeness))
     code = re.sub(r'""".*?"""', "", src, flags=re.S)          # strip docstrings (they name the forbidden fields)
     # the production code must never READ the secret hidden state or call the sim success model
     assert '["nominal"]' not in code and '["residual"]' not in code
@@ -214,7 +216,7 @@ def test_identity_template_in_config():
 # ================= determinism =================
 def test_determinism_env_frozen():
     d = _cfg()["determinism_env"]
-    assert d["device"] == "CPU"
+    assert d["device"].lower() == "cpu"
     assert d["torch.set_num_threads"] == 1 and d["torch.set_num_interop_threads"] == 1
     assert d["torch.use_deterministic_algorithms"] is True
     assert d["env"]["OMP_NUM_THREADS"] == "1" and d["env"]["MKL_NUM_THREADS"] == "1"
@@ -241,7 +243,7 @@ def test_no_generator_or_data_produced():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT" in md
+    assert "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT" in md
     assert "confirmatory_v4_selection.select_best_single" in (_DOCS / "preregistration_v4.json").read_text()
 
 

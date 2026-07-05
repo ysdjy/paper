@@ -8,9 +8,30 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT`.** This phase authorizes nothing — Claude C
+**Status: `PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT`.** This phase authorizes nothing — Claude C
 must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
-instance, confirmatory data, or run authorization is produced here.
+instance, checkpoint, confirmatory data, or run authorization is produced here.
+
+## 0aa. Fix3 changes (resolving Claude C's three final-reaudit blockers)
+- **I `BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE`** — the ONLY confirmatory production entry is
+  `confirmatory_v4_selection.select_best_single_confirmatory(observed_candidate_records)` (one parameter,
+  no override kwargs, `__all__` frozen to the 3 public names). It enforces the exact split composition
+  **45 train + 12 validation sessions → 135 + 36 = 171 candidate records**, per-session 3-candidate
+  structure, globally-unique `session_id`, unique `planned_episode_id`, strict Python bool, no probe/test,
+  non-overridable bank → else `EXPERIMENT_INVALID_BEST_SINGLE_INPUT`. The override-capable logic is private
+  (`_select_best_single_core`, bridge/tests only). Bridge 4500/4500 unchanged.
+- **II `BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED`** — `confirmatory_v4_identity.PlannedTrialKey` validates the
+  frozen design domain (block range per split; per-split nominal set via `isclose(abs_tol=1e-12)` then
+  canonicalize; probe↔−0.04, candidate↔bank; non-bool int block/attempt; NaN/Inf rejected; `attempt∈{0,1}`;
+  `planned_episode_id` regex). All identity/subseed builders route through it; the 300 canonical strings are
+  unchanged.
+- **III `BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY`** — the structure hash is renamed
+  `canonical_planned_structure_hash()` (identities only). New module
+  `confirmatory_v4_manifest_integrity` provides the **fully-resolved phase-manifest hashes**
+  (train_validation 228 trials, test 72 trials) covering residual/nuisance/execution-order/seeds/env/commits,
+  the self-hash handling, and the `combined_experiment_plan_sha256`. Per-record `science_manifest_sha256`
+  anchors to its phase full-manifest hash. Minor: deterministic env machine-frozen (`device=="cpu"`, retry
+  path). `power_recertification_required = false`.
 
 ## 0a. Fix2 changes (resolving Claude C's two 2nd-pass blockers)
 - **1 `BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT`** — the confirmatory production best-single is
@@ -122,21 +143,26 @@ validity & failure semantics** (all 5 seeds must be valid, retry ≤ 1, separate
 namespace, `EXPERIMENT_INVALID_MODEL_FIT`) are in the analysis plan §1/§9. Full list in
 `confirmatory_v4_analysis_plan.md` / `MODEL` in the JSON.
 
-## 7. Best-single (§9) — FIX2: observed-outcome-only production selector
-Train+validation **only** (test never participates). **Production implementation (fix2):**
-`confirmatory_v4_selection.select_best_single`, which reads **only** observed candidate outcomes — allowlist
-`split, session_id, trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id` — and **never**
-tau/nominal/residual/actual bias/eff/oracle/test/success-model. Rule: equal denominators → (1) max integer
-**observed_success_count** per offset; (2) tie → min |offset|; (3) tie → earliest in bank order
-`{-0.04, 0.00, +0.04}`. Input completeness (else `EXPERIMENT_INVALID_BEST_SINGLE_INPUT`): exactly **171**
-candidate records, **57** unique sessions, 3 per session, offset set `{-0.04,0,+0.04}`, no duplicate
-`(session,offset)`, unique `planned_episode_id`, split ∈ {train,validation}, `y.success` present & bool.
-Save per-candidate score, tie-break trace, final offset, `n_trials_per_offset`, `success_count_per_offset`,
-`input_projection_hash`, `input_record_set_hash`, `selection_artifact_hash`. Offset 0 is **not** hardcoded.
-`learned_selector_power.best_single_legal` is retained only as a `SIMULATION_ONLY_REFERENCE` (it reconstructs
-the label from the secret and is not production). The production selector equals the simulation reference on
-**4500/4500** frozen configs (`production_best_single_bridge_invariance_v1`) and the fix1 tie-break was dead
-code (`best_single_tiebreak_invariance_v1`), so **no power recertification**.
+## 7. Best-single (§9) — FIX3: single guarded production entry (45/12 → 135/36 → 171)
+Train+validation **only** (test never participates). **Production entry:**
+`confirmatory_v4_selection.select_best_single_confirmatory(observed_candidate_records)` — one business
+parameter, **no override kwargs**, `__all__ = {select_best_single_confirmatory, ObservedCandidateOutcome,
+BestSingleInputError}`. Reads **only** observed candidate outcomes — allowlist `split, session_id,
+trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id` — and **never**
+tau/nominal/residual/actual bias/eff/oracle/test/success-model. Rule (equal denominators, 57/offset): (1) max
+integer **observed_success_count**; (2) tie → min |offset|; (3) tie → earliest in bank order. **Completeness
+gate** (else `EXPERIMENT_INVALID_BEST_SINGLE_INPUT`; no warning, no dropped record, no denominator change):
+exactly **171** records, **train 45 / validation 12 sessions**, **train 135 / validation 36 records**,
+57 globally-unique sessions, `session_id` globally unique (no cross-split), 3/session, offset set
+`{-0.04,0,+0.04}`, no dup `(split,session_id,offset)`, unique `planned_episode_id`, split ∈
+{train,validation}, `y.success` strict Python bool, no probe/test, bank not overridable. Artifact saves
+`train_session_count=45, validation_session_count=12, train_record_count=135, validation_record_count=36,
+n_trials_per_offset=57, completeness_gate_version, production_entrypoint`, counts/means/tie-sets/selected
+offset + `input_projection_hash`/`input_record_set_hash`/`selection_artifact_hash`. Offset 0 is **not**
+hardcoded. The generic override-capable logic is **private** (`_select_best_single_core`, bridge/tests only;
+not in `__all__`, not referenced by the config or generator). `learned_selector_power.best_single_legal`
+remains a `SIMULATION_ONLY_REFERENCE`. Production == simulation on **4500/4500** frozen configs
+(`production_best_single_bridge_invariance_v1`) → **no power recertification**.
 
 ## 8. History allowlist / secret denylist (§7)
 Model reads history ONLY via `features.probe_vector` — **8 fields**: `theta.grasp_offset_local_y`,
