@@ -1,0 +1,122 @@
+{
+  "verdict": "ONE_SHOT_BATCH_FIX_REQUIRED",
+  "auditor": "Claude C (independent, read-only, adversarial, one-shot full-repository final audit)",
+  "audited_commit": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+  "source_fix4_commit": "f8fedd45d2c0e2f9587ae8740c61a1b9eedb64ea",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "issue_list_frozen": true,
+  "authorizes_generator_implementation": false,
+  "authorizes_generator_smoke": false,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "power_certification_verdict": "valid",
+  "power_certification_note": "Fix4 changed only input guards / validator / hash required-fields / active docs. Bank {-0.04,0,+0.04}, ±0.035 test geometry, residual, probe, DeepSets+HP+5 seeds, primary comparator, block bootstrap, 0.15 CI, seed gate, 300 trials, and legal-input selection are unchanged; learned power 0.984-0.986 (separate from structural 1.000) at the correct block unit stands.",
+  "scientific_claim_conclusion": "The core proposition (history-conditioned selection beats train/val best-single on unseen NOMINAL test biases, with actual state in-support) is sound, powered, and correctly claim-scoped to SUCCESS. Selection = argmax p_success and the primary endpoint = selected success ONLY; the DeepSets error/time heads are auxiliary multitask signals and do NOT drive selection or the primary, so the experiment does NOT identify a benefit of multidimensional prediction over success-only prediction. The frozen claim_scope does not over-claim this, but the prereg should say it explicitly (FINAL-004).",
+  "leakage_conclusion": "Clean. Production best-single (select_best_single_confirmatory) reads only {split, session_id, trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id}; secret perturbation invariant; nominal/residual/actual/eff/tau/oracle/test/success-model forbidden and in SECRET_DENYLIST. K0=empty history, K1=1 frozen probe. Simulation-only best_single_legal is not the production entry. No source->component leakage path reaches a deployable model.",
+  "manifest_order_conclusion": "Deep validator now enforces composition/uniqueness/identity<->PID recompute/referential/per-session/residual-bounds/subseed-recompute/exec-order/planned-subset/frozen-seeds; rejects the bogus 228-duplicate manifest and accepts a valid 228/72 fixture (not over-strict). REMAINING: the candidate/session/block execution ORDER is not uniquely determined by the frozen seed (no canonical subseed->permutation function; validator accepts any bank permutation / unique int) -> FINAL-001; several knowable-now integrity values are format/presence-only -> FINAL-002; one active doc retains stale field names -> FINAL-003.",
+  "statistics_conclusion": "Correct. Unit = test block (9); per block avg over 2 test nominals then 5 model seeds; gain vs same-block train/val-only best-single; 2000 test-block percentile bootstrap preserving block structure; PRIMARY = CI_lower>=0.15 AND seed gate (>=4/5 point gains>=0.15, none<0); intention-to-analyze keeps all schema-valid outcomes; collision only in secondary sensitivity; VOI/tau secondary, never primary.",
+  "issues": [
+    {
+      "id": "FINAL-001",
+      "category": "manifest",
+      "severity": "pre_generator_blocker",
+      "summary": "No canonical subseed->permutation order-resolution function exists; execution order (candidate order within a session, session order, block order) is not uniquely determined by the frozen seed.",
+      "evidence": [
+        "Exhaustive grep of confirmatory_v4_identity.py / preregistration_v4.py / confirmatory_v4_manifest_integrity.py finds order SUBSEEDS (session_order_subseed, nominal_order_subseed, candidate_order_subseed) but NO function mapping a subseed to a permutation.",
+        "validate_fully_resolved_phase_manifest checks resolved_candidate_order only as a length-3 bank permutation (line ~238-243) and block_order_key only as a unique non-bool int; neither is recomputed from a seed; execution_order_index is checked unique/complete but not cross-checked against the order keys; there is no candidate_order_key field (global scan: 0 hits).",
+        "manifest_spec §3 states 'resolve block/session/nominal/candidate order from the corresponding order seeds' -> the prereg INTENDS seed-determined order, but the algorithm is undefined (B known_issues §B)."
+      ],
+      "affected_files": [
+        "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_identity.py (order subseeds, no resolver)",
+        "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_manifest_integrity.py (validate_fully_resolved_phase_manifest: permutation/uniqueness only)"
+      ],
+      "minimal_fix": "Freeze one canonical order-resolution function, e.g. resolve_order(subseed, items) -> tuple: build per-item keys ki = subseed(order_seed, item_identity + '|domain=<order>') and return the stable-argsort of items by (ki, item_canonical_index). Apply it to candidate order (per session), session order (per block/split), block order (per split). In validate_fully_resolved_phase_manifest, RE-DERIVE resolved_candidate_order and the block/session order keys from the frozen seeds via this function and reject any mismatch; cross-check execution_order_index against the derived order. ALTERNATIVELY, if execution order is scientifically irrelevant (full reset per trial, block-constant state), drop order randomization: fix a single canonical execution order, remove the order subseeds, and state that order is fixed. Either way the manifest must be uniquely determined by the frozen seeds.",
+      "acceptance_test": "A frozen resolver exists and is deterministic; validate_fully_resolved_phase_manifest raises ManifestIntegrityError when resolved_candidate_order / block order / session order differ from the seed-recomputed order; two independent constructions from the frozen seeds produce byte-identical order.",
+      "power_recertification_required": false
+    },
+    {
+      "id": "FINAL-002",
+      "category": "manifest",
+      "severity": "pre_manifest_blocker",
+      "summary": "Knowable-now integrity values are validated by format/presence only, not by exact frozen value: config_sha256, schema_version, and the full deterministic_environment field set.",
+      "evidence": [
+        "validate_fully_resolved_phase_manifest checks config_sha256 as 64-hex format only (not == sha256 of confirmatory_v4_config.json); schema_version present+hashed only; deterministic_environment checks only device=='cpu' (not the frozen set_num_threads/set_num_interop_threads/use_deterministic_algorithms/OMP/MKL/OPENBLAS). frozen_seeds, manifest_algorithm_version, and planned_structure_sha256 ARE exact-checked (B known_issues §C).",
+        "protocol/generator/runtime commits are legitimately format-only until the post-GO generator/run exists (pinned at seal Step 0/5)."
+      ],
+      "affected_files": ["deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_manifest_integrity.py"],
+      "minimal_fix": "In the validator, exact-check the values knowable at manifest time: config_sha256 == sha256(confirmatory_v4_config.json bytes); schema_version == frozen constant; deterministic_environment == the frozen determinism_env dict (device+all thread/deterministic flags). Keep commits format-only until the seal step freezes them (document this explicitly). Add a per-field 'source-of-freeze' note (now / generator-commit / train-val-freeze / test-manifest).",
+      "acceptance_test": "validate_fully_resolved_phase_manifest raises when config_sha256 != actual config hash, schema_version != frozen, or deterministic_environment != frozen determinism_env; passes on the valid fixture with correct values.",
+      "power_recertification_required": false
+    },
+    {
+      "id": "FINAL-003",
+      "category": "docs",
+      "severity": "nonblocking",
+      "summary": "Active confirmatory_v4_manifest_spec.md §2.3 (lines 127-129) and line 153 retain the pre-fix4 singular field names manifest_hash / config_hash / code_commit, conflicting with the fix4 layered set used by config and code.",
+      "evidence": [
+        "manifest_spec.md §2.3 lists 'manifest_hash', 'config_hash', 'code_commit' (B known_issues §A; global_reference_scan active-potential-conflict).",
+        "confirmatory_v4_config.json manifest_fields and preregistration_v4 MANIFEST_FIELDS are already the layered set (planned_structure_sha256, train_validation_manifest_sha256, test_manifest_sha256, model_analysis_freeze_sha256, combined_experiment_plan_sha256, ...); config is authoritative -> no real machine ambiguity, but the doc is misleading for a generator implementer."
+      ],
+      "affected_files": ["docs/offline_v2/calibration_bias/confirmatory_v4_manifest_spec.md"],
+      "minimal_fix": "Replace the §2.3 field list and line 153 with the layered field names; add a one-line note that the per-trial provenance anchor is the PHASE full-manifest hash.",
+      "acceptance_test": "grep of the active manifest_spec finds no standalone 'manifest_hash'/'config_hash'/'code_commit' field-list entries (only layered names).",
+      "power_recertification_required": false
+    },
+    {
+      "id": "FINAL-004",
+      "category": "science",
+      "severity": "nonblocking",
+      "summary": "The prereg does not explicitly state that the DeepSets error/time heads are auxiliary and that a benefit of multidimensional prediction over success-only prediction is neither claimed nor identified (selection = argmax p_success; primary = selected success only).",
+      "evidence": [
+        "analysis_plan: 'candidate argmax = max p_success'; primary 'select the offset by argmax/tie-break; read selected success'; 'Delta_primary = B2_K1 selected success - best-single success'.",
+        "claim_scope frozen wording is success-based and does NOT over-claim multidimensional prediction (so no active over-claim exists) -- but the model is a multitask (success/error/time) network and the paper narrative could imply the multidimensional aspect helps."
+      ],
+      "affected_files": ["docs/offline_v2/calibration_bias/confirmatory_v4_claim_scope.md", "docs/offline_v2/calibration_bias/preregistration_v4.md"],
+      "minimal_fix": "Add one explicit sentence to claim_scope / positioning: 'The error/time regression heads are auxiliary multitask signals; the primary selection and endpoint use p_success only; this experiment does not test or claim that multidimensional (error/time) prediction outperforms success-only prediction.'",
+      "acceptance_test": "claim_scope / prereg contains an explicit 'error/time heads are auxiliary; multidimensional-prediction superiority not claimed' statement.",
+      "power_recertification_required": false
+    },
+    {
+      "id": "FINAL-005",
+      "category": "docs",
+      "severity": "nonblocking",
+      "summary": "snapshot_manifest.json 'snapshot_commit' = 1abaa72 is the phase-1 metadata-payload commit, not the final audited HEAD b983b7e; the field name is ambiguous and no final_head_commit is recorded.",
+      "evidence": [
+        "snapshot_manifest.json: snapshot_commit=1abaa72d..., source_fix4_commit=f8fedd45...; the remote final HEAD is b983b7e (commit 'record final snapshot commit SHA in snapshot_manifest.json').",
+        "The audited tree is b983b7e; 1abaa72 is an earlier two-stage metadata commit -> a naming ambiguity for provenance/traceability."
+      ],
+      "affected_files": ["docs/offline_v2/calibration_bias/final_snapshot_v1/snapshot_manifest.json"],
+      "minimal_fix": "Rename 'snapshot_commit' -> 'metadata_payload_commit' and add 'final_head_commit': 'b983b7e9e638e2ed03589e2bd061139b073ce53f'; note that the audited tree is the final HEAD.",
+      "acceptance_test": "snapshot_manifest records final_head_commit == b983b7e... and disambiguates the metadata-payload commit.",
+      "power_recertification_required": false
+    }
+  ],
+  "fatal_issues": [],
+  "pre_generator_blockers": ["FINAL-001"],
+  "pre_manifest_blockers": ["FINAL-002"],
+  "pre_run_blockers": [],
+  "nonblocking_issues": ["FINAL-003", "FINAL-004", "FINAL-005"],
+  "verified_pass": [
+    "Scientific core: hidden state = actual_bias = nominal + residual; test actual support ([-0.045,-0.025] u [+0.025,+0.045]) inside train ([-0.05,+0.05]); ±0.035 chosen pre-data (not from confirmatory outcomes); state-aware/oracle only as structural upper bound.",
+    "Power certification VALID (learned 0.984-0.986 separate from structural 1.000, correct block unit); fix4 changed no power input; no recert.",
+    "Leakage clean: production selector observed-y.success only (secret-perturbation invariant); SECRET_DENYLIST; K0 empty history / K1 one frozen probe; simulation helper not production.",
+    "Best-single: single production entry select_best_single_confirmatory (one param, no bypass), train/val-only, exact 45/12 -> 135/36 -> 171 composition, offset domain strict (isclose 1e-12; +0.0004/'0.0'/near-bank rejected), order- and secret-invariant, offset 0 not hardcoded.",
+    "Identity domain strict (PlannedTrialKey, isclose 1e-12; rejects out-of-domain block/nominal/offset/role/attempt); 300 canonical / 300 unique; probe vs candidate(-0.04) distinct.",
+    "Deep manifest validator rejects bogus (228-duplicate/all-train/PID-inconsistent) and accepts a valid 228/72 fixture (not over-strict); combined_experiment_plan_hash requires all 8 fields (no defaults) with hex/seed format checks.",
+    "Statistics: test-block unit, 2-nominal->5-seed aggregation, same-block best-single, 2000 block bootstrap, CI_lower>=0.15 AND seed gate; intention-to-analyze; collision/VOI/tau secondary only.",
+    "Model/determinism: DeepSets HP+5 seeds explicit; all-5-seeds-must-converge, model_fit_failure_count separate from runtime_trial_invalid_count, retry<=1 infra-only; CPU determinism flags machine-frozen.",
+    "Seal Scheme 2 unique (model+analysis freeze before test manifest; early access INVALID); 306 data immutable (sha256 131750e1...); no confirmatory data/manifest/checkpoint; 300 trials frozen."
+  ],
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "post_report_rule": "Issue list frozen (FINAL-001..005). Only CRITICAL_NEW_EVIDENCE (changes a main scientific conclusion, causes test leakage, makes the primary estimator wrong, makes formal data non-traceable, or enables safety/data-fabrication) may add an item in a later regression; ordinary naming/format/style/non-production-bypass/unused-helper findings may NOT be escalated to new blockers.",
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/one_shot_full_audit_c.md",
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/one_shot_full_audit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_one_shot_full_audit_c.py"
+  ]
+}
