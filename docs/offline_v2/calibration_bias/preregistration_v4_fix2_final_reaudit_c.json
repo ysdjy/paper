@@ -1,0 +1,94 @@
+{
+  "verdict": "MODIFY_PREREGISTRATION_V4_FIX2",
+  "auditor": "Claude C (independent, read-only, adversarial, final short re-audit)",
+  "audited_commit": "48976e4918a11406daf805f6f6451ea8272b72d5",
+  "fix1_commit": "91a41e51282f716595bc3553ba500e6e2af95f40",
+  "prior_reaudit_commit": "21b676b749074a85ad0d9a02e47d6f712a22baa2",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "authorizes_generator_implementation": false,
+  "authorizes_generator_smoke": false,
+  "authorizes_manifest_instance_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "power_recertification_note": "All open items are input-guard / hash-semantics / domain-validation hardening. On correct input the production selector's choice is unchanged; algorithm-equivalence to the frozen rule verified over 787 count patterns (0 mismatch, not hardcoded to 0); bridge invariance holds (B 4500/4500 + prior-round 4500 old/new). Bank, geometry, residual, probe, model/HP/seeds, comparator, bootstrap, 0.15, effect are untouched.",
+  "resolved_cores": [
+    {
+      "blocker": "BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT",
+      "status": "CORE RESOLVED (residual guard gaps -> new_blockers)",
+      "evidence": "config best_single.implementation = confirmatory_v4_selection.select_best_single; best_single_legal demoted to SIMULATION_ONLY_REFERENCE ('NOT production'). Selector allowlist-projects to {split, session_id, trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id}; no tau/succ/nominal/residual/actual/eff/oracle. Functionally verified: perturbing secret fields does not change selection; flipping observed y.success does. Algorithm = max observed-success count -> min|offset| -> bank order (787/787 vs frozen rule; not hardcoded 0). Rejects test/probe/non-bool. Artifact saves counts/means/tie-sets/selected + projection/record-set/artifact hashes."
+    },
+    {
+      "blocker": "BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN",
+      "status": "CORE RESOLVED (residual gaps -> new_blockers)",
+      "evidence": "confirmatory_v4_identity freezes block/session/trial templates (v4|split=..|block=NN|nominal=+.3f|role=..|offset=+.3f), +0.000 zero with negative-zero normalized, block 2-digit zero-based, role distinguishes probe/candidate at -0.04. planned_episode_id = v4ep-<sha256[:24]>; 300 planned trials, 300 unique ids (recomputed). Domain subseeds via PRE.subseed (sha256, not Python hash()); frozen domain labels; attempt_id/resume_key exclude attempt from randomization."
+    }
+  ],
+  "new_blockers": [
+    {
+      "id": "BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE",
+      "severity": "blocker",
+      "facets": [
+        "3.3: _check_completeness verifies TOTAL 57 sessions and 3-per-session, but NOT the 45 train / 12 validation composition. A malformed split (e.g. 57 train + 0 val) passes, and could change best-single (the baseline is the pooled train+val mean). Config input_completeness.checks lists '57 unique sessions', not 45/12.",
+        "3.4: select_best_single (the config-designated production entry) exposes validate_completeness=False, candidate_bank=..., expected_candidate_records=... The active config freezes NONE of these (0 occurrences), and there is no non-default -> INVALID guard. A can therefore disable the completeness gate or swap the bank on the production path -> per task 3.4 this alone withholds GO."
+      ],
+      "files": [
+        "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_selection.py : _check_completeness (total-57 only), select_best_single (validate_completeness/candidate_bank/expected_candidate_records params)",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_config.json : best_single.input_completeness.checks (no 45/12; no frozen production-call params)"
+      ],
+      "minimal_fix": "(a) In _check_completeness, assert exactly 45 train + 12 validation sessions (count per split), in addition to total 57. (b) Expose a public production wrapper select_best_single_confirmatory(records) that hardcodes validate_completeness=True, expected_candidate_records=171, candidate_bank=(-0.04,0,+0.04) and does NOT accept overrides, OR freeze these in the active config and make any non-default production call raise EXPERIMENT_INVALID_BEST_SINGLE_INPUT. Keep validate_completeness=False reachable only inside the sim bridge, not on the production entry.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED",
+      "severity": "blocker",
+      "summary": "trial_identity/block_identity/session_identity validate only split and role; they format arbitrary out-of-domain inputs. Verified accepted: block=99, nominal=0.5 (not in split), probe offset=+0.02 (must be -0.04), block=-1 (also breaks 2-digit padding), offset=0.07 (not in bank). This leaves A manifest freedom despite enumerate_trials() being domain-correct.",
+      "files": ["deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_identity.py : block/session/trial_identity"],
+      "minimal_fix": "Validate the frozen domain in the identity builders (or a wrapper the generator must use): block in BLOCKS[split], nominal in NOMINALS[split], probe offset == -0.04, candidate offset in CANDIDATE_BANK, block>=0, attempt in [0,1]. Reject otherwise. Add a test that out-of-domain identities raise.",
+      "power_recert_needed": false
+    },
+    {
+      "id": "BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY",
+      "severity": "blocker",
+      "summary": "canonical_manifest_hash() hashes only [canonical_trial_identity, planned_episode_id] (planned STRUCTURE). But confirmatory_v4_manifest_spec.md calls manifest_hash 'sha256 of the fully-resolved manifest (pre-run)' and 'Reproducible via confirmatory_v4_identity.canonical_manifest_hash()', and the per-trial integrity check is 'science_manifest_sha256 == frozen manifest_hash'. A structure-only anchor does NOT cover the resolved residual, nuisance, execution order, or environment, so residual/nuisance/order tampering would pass the integrity check.",
+      "files": [
+        "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_identity.py : canonical_manifest_hash()",
+        "docs/offline_v2/calibration_bias/confirmatory_v4_manifest_spec.md : lines ~82-88, 101, 114 (manifest_hash == fully-resolved manifest == canonical_manifest_hash())"
+      ],
+      "minimal_fix": "Rename canonical_manifest_hash() -> canonical_planned_structure_hash() and define a SEPARATE full manifest_hash over the fully-resolved plan (planned structure + per-block residual values + nuisance + resolved block/session/nominal/candidate orders + seeds + config_hash + code/generator commit + environment), with a frozen canonical serialization; use THAT as the per-trial science_manifest_sha256 integrity anchor. Correct the manifest_spec wording. This affects seal/integrity, hence blocker not minor.",
+      "power_recert_needed": false
+    }
+  ],
+  "minor_issues": [
+    {
+      "id": "DETERMINISM_GPU_AND_OP_UNAVAILABLE_WORDING",
+      "summary": "config freezes CPU + torch.set_num_threads(1)/set_num_interop_threads(1)/use_deterministic_algorithms(True)/OMP,MKL,OPENBLAS=1 (verified present). Recommend also asserting device==CPU at runtime and that a deterministic-op-unavailable RuntimeError maps to model-fit INVALID (fix2 summary states this; ensure it is in the machine config too), and that set_num_interop_threads is set before any torch op."
+    }
+  ],
+  "verified_pass": {
+    "active_binding": "PASS - production selector, sim helper demoted",
+    "no_secret_in_selection": "PASS - secret perturbation invariant; observed success decisive",
+    "selection_algorithm": "PASS - 787/787 vs frozen rule; not hardcoded 0",
+    "bridge_invariance": "PASS - algorithm-equivalence + B 4500/4500 + prior 4500 -> no power recert",
+    "identity_format": "PASS - templates, +0.000 zero, role-distinct, 300 unique ids",
+    "domain_subseeds": "PASS - frozen labels, sha256 (not python hash), attempt excluded",
+    "determinism_flags": "PASS - thread/interop/deterministic/OMP/MKL/OPENBLAS frozen",
+    "power_inputs_unchanged": "PASS - POWER_SUFFICIENT_FOR_PREREG_V4 stands",
+    "status_consistency": "PASS - PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT",
+    "fix1_resolutions_intact": "PASS - seeds (15 exact), seal SCHEME_2, model-failure namespace unchanged"
+  },
+  "tests": {
+    "b_fix2_suite": "test_preregistration_v4_fix2.py -> 23 passed (env_isaaclab)",
+    "c_final_reaudit_suite": "test_preregistration_v4_fix2_final_reaudit_c.py -> 10 passed, 3 xfailed (the 3 new blockers)",
+    "c_prior_audit_files": "unmodified; prior fix1-reaudit canonical-identity xfail now XPASS->fail (intended: format frozen); production-best-single xfail stays xfail (it inspects the SIMULATION_ONLY best_single_legal, which is intentionally secret-dependent)."
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/preregistration_v4_fix2_final_reaudit_c.md",
+    "docs/offline_v2/calibration_bias/preregistration_v4_fix2_final_reaudit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_preregistration_v4_fix2_final_reaudit_c.py"
+  ]
+}
