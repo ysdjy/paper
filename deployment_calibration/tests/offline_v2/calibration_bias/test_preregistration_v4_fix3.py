@@ -33,7 +33,7 @@ def _pre():
 
 
 def test_status_is_fix3():
-    assert P.STATUS == "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION"
+    assert P.STATUS == "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION"
     assert _pre()["status"] == P.STATUS and _pre()["power_recertification_required"] is False
 
 
@@ -284,7 +284,7 @@ def test_no_generator_manifest_checkpoint_data():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION" in md
+    assert "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION" in md
     assert "select_best_single_confirmatory" in (_DOCS / "preregistration_v4.json").read_text()
 
 

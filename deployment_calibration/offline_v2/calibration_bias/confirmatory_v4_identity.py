@@ -326,6 +326,36 @@ def canonical_manifest_rows():
     return sorted(enumerate_trials(), key=_sort_key)
 
 
+# ==================== FINAL-001 completion: frozen canonical STORAGE order ====================
+# Storage order (how the blocks/sessions/trials LISTS are serialized) is DISTINCT from execution order
+# (resolve_phase_execution_plan). A manifest whose lists are not in canonical storage order is INVALID, so
+# the manifest bytes are uniquely determined -- not just the hash payload.
+def _phase_splits_storage(phase):
+    if phase == "train_validation":
+        return ("train", "validation")
+    if phase == "test":
+        return ("test",)
+    raise ValueError(f"unknown phase {phase!r}")
+
+
+def canonical_phase_block_identities(phase):
+    """Canonical storage order of block identities: split rank -> block_index ascending."""
+    return tuple(block_identity(sp, bi) for sp in _phase_splits_storage(phase) for bi in BLOCKS[sp])
+
+
+def canonical_phase_session_identities(phase):
+    """Canonical storage order of session identities: split rank -> block asc -> nominal numeric asc."""
+    return tuple(session_identity(sp, bi, nom) for sp in _phase_splits_storage(phase)
+                 for bi in BLOCKS[sp] for nom in sorted(NOMINALS[sp]))
+
+
+def canonical_phase_trial_identities(phase):
+    """Canonical storage order of trial identities: split -> block -> nominal -> role(probe<candidate) ->
+    offset asc (reuses the frozen canonical_manifest_rows storage rule)."""
+    splits = _phase_splits_storage(phase)
+    return tuple(r["canonical_trial_identity"] for r in canonical_manifest_rows() if r["split"] in splits)
+
+
 def canonical_json(obj) -> str:
     """Frozen canonical JSON: keys sorted, tight separators, non-ascii kept, UTF-8, no trailing whitespace."""
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)

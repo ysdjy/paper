@@ -1,0 +1,50 @@
+{
+  "status": "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION",
+  "previous_status": "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION",
+  "regression_commit": "ad2a9ca25570b087382747ef474deb6ebc4b16ca",
+  "batch_fix_commit": "673d9fe7a7651bc07ec21e758b370ee6747ce618",
+  "one_shot_audit_commit": "01ac19d287e2106ecddd9662dad7351f4d621361",
+  "power_cert_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "verdict_addressed": "FROZEN_ISSUE_BATCH_FIX_INCOMPLETE",
+  "power_recertification_required": false,
+  "scope": "FINAL-001 and FINAL-002 remaining parts ONLY; no new issue IDs; FINAL-003..005 unchanged",
+  "frozen_issue_status": {
+    "FINAL-001": "fixed",
+    "FINAL-002": "fixed",
+    "FINAL-003": "unchanged_resolved",
+    "FINAL-004": "unchanged_resolved",
+    "FINAL-005": "unchanged_resolved"
+  },
+  "FINAL-001": {
+    "canonical_storage_order_functions": ["canonical_phase_block_identities",
+                                          "canonical_phase_session_identities",
+                                          "canonical_phase_trial_identities"],
+    "storage_order": "split rank -> block_index asc -> nominal numeric asc -> role(probe<candidate) -> offset asc",
+    "execution_order": "seed-derived resolve_phase_execution_plan (block/session/candidate order, probe first)",
+    "validator_rejects": ["blocks list not in canonical storage order",
+                          "sessions list not in canonical storage order",
+                          "trials list not in canonical storage order"],
+    "no_hash_normalization": true,
+    "reference_fixture_storage_and_execution_separated": true,
+    "config_description": "deep_manifest_validator.checks now states seed-recomputed exact candidate order + canonical storage order; 'bank permutation' phrasing removed",
+    "block_order_in_domain_labels": true
+  },
+  "FINAL-002": {
+    "code_unchanged": ["canonical_config_sha256", "PHASE_MANIFEST_SCHEMA_VERSION",
+                       "deterministic_environment exact validator", "freeze-source table"],
+    "config_description_synced": true,
+    "removed_phrases": ["config/commit hex formats", "device==cpu"],
+    "added_phrases": ["config_sha256 == canonical_config_sha256()",
+                      "schema_version == confirmatory_v4_phase_manifest_v1",
+                      "deterministic_environment == frozen 7-key contract (value + type; no extras; no GPU)",
+                      "commits 40-hex format now; exact values frozen at generator Step 0"]
+  },
+  "unchanged": ["FINAL-003", "FINAL-004", "FINAL-005", "candidate_bank", "test_nominal_pm035",
+                "9/6/9_blocks", "residual", "probe", "DeepSets+HP+seeds", "primary_comparator",
+                "bootstrap_0.15", "306_data", "power_result"],
+  "new_files": ["final_001_002_completion.md", "final_001_002_completion.json",
+                "test_final_001_002_completion.py"],
+  "c_audit_and_regression_files_unmodified": true,
+  "no_generator": true, "no_formal_manifest_instance": true, "no_checkpoint": true,
+  "no_runtime_or_confirmatory_data": true, "no_run_authorization": true
+}

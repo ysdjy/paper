@@ -409,7 +409,8 @@ PLANNED_IDENTITY_FORMAT = {
     "splits": ["train", "validation", "test"], "roles": ["probe", "candidate"],
     "block_ranges": {"train": [0, 8], "validation": [0, 5], "test": [0, 8]},
     "probe_offset": -0.04, "candidate_offsets": [-0.04, 0.0, 0.04],
-    "domain_labels": ["residual", "nuisance", "session_order", "nominal_order", "candidate_order", "trial_init"],
+    "domain_labels": ["residual", "nuisance", "block_order", "session_order", "nominal_order",
+                      "candidate_order", "trial_init"],
     "domain_subseed_rule": "subseed(<seed>, canonical_identity + '|domain=<label>')",
     "storage_sort": "split(train=0,validation=1,test=2) -> block asc -> nominal asc -> role(probe=0,candidate=1) -> offset asc",
     "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False, UTF-8, no trailing newline",
@@ -529,7 +530,39 @@ DETERMINISM_MANIFEST_CONTRACT = {
 # FINAL-002: frozen phase-manifest schema version (kept in sync with manifest_integrity).
 PHASE_MANIFEST_SCHEMA_VERSION = "confirmatory_v4_phase_manifest_v1"
 
-STATUS = "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION"
+# FINAL-001/002 completion: the active, precise description of the deep manifest validator's checks
+# (single source; emitted to config as `deep_manifest_validator`). Storage order != execution order.
+DEEP_MANIFEST_VALIDATOR = {
+    "module": "confirmatory_v4_manifest_integrity.validate_fully_resolved_phase_manifest",
+    "storage_order_vs_execution_order": (
+        "STORAGE order = split rank -> block_index asc -> nominal numeric asc -> role(probe<candidate) -> "
+        "offset asc (how the blocks/sessions/trials LISTS are serialized). EXECUTION order = seed-derived "
+        "resolve_block_order -> resolve_session_order -> probe first -> resolve_candidate_order, carried by "
+        "execution_order_index. A storage list position does NOT define execution order; execution_order_index "
+        "does."),
+    "checks": [
+        "strict allowed keys (reject unexpected / nested integrity)",
+        "per-phase split composition (train_validation 9tr+6val blk / 45+12 sess / 180+48 trials; test 9/18/72)",
+        "global uniqueness (block/session/trial identity, (split,block[,nominal]), planned_episode_id, execution_order_index)",
+        "recompute every canonical identity + planned_episode_id + resume_key + subseed via confirmatory_v4_identity",
+        "referential integrity (session->block, trial->session; split/block/nominal/role/offset consistent)",
+        "per session probe(-0.04) + 3 candidates(bank); probe executes before candidates",
+        "candidate_order_keys == ID.candidate_order_key_map(...)",
+        "resolved_candidate_order == ID.resolve_candidate_order(...) (seed-recomputed exact order, NOT any bank permutation)",
+        "execution_order_index == index in ID.resolve_phase_execution_plan(phase)",
+        "blocks/sessions/trials lists == frozen canonical storage order (ID.canonical_phase_{block,session,trial}_identities)",
+        "block-shared residual finite in [-0.01,+0.01]; one nuisance set per block",
+        "config_sha256 == canonical_config_sha256() (raw bytes of active confirmatory_v4_config.json)",
+        "schema_version == confirmatory_v4_phase_manifest_v1",
+        "deterministic_environment == frozen deterministic_environment_manifest_contract (exact 7-key set, exact values, exact types, no extras, no GPU)",
+        "protocol_commit/generator_commit/runtime_commit: 40-lowercase-hex format at validation; exact values frozen at generator Step 0",
+        "frozen_seeds == preregistered 15; planned_structure_sha256 == canonical_planned_structure_hash(); recursive finite",
+    ],
+    "session_full_hash_fields": ["candidate_order_keys", "resolved_candidate_order"],
+    "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+}
+
+STATUS = "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION"
 
 
 def preregistration_dict():
@@ -576,6 +609,7 @@ def preregistration_dict():
         "post_unseal_forbidden": POST_UNSEAL_FORBIDDEN,
         "planned_identity_format": PLANNED_IDENTITY_FORMAT, "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
         "manifest_integrity": MANIFEST_INTEGRITY,
+        "deep_manifest_validator": DEEP_MANIFEST_VALIDATOR,
         "determinism_env": DETERMINISM_ENV,
         "deterministic_environment_manifest_contract": DETERMINISM_MANIFEST_CONTRACT,
         "phase_manifest_schema_version": PHASE_MANIFEST_SCHEMA_VERSION,
@@ -672,6 +706,7 @@ def emit(docs_dir=None):
            "planned_identity_format": PLANNED_IDENTITY_FORMAT,
            "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
            "manifest_integrity": MANIFEST_INTEGRITY,
+           "deep_manifest_validator": DEEP_MANIFEST_VALIDATOR,
            "determinism_env": DETERMINISM_ENV,
            "deterministic_environment_manifest_contract": DETERMINISM_MANIFEST_CONTRACT,
            "phase_manifest_schema_version": PHASE_MANIFEST_SCHEMA_VERSION,

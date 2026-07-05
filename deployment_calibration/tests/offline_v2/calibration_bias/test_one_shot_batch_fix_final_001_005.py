@@ -25,7 +25,7 @@ def _cfg():
 
 
 def test_status_is_batch_fix():
-    assert P.STATUS == "PREREGISTRATION_V4_ONE_SHOT_BATCH_FIX_READY_FOR_FROZEN_ISSUE_REGRESSION"
+    assert P.STATUS == "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION"
     assert json.loads((_DOCS / "preregistration_v4.json").read_text())["power_recertification_required"] is False
 
 

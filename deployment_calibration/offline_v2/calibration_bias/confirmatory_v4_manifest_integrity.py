@@ -352,6 +352,15 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
     if planned_trial_idents != phase_planned:
         _err("trial identities are not exactly the phase subset of the 300 planned structure")
 
+    # FINAL-001 completion: the LISTS must be in canonical STORAGE order (distinct from execution order).
+    # Reject any reordered list so the manifest bytes are uniquely determined (not just the hash payload).
+    if tuple(b["canonical_block_identity"] for b in blocks) != ID.canonical_phase_block_identities(phase):
+        _err("blocks list not in canonical storage order")
+    if tuple(s["canonical_session_identity"] for s in sessions) != ID.canonical_phase_session_identities(phase):
+        _err("sessions list not in canonical storage order")
+    if tuple(t["canonical_trial_identity"] for t in trials) != ID.canonical_phase_trial_identities(phase):
+        _err("trials list not in canonical storage order")
+
 
 def _canon_bank(v):
     from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_identity as ID
@@ -402,10 +411,11 @@ def reference_phase_manifest(phase, *, protocol_commit="0" * 40, generator_commi
                                  "candidate_order_keys": ID.candidate_order_key_map(split, bi, nom),
                                  "resolved_candidate_order": list(ID.resolve_candidate_order(split, bi, nom))})
     plan = ID.resolve_phase_execution_plan(phase)
-    idx = {tid: i for i, tid in enumerate(plan)}
-    # map each canonical trial identity to (split, block, nominal, role, offset) via the planned structure
+    idx = {tid: i for i, tid in enumerate(plan)}       # execution_order_index (seed-derived, NOT storage)
     meta = {r["canonical_trial_identity"]: r for r in ID.enumerate_trials() if r["split"] in splits}
-    for tid in plan:
+    # FINAL-001 completion: emit the trials LIST in canonical STORAGE order (execution_order_index carries
+    # the seed-derived execution order separately). blocks/sessions above are already in storage order.
+    for tid in ID.canonical_phase_trial_identities(phase):
         r = meta[tid]
         pid = ID.planned_episode_id(tid)
         trials.append({"canonical_trial_identity": tid, "planned_episode_id": pid,
