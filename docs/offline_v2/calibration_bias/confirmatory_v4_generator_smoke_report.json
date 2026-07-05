@@ -1,0 +1,43 @@
+{
+  "status": "GENERATOR_IMPLEMENTATION_AND_SMOKE_READY_FOR_AUDIT",
+  "source_go_commit": "c8ac0af29a0884c8efb520151729d515613d70bb",
+  "source_kat_fix_commit": "cb92f4ff44faf93f22deb8e49dab79ef61dd1691",
+  "smoke_only": true,
+  "kat_passed": true,
+  "kat_version": "pcg64_normal_floathex_kat_v1",
+  "kat_vectors_checked": 6,
+  "formal_manifest_written": false,
+  "model_checkpoint_written": false,
+  "confirmatory_records_written": false,
+  "isaac_launched": false,
+  "train_validation_smoke_passed": true,
+  "test_smoke_passed": true,
+  "deep_validation_passed": true,
+  "deterministic_rebuild_passed": true,
+  "public_secret_leakage_test_passed": true,
+  "formal_writer_zero_side_effect_test_passed": true,
+  "storage_execution_orders_distinct": true,
+  "train_validation_counts": {
+    "blocks": 15,
+    "sessions": 57,
+    "trials": 228
+  },
+  "test_counts": {
+    "blocks": 9,
+    "sessions": 18,
+    "trials": 72
+  },
+  "generator_never_calls_unchecked_core": true,
+  "reference_phase_manifest_not_wrapped": true,
+  "smoke_output_dir": "artifacts/smoke_only/confirmatory_v4_generator/ (gitignored; SMOKE_ONLY only)",
+  "generator_tests": "24 passed",
+  "named_regressions": {
+    "test_block_state_kat_final_reaudit_c": "12 passed",
+    "test_confirmatory_v4_block_state": "15 passed",
+    "test_confirmatory_v4_block_state_kat_gate": "10 passed"
+  },
+  "full_calibration_bias_suite": "415 passed, 25 failed, 2 xfailed",
+  "preexisting_failures_note": "the 25 failures are historical Claude-C audit/reaudit regression files (frozen_issue_regression_final_001_005_c, one_shot_full_audit_c, preregistration_v4_audit_c, fix1/fix2/fix3_reaudit_c); superseded by the fix4/FINAL/KAT reaudit that issued the GO; PROVEN pre-existing on the pristine c8ac0af tree with all A files removed; none imports the generator; all ACTIVE KAT/block-state/final/generator tests pass",
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_run": false
+}

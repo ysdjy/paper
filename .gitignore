@@ -19,3 +19,6 @@ franka_v1_skill_lab/sensors/**/debug_outputs/
 
 # OS junk
 .DS_Store
+
+# confirmatory v4 generator smoke-only outputs (never committed)
+artifacts/smoke_only/
