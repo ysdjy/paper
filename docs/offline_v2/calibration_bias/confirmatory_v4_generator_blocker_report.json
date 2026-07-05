@@ -1,0 +1,69 @@
+{
+  "status": "GENERATOR_IMPLEMENTATION_BLOCKED_MISSING_FROZEN_BLOCK_STATE_SAMPLER",
+  "task": "confirmatory v4 generator implementation + smoke (Claude A)",
+  "source_go_commit": "45599ca69fbbf415c08c41579506ae9010fff94f",
+  "go_evidence_verified": {
+    "file": "docs/offline_v2/calibration_bias/final_snapshot_v1/validator_description_final_regression_c.json",
+    "verdict": "GO_TO_GENERATOR_IMPLEMENTATION",
+    "authorizes_generator_implementation": true,
+    "authorizes_generator_smoke": true,
+    "authorizes_formal_manifest_generation": false,
+    "authorizes_confirmatory_data_generation": false,
+    "authorizes_confirmatory_run": false,
+    "all_go_fields_ok": true
+  },
+  "branch": "implementation/offline-calibration-confirmatory-v4-generator-smoke-a",
+  "worktree": "/home1/banghai/Documents/IsaacLab/projects/paper_offline_calibration_confirmatory_v4_generator_a",
+  "stopped_per_rule": "prompt §9.1: if no unique frozen block-state sampler exists, do NOT self-select a NumPy/SciPy RNG; STOP and report GENERATOR_IMPLEMENTATION_BLOCKED_MISSING_FROZEN_BLOCK_STATE_SAMPLER with the exact missing fields.",
+  "generator_implemented": false,
+  "self_chosen_sampler_used": false,
+  "isaac_launched": false,
+  "formal_manifest_written": false,
+  "confirmatory_data_written": false,
+
+  "blocker": "The frozen active modules require every block record to carry `residual_value` and `nuisance_values` (confirmatory_v4_manifest_integrity.REQUIRED_BLOCK), and these are covered by the FULL phase-manifest hash that anchors every runtime record (Scheme-2 science anchor). But NO active frozen function maps the per-block subseeds to those values, and the deep validator does not pin them. The manifest bytes / phase hash are therefore NOT uniquely determined by the frozen spec, so a production generator cannot be implemented without self-choosing an RNG + sampling algorithm (forbidden).",
+
+  "missing_frozen_fields": {
+    "residual_value_sampler": {
+      "required_by": "confirmatory_v4_manifest_integrity.REQUIRED_BLOCK ('residual_value'); covered by fully_resolved_phase_manifest_hash",
+      "design_intent_prose_only": "docs/.../confirmatory_v4_manifest_spec.md §3 step 2: 'draw one residual per block via subseed(<split>_residual_seed, block_identity|domain=residual) from TruncatedNormal(0,0.005,[-0.01,0.01])'",
+      "not_frozen": [
+        "the function mapping block_residual_subseed(split, block_index) -> residual_value (NO function consumes the subseed; grep 'def ...(subseed' returns nothing)",
+        "RNG family + seeding rule from the integer subseed (np.random.default_rng(subseed)? PCG64? one draw vs a stream?)",
+        "TruncatedNormal method (rejection vs inverse-CDF/ppf), max iterations, and the out-of-support fallback",
+        "which of the THREE divergent existing implementations (if any) is the confirmatory production sampler"
+      ],
+      "divergent_existing_impls_none_subseed_addressed": [
+        "power.py:90 _truncnorm(rng, sigma, lo, hi): rejection, no mean, 1000 tries, fallback min(max(0,lo),hi)",
+        "residual_nuisance.py:52 _truncnorm_draw(rng, mean, sigma, lo, hi): rejection, mean param, 1000 tries, fallback min(max(mean,lo),hi)",
+        "learned_selector_power.py:36 draw_residuals(n, rng): rejection, UNBOUNDED while-loop, no cap"
+      ],
+      "validator_does_not_pin_value": "confirmatory_v4_manifest_integrity.py:231-233 checks only residual_value finite in [-0.01,+0.01]; it recomputes residual_subseed (line 236) but NEVER recomputes/verifies residual_value. Two generators can emit different residual_value and both pass deep validation -> different train_validation_manifest_sha256 / test_manifest_sha256.",
+      "reference_uses_placeholder": "confirmatory_v4_manifest_integrity.py:402 reference_phase_manifest sets residual_value=0.001 (explicit placeholder; §5 forbids using reference_phase_manifest as production)"
+    },
+    "nuisance_values_definition_and_sampler": {
+      "required_by": "confirmatory_v4_manifest_integrity.REQUIRED_BLOCK ('nuisance_values'); covered by full phase-manifest hash",
+      "not_frozen": [
+        "the exact nuisance field key set (which keys a block's nuisance_values dict must contain)",
+        "each nuisance field's distribution",
+        "the function mapping block_nuisance_subseed(split, block_index) -> nuisance_values"
+      ],
+      "validator_only_requires_dict": "confirmatory_v4_manifest_integrity.py:234 checks only isinstance(nuisance_values, dict); no keys/values pinned",
+      "reference_uses_placeholder": "confirmatory_v4_manifest_integrity.py:402 nuisance_values={'joint_delta': 0.0} (placeholder)",
+      "v3_ambiguity": "residual_nuisance.py docstring: the v3 runtime-aligned model REMOVED the per-block grasp perturbation ('NO artificial noise is added to the candidate action'); so it is unclear whether confirmatory nuisance_values should be empty, carry joint_delta, or another field set."
+    }
+  },
+
+  "what_is_frozen_and_usable": [
+    "identity/order: confirmatory_v4_identity (block/session/trial identities, planned_episode_id, subseeds, resolve_* orders, storage vs execution order, canonical_json, canonical_planned_structure_hash)",
+    "seeds: preregistration_v4.frozen_seeds / seed / subseed / SEED_LABELS",
+    "schema/hash/validator: confirmatory_v4_manifest_integrity (PHASE_MANIFEST_SCHEMA_VERSION, MANIFEST_ALGORITHM_VERSION, canonical_config_sha256, deterministic_environment_contract, validate_fully_resolved_phase_manifest, fully_resolved_phase_manifest_hash, combined_experiment_plan_hash)",
+    "denylist: preregistration_v4.SECRET_DENYLIST",
+    "selection: confirmatory_v4_selection.select_best_single_confirmatory (not needed for block-state sampling)"
+  ],
+
+  "requested_resolution": "Claude B/C freeze a single production block-state sampler as active code (e.g. a function residual_value = truncnorm_from_subseed(block_residual_subseed(split,bi)) with a pinned RNG family, seeding-from-int rule, truncation method, iteration cap, and fallback; and a nuisance_values(subseed) spec with a frozen field set + distributions), AND extend validate_fully_resolved_phase_manifest to RECOMPUTE and exact-check residual_value + nuisance_values from the subseeds (so the phase hash is uniquely determined). Once that lands (or the design declares nuisance_values a fixed constant), re-issue GO and A implements the generator against the frozen sampler.",
+
+  "not_a_protocol_rewrite": true,
+  "no_files_modified_in_active_spec": true
+}
