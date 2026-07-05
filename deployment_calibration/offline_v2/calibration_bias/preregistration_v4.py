@@ -457,29 +457,13 @@ MANIFEST_INTEGRITY = {
     "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False; UTF-8; lowercase sha256",
     "structure_hash_not_equal_full_manifest_hash": True,
     # FIX4 BLOCKER 2: the validator is DEEP (not shape-only). Full hash computed ONLY after it passes.
-    "deep_validation": {
-        "phase_split_composition": {"train_validation": {"blocks": {"train": 9, "validation": 6},
-                                                          "sessions": {"train": 45, "validation": 12},
-                                                          "trials": {"train": 180, "validation": 48}},
-                                    "test": {"blocks": {"test": 9}, "sessions": {"test": 18},
-                                             "trials": {"test": 72}}},
-        "checks": ["strict allowed keys (reject unexpected / nested 'integrity')",
-                   "per-phase split composition of blocks/sessions/trials",
-                   "global uniqueness: block identity, (split,block), session identity, (split,block,nominal), "
-                   "trial identity, planned_episode_id, execution_order_index",
-                   "recompute every canonical identity + planned_episode_id + resume_key via confirmatory_v4_identity",
-                   "planned_episode_id == planned_episode_id(canonical_trial_identity); resume_key == planned_episode_id",
-                   "referential: session->block, trial->session; split/block/nominal/role/offset consistency",
-                   "per session exactly probe(-0.04) + 3 candidates(bank); probe executes before candidates; "
-                   "resolved_candidate_order is a bank permutation",
-                   "block-shared single residual finite in [-0.01,+0.01]; one nuisance set per block",
-                   "recompute residual/nuisance/session-order/nominal-order/trial-init subseeds from frozen seeds",
-                   "execution_order_index non-bool int, unique, complete 0..N-1",
-                   "planned_structure_sha256 == canonical_planned_structure_hash(); trials == phase subset of 300",
-                   "frozen_seeds == preregistered 15; config/commit hex formats; manifest_algorithm_version; device==cpu",
-                   "all scientific numerics finite (recursive NaN/Inf reject)"],
-        "rejects_bogus": "a 228-duplicate / all-train / PID!=identity manifest is INVALID (no full hash)",
-    },
+    # CONSOLIDATION (Scheme B): the SINGLE authoritative validator description is `deep_manifest_validator`.
+    # The old duplicate `manifest_integrity.deep_validation` block (which still carried stale semantics) is
+    # REMOVED entirely -- there is no second checks list. (Scheme B, not A, because the frozen regression's
+    # aggregator reads deep_validation["checks"] unconditionally, so a reference object without `checks`
+    # would crash it; full removal is the compatible consolidation.) See `deep_manifest_validator` for the
+    # authoritative checks and phase split composition; violations -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY.
+    "deep_validation_removed": "consolidated into deep_manifest_validator (single authoritative checks list)",
     "combined_hash_required_fields": {"all_required_no_none": True,
                                       "sha256_fields": ["train_validation_manifest_sha256",
                                                         "model_analysis_freeze_sha256", "test_manifest_sha256",
@@ -533,7 +517,16 @@ PHASE_MANIFEST_SCHEMA_VERSION = "confirmatory_v4_phase_manifest_v1"
 # FINAL-001/002 completion: the active, precise description of the deep manifest validator's checks
 # (single source; emitted to config as `deep_manifest_validator`). Storage order != execution order.
 DEEP_MANIFEST_VALIDATOR = {
+    "authoritative": True,      # SINGLE authoritative validator description (deep_validation removed, Scheme B)
+    "authoritative_note": "authoritative validator description = deep_manifest_validator (exactly one active checks list)",
     "module": "confirmatory_v4_manifest_integrity.validate_fully_resolved_phase_manifest",
+    "phase_split_composition": {"train_validation": {"blocks": {"train": 9, "validation": 6},
+                                                     "sessions": {"train": 45, "validation": 12},
+                                                     "trials": {"train": 180, "validation": 48}},
+                                "test": {"blocks": {"test": 9}, "sessions": {"test": 18},
+                                         "trials": {"test": 72}}},
+    "rejects_bogus": "a 228-duplicate / all-train / PID!=identity / non-canonical-order manifest is INVALID "
+                     "(no full hash)",
     "storage_order_vs_execution_order": (
         "STORAGE order = split rank -> block_index asc -> nominal numeric asc -> role(probe<candidate) -> "
         "offset asc (how the blocks/sessions/trials LISTS are serialized). EXECUTION order = seed-derived "
@@ -562,7 +555,7 @@ DEEP_MANIFEST_VALIDATOR = {
     "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
 }
 
-STATUS = "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION"
+STATUS = "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION"
 
 
 def preregistration_dict():

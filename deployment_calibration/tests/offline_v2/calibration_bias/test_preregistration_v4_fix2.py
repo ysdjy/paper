@@ -33,7 +33,7 @@ def _pre():
 
 # ---------------- status ----------------
 def test_status_is_fix2():
-    assert P.STATUS == "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION"
+    assert P.STATUS == "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION"
     assert _pre()["status"] == P.STATUS
     assert _pre()["power_recertification_required"] is False
 
@@ -243,7 +243,7 @@ def test_no_generator_or_data_produced():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION" in md
+    assert "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION" in md
     assert "confirmatory_v4_selection.select_best_single" in (_DOCS / "preregistration_v4.json").read_text()
 
 

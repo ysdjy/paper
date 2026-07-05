@@ -8,7 +8,7 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION`.** This phase authorizes nothing — Claude C
+**Status: `PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION`.** This phase authorizes nothing — Claude C
 must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, checkpoint, confirmatory data, or run authorization is produced here.
 

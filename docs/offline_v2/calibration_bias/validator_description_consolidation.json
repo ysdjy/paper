@@ -1,0 +1,55 @@
+{
+  "FINAL-001": "fixed",
+  "FINAL-002": "fixed",
+  "root_cause": "duplicate active validator description blocks",
+  "authoritative_description": "deep_manifest_validator",
+  "duplicate_checks_removed": true,
+  "algorithm_changed": false,
+  "power_recertification_required": false,
+  "scheme": "B (manifest_integrity.deep_validation removed entirely; single authoritative deep_manifest_validator)",
+  "status": "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION",
+  "previous_status": "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION",
+  "correction_commit": "6f584f002b3810f5115fe6ccd7fda5fea40fe995",
+  "completion_commit": "48f28ac3dc9836680c010ff58e0cccd1c669b01e",
+  "single_full_checks_list_path": "deep_manifest_validator.checks",
+  "deep_validation_reference": {
+    "removed": true,
+    "note": "manifest_integrity.deep_validation_removed present; phase_split_composition moved into deep_manifest_validator"
+  },
+  "stale_phrases_removed_from_active": [
+    "resolved_candidate_order is a bank permutation",
+    "config/commit hex formats",
+    "device==cpu",
+    "execution_order_index ... complete 0..N-1"
+  ],
+  "unchanged": [
+    "validator_code",
+    "order_resolvers",
+    "hash_functions",
+    "canonical_config_sha256",
+    "PHASE_MANIFEST_SCHEMA_VERSION",
+    "deterministic_environment_contract",
+    "FINAL-003",
+    "FINAL-004",
+    "FINAL-005",
+    "candidate_bank",
+    "test_nominal_pm035",
+    "9/6/9",
+    "DeepSets+HP+seeds",
+    "primary_comparator",
+    "bootstrap_0.15",
+    "306_data",
+    "power_result"
+  ],
+  "new_files": [
+    "validator_description_consolidation.md",
+    "validator_description_consolidation.json",
+    "test_validator_description_consolidation.py"
+  ],
+  "no_generator": true,
+  "no_formal_manifest_instance": true,
+  "no_checkpoint": true,
+  "no_runtime_or_confirmatory_data": true,
+  "no_run_authorization": true,
+  "scheme_B_rationale": "the frozen regression aggregator reads deep_validation['checks'] unconditionally, so a Scheme-A reference object without 'checks' would crash it; full removal is the compatible consolidation"
+}

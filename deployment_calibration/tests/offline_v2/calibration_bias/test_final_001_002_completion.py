@@ -21,7 +21,7 @@ def _cfg():
 
 
 def test_status_completion():
-    assert P.STATUS == "PREREGISTRATION_V4_FINAL_001_002_COMPLETION_READY_FOR_C_REGRESSION"
+    assert P.STATUS == "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION"
     assert json.loads((_DOCS / "preregistration_v4.json").read_text())["power_recertification_required"] is False
 
 
