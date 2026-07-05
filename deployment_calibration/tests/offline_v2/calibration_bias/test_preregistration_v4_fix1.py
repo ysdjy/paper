@@ -33,7 +33,7 @@ def _pre():
 
 # ---------------- status ----------------
 def test_status_is_fix1():
-    assert P.STATUS == "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT"
+    assert P.STATUS == "PREREGISTRATION_V4_BLOCK_STATE_KAT_GATE_READY_FOR_C_FINAL_REAUDIT"
     assert _pre()["status"] == P.STATUS
     assert _pre()["power_recertification_required"] is False
 
@@ -247,7 +247,7 @@ def test_md_json_consistency():
     j = _pre()
     assert j["frozen_seeds"]["master_seed"] == 6341914557047805261
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT" in md
+    assert "PREREGISTRATION_V4_BLOCK_STATE_KAT_GATE_READY_FOR_C_FINAL_REAUDIT" in md
     assert "6341914557047805261" in (_DOCS / "confirmatory_v4_manifest_spec.md").read_text()
 
 

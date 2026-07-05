@@ -544,7 +544,13 @@ DEEP_MANIFEST_VALIDATOR = {
         "resolved_candidate_order == ID.resolve_candidate_order(...) (seed-recomputed exact order, NOT any bank permutation)",
         "execution_order_index == index in ID.resolve_phase_execution_plan(phase)",
         "blocks/sessions/trials lists == frozen canonical storage order (ID.canonical_phase_{block,session,trial}_identities)",
-        "block-shared residual finite in [-0.01,+0.01]; one nuisance set per block",
+        "mandatory block-state KAT gate (confirmatory_v4_block_state.require_known_answer_compatibility) "
+        "passes before manifest validation/hash; otherwise EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+        "for every block: residual_subseed == ID.block_residual_subseed(...); residual_value is a Python "
+        "float; residual_value == BS.residual_value_from_subseed(residual_subseed) exactly (frozen "
+        "block-state sampler); residual in [-0.01,+0.01]",
+        "for every block: nuisance_subseed == ID.block_nuisance_subseed(...); nuisance_values == "
+        "BS.nuisance_values_from_subseed(...) == none_v1 {} (no extra key)",
         "config_sha256 == canonical_config_sha256() (raw bytes of active confirmatory_v4_config.json)",
         "schema_version == confirmatory_v4_phase_manifest_v1",
         "deterministic_environment == frozen deterministic_environment_manifest_contract (exact 7-key set, exact values, exact types, no extras, no GPU)",
@@ -574,9 +580,25 @@ BLOCK_STATE_SAMPLER = {
     "generator_may_not_choose": ["RNG / bit generator", "truncation method", "any additional block nuisance"],
     "manifest_hash_uniquely_determined_by": "subseeds + frozen sampler",
     "validator_recomputes_exact_values": True,
+    "compatibility_gate": {
+        "version": "pcg64_normal_floathex_kat_v1",
+        "function": "confirmatory_v4_block_state.require_known_answer_compatibility",
+        "mandatory_before": ["residual draw", "resolved block state", "phase manifest construction",
+                             "deep manifest validation", "full manifest hash"],
+        "vectors": 6,
+        "comparison": "Python float.hex() exact",
+        "numpy_version_recorded": True,
+        "numpy_version_alone_is_not_the_gate": True,
+        "on_mismatch": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+        "formal_artifact_generation_allowed_on_mismatch": False,
+        "note": "PCG64 raw state + Generator.normal + float conversion must pass the KAT; recording the "
+                "NumPy version alone is NOT sufficient to release; on KAT failure no phase manifest/hash "
+                "may be produced. Future generator preflight #1 = require_known_answer_compatibility(); "
+                "generators must never call the private unchecked core.",
+    },
 }
 
-STATUS = "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT"
+STATUS = "PREREGISTRATION_V4_BLOCK_STATE_KAT_GATE_READY_FOR_C_FINAL_REAUDIT"
 
 
 def preregistration_dict():
@@ -658,6 +680,7 @@ def audit_checklist():
     return {
         "for": "Claude C one-shot frozen-issue regression of preregistration v4 (FINAL-001..005 batch fix)",
         "must_verify": [
+            "BLOCK-STATE KAT GATE: require_known_answer_compatibility() (6 frozen float.hex vectors; PCG64+Generator.normal) is mandatory before residual draw / resolved block state / phase construction / deep validation / full hash; mismatch -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY; numpy version alone is not the gate; unchecked core private; known-answer JSON==module constants; authoritative deep_manifest_validator.checks describes residual_value==sampler + nuisance_values==none_v1 {}",
             "BLOCK-STATE SAMPLER: confirmatory_v4_block_state is the unique subseed->value source; residual "
             "pcg64_rejection_v1 (PCG64(block_residual_subseed) rejection TruncatedNormal(0,0.005,[-0.01,0.01]) "
             "== DEFAULT_RESIDUAL; no clip; exhaustion->INVALID); nuisance none_v1 == {}; validator recomputes "

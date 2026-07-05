@@ -1,6 +1,6 @@
 {
   "title": "Confirmatory Preregistration v4 FIX4 -- calibration-bias diagnostic history & action selection",
-  "status": "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT",
+  "status": "PREREGISTRATION_V4_BLOCK_STATE_KAT_GATE_READY_FOR_C_FINAL_REAUDIT",
   "base_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
   "audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
   "v4_original_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
@@ -838,7 +838,9 @@
       "resolved_candidate_order == ID.resolve_candidate_order(...) (seed-recomputed exact order, NOT any bank permutation)",
       "execution_order_index == index in ID.resolve_phase_execution_plan(phase)",
       "blocks/sessions/trials lists == frozen canonical storage order (ID.canonical_phase_{block,session,trial}_identities)",
-      "block-shared residual finite in [-0.01,+0.01]; one nuisance set per block",
+      "mandatory block-state KAT gate (confirmatory_v4_block_state.require_known_answer_compatibility) passes before manifest validation/hash; otherwise EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+      "for every block: residual_subseed == ID.block_residual_subseed(...); residual_value is a Python float; residual_value == BS.residual_value_from_subseed(residual_subseed) exactly (frozen block-state sampler); residual in [-0.01,+0.01]",
+      "for every block: nuisance_subseed == ID.block_nuisance_subseed(...); nuisance_values == BS.nuisance_values_from_subseed(...) == none_v1 {} (no extra key)",
       "config_sha256 == canonical_config_sha256() (raw bytes of active confirmatory_v4_config.json)",
       "schema_version == confirmatory_v4_phase_manifest_v1",
       "deterministic_environment == frozen deterministic_environment_manifest_contract (exact 7-key set, exact values, exact types, no extras, no GPU)",
@@ -884,7 +886,25 @@
       "any additional block nuisance"
     ],
     "manifest_hash_uniquely_determined_by": "subseeds + frozen sampler",
-    "validator_recomputes_exact_values": true
+    "validator_recomputes_exact_values": true,
+    "compatibility_gate": {
+      "version": "pcg64_normal_floathex_kat_v1",
+      "function": "confirmatory_v4_block_state.require_known_answer_compatibility",
+      "mandatory_before": [
+        "residual draw",
+        "resolved block state",
+        "phase manifest construction",
+        "deep manifest validation",
+        "full manifest hash"
+      ],
+      "vectors": 6,
+      "comparison": "Python float.hex() exact",
+      "numpy_version_recorded": true,
+      "numpy_version_alone_is_not_the_gate": true,
+      "on_mismatch": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+      "formal_artifact_generation_allowed_on_mismatch": false,
+      "note": "PCG64 raw state + Generator.normal + float conversion must pass the KAT; recording the NumPy version alone is NOT sufficient to release; on KAT failure no phase manifest/hash may be produced. Future generator preflight #1 = require_known_answer_compatibility(); generators must never call the private unchecked core."
+    }
   },
   "determinism_env": {
     "device": "cpu",

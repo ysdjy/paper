@@ -139,6 +139,14 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
     structure subset, and the frozen seeds/config/version. Only after this may the full hash be computed."""
     from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_identity as ID
     from deployment_calibration.offline_v2.calibration_bias import preregistration_v4 as PRE
+    from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_block_state as BS
+
+    # MANDATORY block-state known-answer gate BEFORE any scientific-field validation or hashing: if the
+    # frozen KAT (PCG64 + Generator.normal + float.hex) fails, stop -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY.
+    try:
+        BS.require_known_answer_compatibility()
+    except BS.BlockStateCompatibilityError as e:
+        _err(f"block-state known-answer gate failed: {e}")
 
     if not isinstance(manifest, dict):
         _err("manifest must be a dict")

@@ -214,3 +214,14 @@ exact-checks** them:
 - The generator (Claude A) may NOT choose the RNG, the truncation method, or any additional block nuisance;
   the manifest hash is uniquely determined by the subseeds + this frozen sampler. Known-answer vectors:
   `confirmatory_v4_block_state_known_answers.json`.
+
+## 9. Mandatory block-state known-answer (KAT) gate
+Before ANY production residual draw, resolved block state, phase-manifest construction, deep validation, or
+full-manifest hash, `confirmatory_v4_block_state.require_known_answer_compatibility()` must pass. It recomputes
+6 FROZEN known-answer vectors (train 0/8, validation 0/5, test 0/8) via the private unchecked core and compares
+`float.hex()` exactly (PCG64 raw state + `Generator.normal` + Python float). Any mismatch →
+`BlockStateCompatibilityError` → `EXPERIMENT_INVALID_MANIFEST_INTEGRITY`; no manifest/hash may be produced.
+Recording the NumPy version alone is NOT the gate. The gate is invoked at the top of
+`validate_fully_resolved_phase_manifest` and inside every gated public residual function; the private
+`_residual_value_from_subseed_unchecked` is not exported and a generator must never call it. **Future generator
+preflight #1 = `require_known_answer_compatibility()`.**

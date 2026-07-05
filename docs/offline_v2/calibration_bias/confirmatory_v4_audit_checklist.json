@@ -1,6 +1,7 @@
 {
   "for": "Claude C one-shot frozen-issue regression of preregistration v4 (FINAL-001..005 batch fix)",
   "must_verify": [
+    "BLOCK-STATE KAT GATE: require_known_answer_compatibility() (6 frozen float.hex vectors; PCG64+Generator.normal) is mandatory before residual draw / resolved block state / phase construction / deep validation / full hash; mismatch -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY; numpy version alone is not the gate; unchecked core private; known-answer JSON==module constants; authoritative deep_manifest_validator.checks describes residual_value==sampler + nuisance_values==none_v1 {}",
     "BLOCK-STATE SAMPLER: confirmatory_v4_block_state is the unique subseed->value source; residual pcg64_rejection_v1 (PCG64(block_residual_subseed) rejection TruncatedNormal(0,0.005,[-0.01,0.01]) == DEFAULT_RESIDUAL; no clip; exhaustion->INVALID); nuisance none_v1 == {}; validator recomputes residual (exact float equality) + nuisance ({}); reference placeholders removed; known-answers verified",
     "FINAL-001: frozen seed->order resolution (resolve_order/block/session/candidate/phase-plan); validator recomputes block_order_key/candidate_order_keys/resolved_candidate_order/execution_order_index; no random/RNG/hash()/dict-iteration",
     "FINAL-002: exact config_sha256==canonical_config_sha256(), schema_version, determinism contract (key set + value + type; no extra; no GPU); future commits 40-hex until Step 0",

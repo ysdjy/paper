@@ -93,3 +93,9 @@ Sampled dims (round-1): `grasp_offset_local_y ∈ [-0.06,0.06]` (the only bank a
 (residual = `pcg64_rejection_v1` PCG64(block_residual_subseed) rejection TruncatedNormal(0, 0.005, [-0.01,
 0.01]); nuisance = `none_v1` -> `{}`). The deep validator recomputes both exactly; residual is a Python float
 compared with exact equality. residual is the only block-level hidden variation.
+
+## 11. Block-state KAT gate
+`residual_value`/`nuisance_values` are gated by `confirmatory_v4_block_state.require_known_answer_compatibility()`
+(6 frozen `float.hex()` known-answer vectors; PCG64+Generator.normal+float). The deep validator runs the gate
+first, then recomputes `residual_value` (exact float equality vs `residual_value_from_subseed`) and
+`nuisance_values` (`none_v1` `{}`). KAT failure → EXPERIMENT_INVALID_MANIFEST_INTEGRITY (no hash).

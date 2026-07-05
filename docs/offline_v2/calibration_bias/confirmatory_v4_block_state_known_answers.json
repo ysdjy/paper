@@ -57,5 +57,9 @@
       "nuisance_subseed": 6818819167133771356,
       "nuisance_values": {}
     }
-  ]
+  ],
+  "known_answer_version": "pcg64_normal_floathex_kat_v1",
+  "production_gate_function": "confirmatory_v4_block_state.require_known_answer_compatibility",
+  "mandatory_before_phase_construction": true,
+  "on_mismatch": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY"
 }

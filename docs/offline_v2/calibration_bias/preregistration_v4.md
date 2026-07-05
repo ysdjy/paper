@@ -8,9 +8,23 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT`.** This phase authorizes nothing — Claude C
+**Status: `PREREGISTRATION_V4_BLOCK_STATE_KAT_GATE_READY_FOR_C_FINAL_REAUDIT`.** This phase authorizes nothing — Claude C
 must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, checkpoint, confirmatory data, or run authorization is produced here.
+
+## 0x. Block-state KAT gate + authoritative description sync (closes the last two sampler items)
+- **Mandatory KAT gate:** `confirmatory_v4_block_state.require_known_answer_compatibility()` recomputes 6
+  FROZEN known-answer vectors (source-of-truth literals in `KNOWN_ANSWER_VECTORS`, byte-consistent with
+  `confirmatory_v4_block_state_known_answers.json`) and compares `float.hex()` exactly. It runs BEFORE any
+  residual draw, resolved block state, phase-manifest construction, deep validation, or full hash; any
+  mismatch -> `BlockStateCompatibilityError` -> `EXPERIMENT_INVALID_MANIFEST_INTEGRITY`. Recording the NumPy
+  version alone is not the gate (Scheme A). The sampler algorithm is refactored to a private unchecked core
+  `_residual_value_from_subseed_unchecked` (not in `__all__`; generators must not call it); the public
+  residual API and `resolved_block_state` go through the gate.
+- **Authoritative description:** `deep_manifest_validator.checks` now states the mandatory KAT gate and the
+  per-block exact recompute (`residual_value == BS.residual_value_from_subseed(...)`, `nuisance_values ==
+  none_v1 {}`), replacing the loose 'residual finite; one nuisance set' line. `power_recertification_required
+  = false` (residual law / algorithm / nuisance policy / power all unchanged).
 
 ## 0y. Block-state sampler freeze (closes GENERATOR_IMPLEMENTATION_BLOCKED_MISSING_FROZEN_BLOCK_STATE_SAMPLER)
 - New unique production module `confirmatory_v4_block_state`: the deterministic `subseed -> value` mapping

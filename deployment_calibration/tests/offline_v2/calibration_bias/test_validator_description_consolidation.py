@@ -24,7 +24,7 @@ def _pre():
 
 
 def test_status_consolidated():
-    assert P.STATUS == "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT"
+    assert P.STATUS == "PREREGISTRATION_V4_BLOCK_STATE_KAT_GATE_READY_FOR_C_FINAL_REAUDIT"
     assert _pre()["power_recertification_required"] is False
 
 
