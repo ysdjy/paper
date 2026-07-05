@@ -118,12 +118,18 @@ def best_single(train_sessions, val_sessions, tau):
 
 
 def best_single_legal(train_sessions, val_sessions, tau):
-    """PREREGISTERED (fix1) state-agnostic best-single. Train+val ONLY, no secret.
+    """SIMULATION_ONLY_REFERENCE (fix2). NOT the confirmatory production best-single.
 
-    Rule: (1) max observed mean binary success; (2) tie -> min |offset|; (3) tie -> fixed candidate-bank
-    numeric order {-0.04, 0.00, +0.04} (earliest). No nominal/residual/actual bias, no eff_signed/abs_eff,
-    no tau-|eff| margin, no oracle/secret, no test outcomes. `succ(...)` here is the OBSERVED binary
-    outcome of an executed train/val candidate trial (a legal observable), not the hidden state.
+    Implements the legal *ranking* (max observed mean success -> min |offset| -> bank order) but RECONSTRUCTS
+    each success label via `succ(nominal, residual, offset, tau)`, i.e. from the SECRET hidden state and tau.
+    That is fine for an offline SIMULATION (the sim has no runtime y.success to read), but it is
+    secret-dependent and MUST NOT be the confirmatory production implementation
+    (BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT, Claude C).
+
+    The confirmatory PRODUCTION selector is `confirmatory_v4_selection.select_best_single`, which reads ONLY
+    observed candidate `y.success` (no nominal/residual/tau/eff/oracle). The two agree on all 4500 frozen
+    power configs (`production_best_single_bridge_invariance_v1`), so the production swap needs no power
+    recertification. Kept here only as the simulation baseline / bridge reference.
     """
     sess = list(train_sessions) + list(val_sessions)
     rows = [(o, float(np.mean([succ(s["nominal"], s["residual"], o, tau) for s in sess]))) for o in BANK]

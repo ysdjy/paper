@@ -254,12 +254,53 @@
       "test outcomes"
     ],
     "no_new_observable_continuous_tiebreak": true,
-    "implementation": "deployment_calibration.offline_v2.calibration_bias.learned_selector_power.best_single_legal",
+    "implementation": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single",
+    "production_reads_only": [
+      "split",
+      "session_id",
+      "trial_role",
+      "theta.grasp_offset_local_y",
+      "y.success",
+      "planned_episode_id"
+    ],
+    "production_forbidden_inputs": [
+      "tau",
+      "nominal",
+      "residual",
+      "actual bias",
+      "eff",
+      "oracle",
+      "test records",
+      "success model"
+    ],
+    "selection_algorithm": "equal denominators -> integer observed_success_count per offset; max count; tie -> min|offset|; tie -> earliest in bank order",
+    "input_completeness": {
+      "train_val_sessions": 57,
+      "candidate_records": 171,
+      "checks": [
+        "exactly 171 records",
+        "57 unique sessions",
+        "3 candidates/session",
+        "offset set == {-0.04,0,+0.04}",
+        "no dup (session,offset)",
+        "unique planned_episode_id",
+        "split in {train,validation}",
+        "y.success present and bool"
+      ],
+      "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT"
+    },
+    "simulation_only_reference": "learned_selector_power.best_single_legal (reconstructs label from secret; NOT production; retained as the bridge baseline only)",
+    "bridge_invariance": "production_best_single_bridge_invariance_v1.json (4500/4500 configs agree -> no power recert)",
     "must_save": [
       "per-candidate train/val success score",
       "tie-break trace",
       "final offset",
-      "selection hash"
+      "selection hash",
+      "n_trials_per_offset",
+      "success_count_per_offset",
+      "input_projection_hash",
+      "input_record_set_hash",
+      "selection_artifact_hash"
     ],
     "exploratory_expectation": 0.0,
     "hardcoded_in_confirmatory": false,
@@ -343,6 +384,86 @@
     "early_test_access_verdict": "EXPERIMENT_INVALID_EARLY_TEST_ACCESS",
     "early_test_access_condition": "generating or reading any test outcome before Step 5 completes"
   },
+  "planned_identity_format": {
+    "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_identity",
+    "encoding": "utf-8",
+    "field_sep": "|",
+    "kv_sep": "=",
+    "prefix": "v4",
+    "identity_template": {
+      "block": "v4|split={split}|block={block_index:02d}",
+      "session": "v4|split={split}|block={block_index:02d}|nominal={nominal:+.3f}",
+      "trial": "v4|split={split}|block={block_index:02d}|nominal={nominal:+.3f}|role={role}|offset={offset:+.3f}"
+    },
+    "planned_episode_id": "v4ep- + sha256(trial_identity.utf8).hexdigest()[:24]",
+    "attempt_id": "{planned_episode_id}|attempt={attempt_index:02d}  (attempt NOT in scientific randomization)",
+    "resume_key": "planned_episode_id",
+    "float_format": "signed fixed-point, exactly 3 decimals, unit metre; zero=+0.000; negative zero forbidden",
+    "block_index": "zero-based, exactly 2 digits",
+    "splits": [
+      "train",
+      "validation",
+      "test"
+    ],
+    "roles": [
+      "probe",
+      "candidate"
+    ],
+    "block_ranges": {
+      "train": [
+        0,
+        8
+      ],
+      "validation": [
+        0,
+        5
+      ],
+      "test": [
+        0,
+        8
+      ]
+    },
+    "probe_offset": -0.04,
+    "candidate_offsets": [
+      -0.04,
+      0.0,
+      0.04
+    ],
+    "domain_labels": [
+      "residual",
+      "nuisance",
+      "session_order",
+      "nominal_order",
+      "candidate_order",
+      "trial_init"
+    ],
+    "domain_subseed_rule": "subseed(<seed>, canonical_identity + '|domain=<label>')",
+    "storage_sort": "split(train=0,validation=1,test=2) -> block asc -> nominal asc -> role(probe=0,candidate=1) -> offset asc",
+    "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, UTF-8, no trailing newline",
+    "planned_trials_total": 300,
+    "planned_ids_unique": true
+  },
+  "identity_template": {
+    "block": "v4|split={split}|block={block_index:02d}",
+    "session": "v4|split={split}|block={block_index:02d}|nominal={nominal:+.3f}",
+    "trial": "v4|split={split}|block={block_index:02d}|nominal={nominal:+.3f}|role={role}|offset={offset:+.3f}"
+  },
+  "determinism_env": {
+    "device": "CPU",
+    "torch.set_num_threads": 1,
+    "torch.set_num_interop_threads": 1,
+    "torch.use_deterministic_algorithms": true,
+    "env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "explicit_hyperparameters_required": true,
+    "no_constructor_defaults": true,
+    "deterministic_unsupported": "if a required deterministic op is unavailable -> model-fit INVALID",
+    "no_gpu_switch": "switching to GPU voids the protocol; may not claim the same protocol",
+    "library_versions_recorded_in": "model_analysis_freeze.json"
+  },
   "manifest_fields": [
     "master_seed",
     "train_residual_seed",
@@ -380,5 +501,5 @@
     "priority": "SECONDARY",
     "no_post_hoc_T_as_primary_endpoint": true
   },
-  "status": "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT"
+  "status": "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT"
 }

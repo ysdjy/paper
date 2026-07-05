@@ -1,0 +1,63 @@
+{
+  "status": "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT",
+  "previous_status": "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT",
+  "reaudit_commit": "21b676b749074a85ad0d9a02e47d6f712a22baa2",
+  "fix1_commit": "91a41e51282f716595bc3553ba500e6e2af95f40",
+  "power_cert_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX1",
+  "power_recertification_required": false,
+  "blockers": {
+    "1_BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT": {
+      "fixed": true,
+      "production_implementation": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_selection.select_best_single",
+      "reads_only": ["split", "session_id", "trial_role", "theta.grasp_offset_local_y", "y.success", "planned_episode_id"],
+      "forbidden": ["tau", "nominal", "residual", "actual bias", "eff", "oracle", "test records", "success model"],
+      "algorithm": "max observed_success_count -> tie min|offset| -> tie bank order",
+      "input_completeness": {"records": 171, "sessions": 57, "per_session": 3,
+                             "on_violation": "EXPERIMENT_INVALID_BEST_SINGLE_INPUT"},
+      "simulation_only_reference": "learned_selector_power.best_single_legal",
+      "bridge_invariance": {"total": 4500, "mismatch": 0, "agree_all": true,
+                            "evidence": "production_best_single_bridge_invariance_v1.json"}
+    },
+    "2_BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN": {
+      "fixed": true,
+      "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_identity",
+      "templates": {
+        "block": "v4|split={split}|block={block:02d}",
+        "session": "v4|split={split}|block={block:02d}|nominal={nominal:+.3f}",
+        "trial": "v4|split={split}|block={block:02d}|nominal={nominal:+.3f}|role={role}|offset={offset:+.3f}"
+      },
+      "planned_episode_id": "v4ep- + sha256(trial_identity.utf8).hexdigest()[:24]",
+      "attempt_id": "{planned_episode_id}|attempt={attempt:02d}",
+      "resume_key": "planned_episode_id",
+      "float_format": "signed fixed 3-decimals metre; zero=+0.000; negative zero forbidden",
+      "block_ranges": {"train": [0, 8], "validation": [0, 5], "test": [0, 8]},
+      "domain_labels": ["residual", "nuisance", "session_order", "nominal_order", "candidate_order", "trial_init"],
+      "planned_trials_total": 300, "planned_ids_unique": true
+    }
+  },
+  "determinism_env": {
+    "device": "CPU", "torch.set_num_threads": 1, "torch.set_num_interop_threads": 1,
+    "torch.use_deterministic_algorithms": true,
+    "env": {"OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1"},
+    "explicit_hyperparameters_required": true, "no_gpu_switch": true
+  },
+  "unchanged": ["candidate_bank", "test_geometry_pm035", "model+hyperparameters+seeds",
+                "primary_comparator", "0.15_CI_threshold", "75_sessions_300_trials", "power_result",
+                "fix1_resolutions(seeds/seal/model-failure)"],
+  "new_files": ["confirmatory_v4_selection.py", "confirmatory_v4_identity.py",
+                "preregistration_v4_fix2_summary.md", "preregistration_v4_fix2_summary.json",
+                "production_best_single_bridge_invariance_v1.md",
+                "production_best_single_bridge_invariance_v1.json",
+                "test_preregistration_v4_fix2.py"],
+  "tests": {
+    "test_preregistration_v4_fix2.py": "new; all PASS",
+    "test_preregistration_v4.py + test_preregistration_v4_fix1.py": "B-owned; status updated to fix2; all PASS",
+    "claude_c_audit_files": "UNMODIFIED; fix1-reaudit canonical-identity strict-xfail now XPASS(strict)=fail (blocker2 fixed); production-best-single strict-xfail stays xfail (targets best_single_legal, intentionally the SIMULATION_ONLY_REFERENCE)"
+  },
+  "no_generator": true,
+  "no_manifest_instance": true,
+  "no_checkpoint": true,
+  "no_runtime_or_confirmatory_data": true,
+  "no_run_authorization": true
+}

@@ -26,8 +26,11 @@ STEP 3  FREEZE TRAIN/VAL DATA
         integrity validation, leakage validation, dataset hashes, train/val lock file.
 
 STEP 4  SELECT BEST-SINGLE + TRAIN MODELS   (train + validation only)
-        apply best_single_legal (no secret); train DeepSets K0 and K1 for each of the 5 model seeds
-        (10 checkpoints); ALL 10 must be valid (analysis-plan §9); save state_dict hashes.
+        apply the PRODUCTION selector confirmatory_v4_selection.select_best_single (observed y.success only,
+        no secret; input-completeness gate -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT); train DeepSets K0 and K1
+        for each of the 5 model seeds (10 checkpoints) under the frozen deterministic env (CPU, 1 thread,
+        use_deterministic_algorithms, OMP/MKL/OPENBLAS=1, explicit HP); ALL 10 must be valid (analysis-plan
+        §9); save state_dict hashes.
 
 STEP 5  FREEZE ANALYSIS  (before ANY test trial)
         freeze: 5 K0 hashes, 5 K1 hashes, best-single artifact/hash, feature-extraction code hash,

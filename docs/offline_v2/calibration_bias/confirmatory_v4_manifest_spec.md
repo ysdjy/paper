@@ -40,12 +40,47 @@ bootstrap_seed                  = 9014517173581927929
 `model_seeds = {1103,2207,3301,4409,5519}` are fixed (not drawn). These integers are re-derivable by anyone
 from the rule above; a test recomputes them.
 
-### 2.2 Identity-addressed sub-randomization (BLOCKER B)
-Per-item randomness uses `subseed(domain_seed, planned_identity)` — e.g.
-`subseed(train_residual_seed, "block=03")`, `subseed(candidate_order_seed, "session=<id>")`,
-`subseed(test_residual_seed, "block=07")`, `subseed(master_seed, "trial=<planned_episode_id>")`. Consequences:
-results do **not** depend on Python iteration order; resume is bit-identical; the test manifest has exactly
-one deterministic result; a manifest cannot be regenerated-and-cherry-picked.
+### 2.2 Identity-addressed sub-randomization (BLOCKER B + FIX2 BLOCKER 2)
+Per-item randomness uses `subseed(domain_seed, canonical_identity + "|domain=<label>")` with the **frozen
+canonical identity strings** (§2.4) and frozen domain labels (A may not rename them):
+```
+block residual   : subseed(<split>_residual_seed,      block_identity  + "|domain=residual")
+block nuisance    : subseed(master_seed,               block_identity  + "|domain=nuisance")
+session order     : subseed(<split>_session_order_seed, session_identity+ "|domain=session_order")
+nominal order     : subseed(<split>_nominal_order_seed, session_identity+ "|domain=nominal_order")
+candidate order   : subseed(candidate_order_seed,       session_identity+ "|domain=candidate_order")
+trial init        : subseed(master_seed,               trial_identity  + "|domain=trial_init")
+```
+Consequences: results do **not** depend on Python iteration order; resume is bit-identical (keyed on
+`planned_episode_id`, attempt excluded); the test manifest has exactly one deterministic result; a manifest
+cannot be regenerated-and-cherry-picked. Reference implementation: `confirmatory_v4_identity`.
+
+### 2.4 FIX2 — canonical planned identity (frozen; BLOCKER 2)
+```
+encoding=UTF-8 ; lowercase ascii literals ; field sep "|" ; kv sep "=" ; no whitespace
+block index = zero-based, exactly 2 digits ; float = signed fixed-point, exactly 3 decimals, metre
+zero = +0.000 ; negative zero forbidden -> +0.000
+block_identity   = v4|split={split}|block={block:02d}
+session_identity = v4|split={split}|block={block:02d}|nominal={nominal:+.3f}
+trial_identity   = v4|split={split}|block={block:02d}|nominal={nominal:+.3f}|role={role}|offset={offset:+.3f}
+planned_episode_id = "v4ep-" + sha256(trial_identity.utf8).hexdigest()[:24]
+attempt_id = {planned_episode_id}|attempt={attempt:02d}   (attempt NOT in scientific randomization)
+resume_key = planned_episode_id
+splits {train,validation,test} ; roles {probe,candidate}
+block ranges: train 00..08, validation 00..05, test 00..08
+probe offset -0.040 ; candidate offsets {-0.040,+0.000,+0.040}
+```
+Examples: `v4|split=test|block=08|nominal=+0.035|role=probe|offset=-0.040` →
+`planned_episode_id` `v4ep-<24 lowercase hex>`. All **300** planned ids are unique; role distinguishes the
+probe from the candidate at −0.04. The manifest stores `canonical_block_identity`,
+`canonical_session_identity`, `canonical_trial_identity`, `planned_episode_id` per trial.
+
+### 2.5 Canonical storage order & manifest hash (frozen)
+Storage/hash order (distinct from execution order, which follows the order seeds):
+`split rank (train=0, validation=1, test=2) → block asc → nominal asc → role (probe=0, candidate=1) →
+offset asc`. Canonical JSON: `sort_keys=True, separators=(",",":"), ensure_ascii=False`, UTF-8, no trailing
+newline; `manifest_hash = sha256(lowercase hex)`. Reproducible via
+`confirmatory_v4_identity.canonical_manifest_hash()`.
 
 ### 2.3 Other required manifest fields
 ```

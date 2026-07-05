@@ -1,0 +1,116 @@
+{
+  "comparison": "production observed-outcome selector (confirmatory_v4_selection.select_best_single) vs SIMULATION_ONLY_REFERENCE (learned_selector_power.best_single_legal)",
+  "total_configs_checked": 4500,
+  "mismatch_count": 0,
+  "agree_all": true,
+  "grid": {
+    "designs": [
+      [
+        9,
+        6,
+        9
+      ],
+      [
+        12,
+        9,
+        12
+      ],
+      [
+        18,
+        9,
+        18
+      ]
+    ],
+    "taus": [
+      0.0342,
+      0.03425,
+      0.0343
+    ],
+    "seeds_per_config": 500
+  },
+  "per_config": [
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0342,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.03425,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        9,
+        6,
+        9
+      ],
+      "tau": 0.0343,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0342,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.03425,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        12,
+        9,
+        12
+      ],
+      "tau": 0.0343,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0342,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.03425,
+      "mismatch": 0
+    },
+    {
+      "design": [
+        18,
+        9,
+        18
+      ],
+      "tau": 0.0343,
+      "mismatch": 0
+    }
+  ],
+  "power_recertification_required": false,
+  "note": "production selector reads ONLY observed y.success; simulation reference reconstructs from secret nominal/residual/tau. Identical selection everywhere -> the secret path was non-decisive; no power recert."
+}

@@ -8,9 +8,25 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT`.** This phase authorizes nothing — Claude C must
-return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
+**Status: `PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT`.** This phase authorizes nothing — Claude C
+must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, confirmatory data, or run authorization is produced here.
+
+## 0a. Fix2 changes (resolving Claude C's two 2nd-pass blockers)
+- **1 `BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT`** — the confirmatory production best-single is
+  now `confirmatory_v4_selection.select_best_single`, reading **only** observed candidate `y.success`
+  (allowlist `split, session_id, trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id`);
+  it never touches tau/nominal/residual/actual/eff/oracle/test/success-model. The simulation helper
+  `learned_selector_power.best_single_legal` is demoted to `SIMULATION_ONLY_REFERENCE`. The active config's
+  `best_single.implementation` points to the production function. Bridge: production == simulation on
+  **4500/4500** frozen configs (`production_best_single_bridge_invariance_v1`) → **no power recert**.
+- **2 `BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN`** — canonical block/session/trial identity strings,
+  `+.3f` padding, `+0.000` zero, `planned_episode_id = v4ep-<sha256(trial_identity)[:24]>`, domain subseeds,
+  storage sort, and canonical JSON are frozen as pure functions in `confirmatory_v4_identity` (300 planned
+  ids, all unique).
+- Minor: deterministic model environment pinned (CPU, `torch.set_num_threads(1)`,
+  `set_num_interop_threads(1)`, `use_deterministic_algorithms(True)`, `OMP/MKL/OPENBLAS=1`); explicit HP; no
+  GPU switch. `power_recertification_required = false`.
 
 ## 0. Fix1 changes (resolving Claude C's four blockers)
 - **A `BLOCKER_SECRET_TIEBREAK`** — best-single tie-break no longer reads the secret; the illegal
@@ -106,15 +122,21 @@ validity & failure semantics** (all 5 seeds must be valid, retry ≤ 1, separate
 namespace, `EXPERIMENT_INVALID_MODEL_FIT`) are in the analysis plan §1/§9. Full list in
 `confirmatory_v4_analysis_plan.md` / `MODEL` in the JSON.
 
-## 7. Best-single (§9) — FIX1: no secret tie-break
-Train+validation **only** (test never participates). **Legal rule (fix1):** (1) maximize observed mean
-binary success over train+val candidate trials; (2) tie → min |offset|; (3) tie → first in the frozen bank
-order `{-0.04, 0.00, +0.04}`. **No** `τ−|eff|` / secret continuous margin, no nominal/residual/actual bias,
-no eff, no oracle, no test outcomes; no new observable continuous tie-break is introduced. Implementation:
-`learned_selector_power.best_single_legal`. Save per-candidate train/val score, tie-break trace, final
-offset, selection hash. Exploratory expectation is offset 0 but it is **computed in confirmatory, not
-hardcoded**. The removed secret tie-break was **dead code** on every frozen config (4500/4500 replicates,
-0 step-1 ties, 0 old↔new mismatches → `best_single_tiebreak_invariance_v1`), so **no power recertification**.
+## 7. Best-single (§9) — FIX2: observed-outcome-only production selector
+Train+validation **only** (test never participates). **Production implementation (fix2):**
+`confirmatory_v4_selection.select_best_single`, which reads **only** observed candidate outcomes — allowlist
+`split, session_id, trial_role, theta.grasp_offset_local_y, y.success, planned_episode_id` — and **never**
+tau/nominal/residual/actual bias/eff/oracle/test/success-model. Rule: equal denominators → (1) max integer
+**observed_success_count** per offset; (2) tie → min |offset|; (3) tie → earliest in bank order
+`{-0.04, 0.00, +0.04}`. Input completeness (else `EXPERIMENT_INVALID_BEST_SINGLE_INPUT`): exactly **171**
+candidate records, **57** unique sessions, 3 per session, offset set `{-0.04,0,+0.04}`, no duplicate
+`(session,offset)`, unique `planned_episode_id`, split ∈ {train,validation}, `y.success` present & bool.
+Save per-candidate score, tie-break trace, final offset, `n_trials_per_offset`, `success_count_per_offset`,
+`input_projection_hash`, `input_record_set_hash`, `selection_artifact_hash`. Offset 0 is **not** hardcoded.
+`learned_selector_power.best_single_legal` is retained only as a `SIMULATION_ONLY_REFERENCE` (it reconstructs
+the label from the secret and is not production). The production selector equals the simulation reference on
+**4500/4500** frozen configs (`production_best_single_bridge_invariance_v1`) and the fix1 tie-break was dead
+code (`best_single_tiebreak_invariance_v1`), so **no power recertification**.
 
 ## 8. History allowlist / secret denylist (§7)
 Model reads history ONLY via `features.probe_vector` — **8 fields**: `theta.grasp_offset_local_y`,

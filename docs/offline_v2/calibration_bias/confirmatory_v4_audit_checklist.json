@@ -1,7 +1,11 @@
 {
-  "for": "Claude C re-audit of preregistration v4 FIX1",
+  "for": "Claude C final re-audit of preregistration v4 FIX2",
   "must_verify": [
-    "BLOCKER A: best_single rule has NO tau/eff/secret; implementation=best_single_legal; invariance proven",
+    "FIX2 BLOCKER 1: best_single.implementation = confirmatory_v4_selection.select_best_single (observed y.success only; no tau/nominal/residual/eff/oracle/test); best_single_legal demoted to SIMULATION_ONLY_REFERENCE; bridge invariance 4500/4500 (production==simulation)",
+    "FIX2 BLOCKER 2: canonical planned identity fully frozen (block/session/trial templates, +.3f padding, +0.000 zero, planned_episode_id=v4ep-<sha256[:24]>, domain subseeds, storage sort, canonical JSON); 300 planned ids unique; module confirmatory_v4_identity",
+    "FIX2 minor: deterministic env pinned (CPU, 1 thread, use_deterministic_algorithms, OMP/MKL/OPENBLAS=1); explicit HP; no GPU switch",
+    "input completeness: 171 records / 57 sessions / 3 per session -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+    "BLOCKER A (fix1): best_single rule observable-only; no secret margin",
     "BLOCKER B: all 15 randomization seeds are exact ints from the frozen SHA256 rule; subseed rule frozen",
     "BLOCKER C: exactly ONE seal scheme (model-freeze-before-test-generation); no either/or; early-access INVALID",
     "BLOCKER D: model-fit failure separate namespace; all-5-seeds-valid required; retry<=1; no seed drop",

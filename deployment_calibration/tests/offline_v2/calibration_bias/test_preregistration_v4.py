@@ -200,7 +200,7 @@ def test_claim_scope_wording(pre):
 
 
 def test_status_and_no_authorization(pre):
-    assert pre["status"] == "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT"
+    assert pre["status"] == "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT"
     for k in ["no confirmatory generator", "no confirmatory data", "no run authorization"]:
         assert k in pre["hard_constraints"]
 
@@ -211,7 +211,7 @@ def test_emitted_json_matches_module(tmp_path):
     j = json.load(open(os.path.join(str(tmp_path), "preregistration_v4.json")))
     assert j["trial_counts"]["full_task_trials_total"] == 300
     assert j["design"]["test_nominals"] == [-0.035, 0.035]
-    assert j["status"] == "PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT"
+    assert j["status"] == "PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT"
 
 
 def test_docs_json_present_and_consistent(pre):

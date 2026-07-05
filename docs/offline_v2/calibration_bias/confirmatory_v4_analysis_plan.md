@@ -27,14 +27,27 @@ before unsealing test. Machine form: `PRIMARY`/`SECONDARY`/`BOOTSTRAP`/`SEED_GAT
 | training failure | **FIX1:** an analysis-stage event in the `model_fit_failure_count` namespace (§9); NOT a runtime trial, NOT part of the 300-trial invalid budget |
 | explicit hyperparameters | **FIX1:** generator/training must pass all HP explicitly; constructor defaults `max_epochs=300, patience=30` differ from frozen `200/25` and must not be relied on |
 
-## 2. Best-single (train + validation only) — FIX1: no secret tie-break
-Rule (frozen, legal): (1) max observed mean binary success over train+val candidate trials → (2) tie:
-min |offset| → (3) tie: first in the frozen bank order `{-0.04, 0.00, +0.04}`. **The illegal `τ − |eff|`
-step (which reads the secret `actual_bias`) is REMOVED** (BLOCKER A); no new observable continuous tie-break
-replaces it. Implementation: `learned_selector_power.best_single_legal`. Save per-candidate train/val score,
-tie-break trace, final offset, selection hash. **Test never participates.** Exploratory expectation offset 0,
-but **computed in confirmatory, not hardcoded**. Selection-invariant on 4500/4500 frozen replicates
-(0 step-1 ties, 0 old↔new mismatches, `best_single_tiebreak_invariance_v1`) → **no power recertification**.
+## 2. Best-single (train + validation only) — FIX2: observed-outcome-only production selector
+Production implementation: `confirmatory_v4_selection.select_best_single` — reads **only** observed
+candidate outcomes (`split, session_id, trial_role, theta.grasp_offset_local_y, y.success,
+planned_episode_id`) and **never** tau/nominal/residual/actual/eff/oracle/test/success-model. Rule (equal
+denominators): (1) max integer **observed_success_count** per offset → (2) tie: min |offset| → (3) tie:
+earliest in bank order `{-0.04, 0.00, +0.04}`. **Input completeness** (else
+`EXPERIMENT_INVALID_BEST_SINGLE_INPUT`): exactly 171 candidate records, 57 sessions, 3/session, offset set
+`{-0.04,0,+0.04}`, no dup `(session,offset)`, unique `planned_episode_id`, split ∈ {train,validation},
+`y.success` bool — no missing record may be ignored, the denominator may not change. Saves per-candidate
+score, tie-break trace, final offset, `n_trials_per_offset`, `success_count_per_offset`, hashes.
+`learned_selector_power.best_single_legal` (which reconstructs the label from the secret) is a
+`SIMULATION_ONLY_REFERENCE`, **not** production. **Test never participates.** Offset 0 is not hardcoded.
+Production == simulation on 4500/4500 frozen configs (`production_best_single_bridge_invariance_v1`); the
+fix1 tie-break was dead code (`best_single_tiebreak_invariance_v1`) → **no power recertification**.
+
+### 2b. Deterministic model environment (FIX2, frozen)
+`device=CPU`; `torch.set_num_threads(1)`; `torch.set_num_interop_threads(1)`;
+`torch.use_deterministic_algorithms(True)`; env `OMP_NUM_THREADS=MKL_NUM_THREADS=OPENBLAS_NUM_THREADS=1`.
+All hyperparameters passed explicitly (no constructor defaults). If a required deterministic op is
+unavailable → model-fit INVALID. Switching to GPU voids the protocol. Library/environment versions are
+recorded in `model_analysis_freeze.json`.
 
 ## 3. K0 / K1 / Oracle
 - **K1 (B2)** = DeepSets with one frozen probe-history entry. **K0 (B1)** = the *same* DeepSets with empty
