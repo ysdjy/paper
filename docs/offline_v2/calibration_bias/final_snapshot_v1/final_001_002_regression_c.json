@@ -1,0 +1,57 @@
+{
+  "verdict": "GO_TO_GENERATOR_IMPLEMENTATION",
+  "auditor": "Claude C (independent, read-only, FINAL-001/002 regression only)",
+  "audited_commit": "48f28ac3dc9836680c010ff58e0cccd1c669b01e",
+  "previous_regression_commit": "ad2a9ca25570b087382747ef474deb6ebc4b16ca",
+  "frozen_issue_source_commit": "01ac19d287e2106ecddd9662dad7351f4d621361",
+  "audited_snapshot": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "issue_list_frozen": true,
+  "scope_note": "Regression restricted to FINAL-001 and FINAL-002. FINAL-003/004/005 were not re-audited (source files unchanged vs the previous regression base, confirmed by diff). No new issue IDs.",
+  "FINAL-001": "RESOLVED",
+  "FINAL-002": "RESOLVED",
+  "FINAL-003": "UNCHANGED_RESOLVED",
+  "FINAL-004": "UNCHANGED_RESOLVED",
+  "FINAL-005": "UNCHANGED_RESOLVED",
+  "authorizes_generator_implementation": true,
+  "authorizes_generator_smoke": true,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "critical_new_evidence": [],
+  "generator_smoke_constraint": "smoke_only=true; only isolated, clearly-marked informal test artifacts. NO formal phase manifest instance, NO model checkpoint, NO confirmatory records, NO 300-trial run.",
+  "final_001_verification": {
+    "storage_order_functions": "canonical_phase_block_identities / canonical_phase_session_identities / canonical_phase_trial_identities present; sizes 15/57/228 (train_validation) and 9/18/72 (test); unique; sessions use sorted(NOMINALS[split]); trials reuse the frozen canonical_manifest_rows rule (verified).",
+    "validator_rejects_non_canonical_lists": "shuffling blocks/sessions/trials each -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY with distinct messages 'blocks/sessions/trials list not in canonical storage order'; shuffling trials while execution_order_index stays a complete 0..227 set is STILL rejected (storage order enforced independently) (verified).",
+    "manifest_bytes_unique": "two independent reference constructions -> identical canonical JSON and identical full hash; no silent sort / hash normalization masks a non-canonical manifest (verified).",
+    "storage_vs_execution_separated": "trials list order == canonical storage order; sorted-by-execution_order_index order == resolve_phase_execution_plan(phase); the two orders genuinely differ (verified).",
+    "active_descriptions": "config deep_manifest_validator.checks: 'resolved_candidate_order == ID.resolve_candidate_order(...) (seed-recomputed exact order, NOT any bank permutation)', 'execution_order_index == index in ID.resolve_phase_execution_plan(phase)', 'blocks/sessions/trials lists == frozen canonical storage order'; explicit 'storage_order_vs_execution_order' field documents storage != execution; block_order in domain_labels; stale 'resolved_candidate_order is a bank permutation' removed (verified)."
+  },
+  "final_002_verification": {
+    "exact_checks_still_valid": "canonical_config_sha256() == sha256(raw active config bytes); config_sha256 1-bit flip / wrong schema_version / determinism True-for-1 / GPU device / extra key all -> INVALID (verified; no regression).",
+    "active_description_synced": "config deep_manifest_validator.checks now states 'config_sha256 == canonical_config_sha256() (raw bytes of active confirmatory_v4_config.json)', 'schema_version == confirmatory_v4_phase_manifest_v1', 'deterministic_environment == frozen 7-key contract (exact values + types, no extras, no GPU)', 'protocol/generator/runtime commits 40-hex format at validation; exact values frozen at generator Step 0'; stale 'config/commit hex formats; ...; device==cpu' removed; no false claim that future commits are already fixed (verified)."
+  },
+  "invariants_unchanged": {
+    "candidate_bank": [-0.04, 0.0, 0.04],
+    "test_nominals": [-0.035, 0.035],
+    "blocks": {"train": 9, "val": 6, "test": 9},
+    "power_verdict": "POWER_SUFFICIENT_FOR_PREREG_V4",
+    "data_306_sha256_prefix": "131750e158032e53",
+    "final_003_004_005_source_files_diff": "empty (manifest_spec / claim_scope / snapshot_manifest unchanged vs ad2a9ca)"
+  },
+  "tests": {
+    "b_completion_suite": "test_final_001_002_completion.py -> 12 passed",
+    "c_prior_regression_runxfail": "test_frozen_issue_regression_final_001_005_c.py --runxfail -> 10 passed (the 3 previously-INCOMPLETE assertions now PASS)",
+    "c_final_regression_suite": "test_final_001_002_regression_c.py -> 10 passed"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/final_001_002_regression_c.md",
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/final_001_002_regression_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_final_001_002_regression_c.py"
+  ]
+}
