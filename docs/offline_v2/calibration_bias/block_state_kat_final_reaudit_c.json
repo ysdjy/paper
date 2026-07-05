@@ -1,0 +1,59 @@
+{
+  "verdict": "REISSUE_GO_TO_GENERATOR_IMPLEMENTATION",
+  "auditor": "Claude C (independent, read-only, block-state KAT-gate final regression only)",
+  "audited_commit": "cb92f4ff44faf93f22deb8e49dab79ef61dd1691",
+  "previous_reaudit_commit": "0040f289acccda3d8cbed578f3c21a6fc97146db",
+  "source_blocker_commit": "33806f0654396c4ef53b5e17beb25166c2db1f13",
+  "prior_go_commit": "45599ca69fbbf415c08c41579506ae9010fff94f",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "scope": "block-state sampler remaining two items only (known_answer_compatibility_gate, active_spec_consistency)",
+  "known_answer_compatibility_gate": "RESOLVED",
+  "active_spec_consistency": "RESOLVED",
+  "all_prior_sampler_areas": "UNCHANGED_RESOLVED",
+  "FINAL-001": "UNCHANGED_RESOLVED",
+  "FINAL-002": "UNCHANGED_RESOLVED",
+  "FINAL-003": "UNCHANGED_RESOLVED",
+  "FINAL-004": "UNCHANGED_RESOLVED",
+  "FINAL-005": "UNCHANGED_RESOLVED",
+  "authorizes_generator_implementation": true,
+  "authorizes_generator_smoke": true,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "critical_new_evidence": [],
+  "generator_restart_note": "Claude A must start from / rebase onto THIS C GO commit; the old 45599ca is no longer a recovery basis. Allowed: generator implementation + smoke_only=true isolated smoke. Forbidden: formal train_validation/test manifest, combined plan, checkpoint, confirmatory records, 300-trial run.",
+  "known_answer_compatibility_gate_verification": {
+    "frozen_literals": "KNOWN_ANSWER_VERSION='pcg64_normal_floathex_kat_v1'; RESIDUAL_SAMPLER_VERSION='pcg64_rejection_v1'; KNOWN_ANSWER_VECTORS = 6 source-literal tuples for {train 0/8, validation 0/5, test 0/8}; module literals == known-answers JSON field-by-field; expected values are NOT regenerated at import; the production gate does not require reading the JSON (JSON is audit evidence only).",
+    "unchecked_core_private": "_residual_value_from_subseed_unchecked keeps the verified PCG64 rejection algorithm; it is NOT in __all__; SPEC/config declare generators must never call it; the reference builder and validator use only the gated public API.",
+    "validate_known_answer_vectors": "normal path returns {passed:true, known_answer_version, sampler_version, numpy_version==actual, vectors_checked:6}; recomputes each vector's residual_subseed/nuisance_subseed (ID.*), residual float.hex() (unchecked core), and nuisance=={}, comparing to the frozen literals.",
+    "drift_blocking": "hex mismatch, residual/nuisance subseed literal mismatch, RESIDUAL_SAMPLER_VERSION drift, KNOWN_ANSWER_VERSION drift, and nuisance_values_from_subseed returning non-empty each raise BlockStateCompatibilityError and block ALL of validate_known_answer_vectors / require_known_answer_compatibility / residual_value(_from_subseed) / resolved_block_state / reference_phase_manifest / validate_fully_resolved_phase_manifest / fully_resolved_phase_manifest_hash -> no full hash, no resolved block state (verified).",
+    "hex_mismatch_diagnostics": "error message includes the vector identity (split,block), expected + actual float.hex(), numpy version, sampler version, and KAT version (verified).",
+    "exhaustion_classification": "monkeypatched unchecked-core BlockStateSamplerExhausted propagates through the KAT with verdict EXPERIMENT_INVALID_MANIFEST_INTEGRITY (a classified, non-generic manifest-integrity error); validate_known_answer_vectors does not falsely return success and downstream manifest hash fails (verified). Acceptable per the audit's error-contract note.",
+    "no_success_cache": "require_known_answer_compatibility runs the KAT every call: pass -> inject a bad vector -> next call blocks immediately -> restore -> passes again (verified).",
+    "gate_in_validator_and_hash": "validate_fully_resolved_phase_manifest calls BS.require_known_answer_compatibility() BEFORE any scientific-field validation; fully_resolved_phase_manifest_hash calls the deep validator first. An already-built valid manifest is rejected by both validate and hash when KAT drift is injected (verified -> not a reference-construction false positive)."
+  },
+  "active_spec_consistency_verification": {
+    "single_authoritative_block": "deep_manifest_validator.checks (one list) now states: 'mandatory block-state KAT gate (confirmatory_v4_block_state.require_known_answer_compatibility) passes before manifest validation/hash; otherwise EXPERIMENT_INVALID_MANIFEST_INTEGRITY'; 'residual_subseed == ID.block_residual_subseed(...); residual_value is a Python float; residual_value == BS.residual_value_from_subseed(residual_subseed) exactly'; 'nuisance_subseed == ID.block_nuisance_subseed(...); nuisance_values == BS.nuisance_values_from_subseed(...) == none_v1 {} (no extra key)'. The loose 'block-shared residual finite in range; one nuisance set per block' is no longer the only rule.",
+    "compatibility_gate_config": "config/preregistration block_state_sampler.compatibility_gate = {version pcg64_normal_floathex_kat_v1, function require_known_answer_compatibility, vectors 6, comparison 'Python float.hex() exact', numpy_version_recorded true, numpy_version_alone_is_not_the_gate true, mandatory_before [residual draw, resolved block state, phase manifest construction, deep manifest validation, full manifest hash], on_mismatch EXPERIMENT_INVALID_MANIFEST_INTEGRITY, formal_artifact_generation_allowed_on_mismatch false, generator preflight #1, unchecked core forbidden for generator}."
+  },
+  "invariance": {
+    "residual_law": "TruncatedNormal(0,0.005,[-0.01,0.01]) unchanged; PCG64 rejection algorithm + MAX_ATTEMPTS=1000 + none_v1 {} unchanged; confirmatory_v4_identity byte-unchanged.",
+    "design_power": "candidate bank {-0.04,0,+0.04}, nominals +-0.035, blocks 9/6/9, DeepSets/HP/seeds, primary estimator, bootstrap, 0.15; models_v2 and test_geometry_power_verdict_v1.json (POWER_SUFFICIENT_FOR_PREREG_V4) byte-unchanged; FINAL-001..005 unchanged; 306 data 131750e1...",
+    "power_recertification_required": false
+  },
+  "tests": {
+    "c_prior_reaudit_runxfail": "test_block_state_sampler_reaudit_c.py::test_mandatory_known_answer_or_version_gate_exists and ::test_authoritative_checks_describe_exact_recompute -> PASS (--runxfail)",
+    "b_block_state_and_kat_suites": "test_confirmatory_v4_block_state.py + test_confirmatory_v4_block_state_kat_gate.py -> 25 passed",
+    "c_final_reaudit_suite": "test_block_state_kat_final_reaudit_c.py -> 12 passed (frozen literals + JSON parity; unchecked-core private; KAT normal report; hex/subseed/version/nuisance drift block-all + diagnostics; exhaustion verdict; no-cache; reference 228/72 reproducible; authoritative+config gate; invariants)"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/block_state_kat_final_reaudit_c.md",
+    "docs/offline_v2/calibration_bias/block_state_kat_final_reaudit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_block_state_kat_final_reaudit_c.py"
+  ]
+}
