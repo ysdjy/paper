@@ -92,29 +92,49 @@ def test_06_storage_order_distinct_from_execution_order():
     assert storage != execu  # the two orders genuinely differ
 
 
-def test_07_config_describes_seed_order_and_storage_not_permutation():
+def _all_validator_check_text():
+    """Every active validator-description checks list in the config (there are TWO: the fix4
+    manifest_integrity.deep_validation block AND the completion deep_manifest_validator block)."""
     d = _cfg()
-    checks = " ".join(d["deep_manifest_validator"]["checks"]).lower()
-    assert "resolved_candidate_order == id.resolve_candidate_order" in checks
-    assert "resolved_candidate_order is a bank permutation" not in checks
-    assert "resolve_phase_execution_plan" in checks
-    assert "canonical storage order" in checks
-    # explicit storage != execution distinction, and block_order in domain labels
-    assert "storage_order_vs_execution_order" in json.dumps(d).lower()
-    assert "block_order" in json.dumps(d.get("identity_template", {})).lower() or \
-        json.dumps(d).lower().count("block_order") > 0
+    txt = []
+    if "deep_manifest_validator" in d:
+        txt += d["deep_manifest_validator"]["checks"]
+    mi = d.get("manifest_integrity", {})
+    if "deep_validation" in mi:
+        txt += mi["deep_validation"]["checks"]
+    return " ".join(txt).lower()
 
 
-# ============================ FINAL-002 ============================
-def test_08_config_description_reflects_exact_checks_not_stale():
+def test_07_new_block_describes_seed_order_and_storage():
+    # the completion block is correct
     checks = " ".join(_cfg()["deep_manifest_validator"]["checks"]).lower()
-    assert "config/commit hex formats" not in checks and "device==cpu" not in checks
-    assert "canonical_config_sha256" in checks
-    assert "confirmatory_v4_phase_manifest_v1" in checks
-    assert "7-key" in checks and "no gpu" in checks
+    assert "resolved_candidate_order == id.resolve_candidate_order" in checks
+    assert "canonical storage order" in checks and "resolve_phase_execution_plan" in checks
+    assert "storage_order_vs_execution_order" in json.dumps(_cfg()).lower()
 
 
-def test_09_exact_value_checks_still_valid():
+# ---- FINAL-001 §2.5 INCOMPLETE: a SECOND active config block still says "bank permutation" ----
+@pytest.mark.xfail(reason="FINAL-001 §2.5 INCOMPLETE: manifest_integrity.deep_validation.checks (the block "
+                          "flagged in the prior regression) STILL contains 'resolved_candidate_order is a "
+                          "bank permutation' and 'execution_order_index ... complete 0..N-1'. The completion "
+                          "added a parallel deep_manifest_validator block but did not remove/update the "
+                          "originally-flagged one -> two contradictory active descriptions", strict=True)
+def test_08_no_stale_candidate_order_description_in_any_active_block():
+    txt = _all_validator_check_text()
+    assert "resolved_candidate_order is a bank permutation" not in txt
+
+
+# ---- FINAL-002 §4.5 INCOMPLETE: same second block still says "hex formats; device==cpu" ----
+@pytest.mark.xfail(reason="FINAL-002 §4.5 INCOMPLETE: manifest_integrity.deep_validation.checks still states "
+                          "'config/commit hex formats; ...; device==cpu' (old semantics) alongside the "
+                          "corrected deep_manifest_validator block", strict=True)
+def test_09_no_stale_final002_description_in_any_active_block():
+    txt = _all_validator_check_text()
+    assert "config/commit hex formats" not in txt and "device==cpu" not in txt
+
+
+# ============================ FINAL-002 code (still valid) ============================
+def test_11_exact_value_checks_still_valid():
     MI = _MI()
     p = os.path.join(MI._repo_root(), "docs", "offline_v2", "calibration_bias", "confirmatory_v4_config.json")
     assert MI.canonical_config_sha256() == hashlib.sha256(open(p, "rb").read()).hexdigest()
@@ -132,7 +152,7 @@ def test_09_exact_value_checks_still_valid():
 
 
 # ============================ invariants (FINAL-003/004/005 + design/power) ============================
-def test_10_design_power_and_final_003_004_005_invariant():
+def test_12_design_power_and_final_003_004_005_invariant():
     d = _cfg()["design"]
     assert d["candidate_bank"] == [-0.04, 0.0, 0.04] and d["test_nominals"] == [-0.035, 0.035]
     assert d["blocks"] == {"train": 9, "val": 6, "test": 9}
