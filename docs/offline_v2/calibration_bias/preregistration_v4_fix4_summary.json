@@ -1,0 +1,58 @@
+{
+  "status": "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT",
+  "previous_status": "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT",
+  "reaudit_commit": "06f596597731ac5fb668fc4e41563a1a85c05d74",
+  "fix3_commit": "7304530eb07d926b96f3e4cbd878ac50fa1d4633",
+  "power_cert_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX3",
+  "power_recertification_required": false,
+  "blockers": {
+    "a_BLOCKER_BEST_SINGLE_OFFSET_DOMAIN_NOT_STRICT": {
+      "fixed": true,
+      "canonicalizer": "confirmatory_v4_selection._canonical_candidate_offset",
+      "rule": "reject bool/non-numeric/numeric-string/non-finite; isclose(rel_tol=0, abs_tol=1e-12) to bank; exact frozen float; round(.,3) never decides legality",
+      "rejects": ["+0.0004", "-0.0004", "-0.0396", "+0.0404", "'0.0'", "True", "False", "NaN", "+Inf", "-Inf", "None"],
+      "error": "BestSingleInputError -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
+      "fail_fast_before_hash": true,
+      "bridge_invariance": {"total": 4500, "mismatch": 0}
+    },
+    "b_BLOCKER_FULL_MANIFEST_VALIDATOR_SHALLOW": {
+      "fixed": true,
+      "validator": "confirmatory_v4_manifest_integrity.validate_fully_resolved_phase_manifest",
+      "phase_split_composition": {"train_validation": {"blocks": {"train": 9, "validation": 6}, "sessions": {"train": 45, "validation": 12}, "trials": {"train": 180, "validation": 48, "total": 228}},
+                                  "test": {"blocks": {"test": 9}, "sessions": {"test": 18}, "trials": {"test": 72}}},
+      "checks": ["strict allowed keys + reject nested integrity", "phase split composition", "global uniqueness",
+                 "identity+PID+resume_key recompute", "referential integrity", "per-session probe+3-candidate + probe-first",
+                 "block-shared residual in [-0.01,0.01]", "subseed recompute", "execution_order 0..N-1 unique",
+                 "planned_structure subset of 300", "frozen seeds/config/version/device", "recursive finite"],
+      "rejects_bogus_228_duplicate": true,
+      "full_hash_only_after_validation": true
+    },
+    "c_BLOCKER_COMBINED_HASH_OPTIONAL_FIELDS": {
+      "fixed": true,
+      "all_8_required_no_none": true,
+      "sha256_64_lowercase_hex": ["train_validation_manifest_sha256", "model_analysis_freeze_sha256", "test_manifest_sha256", "config_sha256", "analysis_code_sha256"],
+      "commit_40_hex": ["protocol_commit", "generator_commit"],
+      "bootstrap_seed": "non-bool int == 9014517173581927929",
+      "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY"
+    },
+    "d_BLOCKER_ACTIVE_MANIFEST_SPEC_STALE": {
+      "fixed": true,
+      "removed_from_active": ["block=<i>", "singular manifest_hash", "science_manifest_sha256 == frozen manifest_hash"],
+      "replaced_with": ["canonical_block_identity + '|domain=residual'", "layered *_sha256 fields", "per-phase per-record anchor", "Scheme-2 phase construction order"],
+      "manifest_fields_layered": true
+    }
+  },
+  "self_hash_field": "integrity.full_manifest_sha256 (flat; nested integrity object forbidden)",
+  "unchanged": ["candidate_bank", "test_geometry_pm035", "model+hyperparameters+seeds", "primary_comparator",
+                "0.15_CI_threshold", "75_sessions_300_trials", "power_result", "fix1_fix2_fix3_resolutions"],
+  "new_files": ["preregistration_v4_fix4_summary.md", "preregistration_v4_fix4_summary.json",
+                "test_preregistration_v4_fix4.py"],
+  "updated_files": ["confirmatory_v4_selection.py", "confirmatory_v4_manifest_integrity.py",
+                    "preregistration_v4.py", "10 active v4 docs"],
+  "no_generator": true,
+  "no_formal_manifest_instance": true,
+  "no_checkpoint": true,
+  "no_runtime_or_confirmatory_data": true,
+  "no_run_authorization": true
+}

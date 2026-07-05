@@ -33,7 +33,7 @@ def _pre():
 
 
 def test_status_is_fix3():
-    assert P.STATUS == "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT"
+    assert P.STATUS == "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT"
     assert _pre()["status"] == P.STATUS and _pre()["power_recertification_required"] is False
 
 
@@ -196,20 +196,48 @@ def test_subseeds_route_through_validation():
 
 # ================= BLOCKER III: manifest integrity =================
 def _manifest():
-    return {"schema_version": "1", "phase": "test", "protocol_commit": "p", "generator_commit": "g",
-            "runtime_commit": "r", "config_sha256": "c", "planned_structure_sha256": "s",
-            "frozen_seeds": {"master_seed": 1}, "deterministic_environment": {"device": "cpu"},
-            "environment_versions": {"torch": "x"}, "counts": {"blocks": 9, "sessions": 18, "trials": 72},
-            "execution_order_definition": "ord", "manifest_algorithm_version": "v1",
-            "blocks": [{"split": "test", "block_index": i, "canonical_block_identity": f"b{i}",
-                        "residual_value": 0.001 * i, "nuisance_values": {}, "residual_subseed": i,
-                        "nuisance_subseed": i, "block_order_key": i} for i in range(9)],
-            "sessions": [{"canonical_session_identity": f"s{i}", "split": "test", "block_index": 0,
-                          "nominal_bias": 0.035, "session_order_key": i, "nominal_order_key": i,
-                          "resolved_candidate_order": [-0.04, 0.0, 0.04]} for i in range(18)],
-            "trials": [{"canonical_trial_identity": f"tr{i}", "planned_episode_id": f"v4ep-{i:024d}",
-                        "role": "candidate", "offset": 0.0, "trial_init_subseed": i,
-                        "execution_order_index": i, "resume_key": f"v4ep-{i:024d}"} for i in range(72)]}
+    """Valid test-phase manifest (fix4 deep validator). Built from the frozen identity module."""
+    rows = [r for r in ID.enumerate_trials() if r["split"] == "test"]
+    blocks, seen_b = [], set()
+    for r in rows:
+        key = (r["split"], r["block_index"])
+        if key in seen_b:
+            continue
+        seen_b.add(key)
+        sp, bi = key
+        blocks.append({"split": sp, "block_index": bi, "canonical_block_identity": ID.block_identity(sp, bi),
+                       "residual_value": 0.001, "nuisance_values": {"joint_delta": 0.0},
+                       "residual_subseed": ID.block_residual_subseed(sp, bi),
+                       "nuisance_subseed": ID.block_nuisance_subseed(sp, bi),
+                       "block_order_key": ID.block_residual_subseed(sp, bi)})
+    sessions, seen_s = [], set()
+    for r in rows:
+        sid = r["canonical_session_identity"]
+        if sid in seen_s:
+            continue
+        seen_s.add(sid)
+        sp, bi, nom = r["split"], r["block_index"], r["nominal"]
+        sessions.append({"canonical_session_identity": sid, "split": sp, "block_index": bi, "nominal_bias": nom,
+                         "session_order_key": ID.session_order_subseed(sp, bi, nom),
+                         "nominal_order_key": ID.nominal_order_subseed(sp, bi, nom),
+                         "resolved_candidate_order": [-0.04, 0.0, 0.04]})
+    trials = []
+    for ei, r in enumerate(rows):
+        sp, bi, nom, role, off = r["split"], r["block_index"], r["nominal"], r["role"], r["offset"]
+        tid = ID.trial_identity(sp, bi, nom, role, off)
+        pid = ID.planned_episode_id(tid)
+        trials.append({"canonical_trial_identity": tid, "planned_episode_id": pid,
+                       "session_ref": r["canonical_session_identity"], "role": role, "offset": off,
+                       "trial_init_subseed": ID.trial_init_subseed(sp, bi, nom, role, off),
+                       "execution_order_index": ei, "resume_key": pid})
+    return {"schema_version": "1", "phase": "test", "protocol_commit": "0" * 40, "generator_commit": "1" * 40,
+            "runtime_commit": "2" * 40, "config_sha256": "a" * 64,
+            "planned_structure_sha256": ID.canonical_planned_structure_hash(), "frozen_seeds": P.frozen_seeds(),
+            "deterministic_environment": {"device": "cpu"}, "environment_versions": {"torch": "x"},
+            "counts": {"blocks": 9, "sessions": 18, "trials": 72},
+            "execution_order_definition": "probe-first per session",
+            "manifest_algorithm_version": MI.MANIFEST_ALGORITHM_VERSION,
+            "blocks": blocks, "sessions": sessions, "trials": trials}
 
 
 def test_structure_hash_semantics_and_rename():
@@ -225,20 +253,19 @@ def test_phase_counts_228_72():
 
 
 def test_full_hash_mutation_sensitivity():
+    # validity-preserving mutations that still change the full hash (deep validator now recomputes subseeds
+    # /identities, so those cannot be freely mutated; the stronger coverage is in test_preregistration_v4_fix4)
     h0 = MI.fully_resolved_phase_manifest_hash(_manifest())
     def mut(fn):
         m = _manifest(); fn(m); return MI.fully_resolved_phase_manifest_hash(m)
-    assert mut(lambda m: m["blocks"][0].__setitem__("residual_value", 9.9)) != h0
-    assert mut(lambda m: m["blocks"][0].__setitem__("nuisance_values", {"z": 1})) != h0
-    assert mut(lambda m: m["sessions"][0].__setitem__("session_order_key", 999)) != h0
+    assert mut(lambda m: m["blocks"][0].__setitem__("residual_value", 0.002)) != h0
+    assert mut(lambda m: m["blocks"][0].__setitem__("nuisance_values", {"joint_delta": 0.5})) != h0
     assert mut(lambda m: m["sessions"][0].__setitem__("resolved_candidate_order", [0.04, 0.0, -0.04])) != h0
-    assert mut(lambda m: m["trials"][0].__setitem__("execution_order_index", 999)) != h0
-    assert mut(lambda m: m["trials"][0].__setitem__("trial_init_subseed", 999)) != h0
-    assert mut(lambda m: m["frozen_seeds"].__setitem__("master_seed", 2)) != h0
-    assert mut(lambda m: m.__setitem__("config_sha256", "zzz")) != h0
-    assert mut(lambda m: m.__setitem__("generator_commit", "zzz")) != h0
-    assert mut(lambda m: m.__setitem__("runtime_commit", "zzz")) != h0
+    assert mut(lambda m: m.__setitem__("config_sha256", "b" * 64)) != h0
+    assert mut(lambda m: m.__setitem__("generator_commit", "9" * 40)) != h0
+    assert mut(lambda m: m.__setitem__("runtime_commit", "9" * 40)) != h0
     assert mut(lambda m: m["environment_versions"].__setitem__("torch", "zzz")) != h0
+    assert mut(lambda m: m.__setitem__("schema_version", "2")) != h0
 
 
 def test_full_hash_excludes_only_self_field():
@@ -260,14 +287,15 @@ def test_missing_resolved_field_rejected():
 
 def test_combined_plan_hash_requires_all_anchors():
     ok = MI.combined_experiment_plan_hash(
-        train_validation_manifest_sha256="a", model_analysis_freeze_sha256="b", test_manifest_sha256="c",
-        config_sha256="d", protocol_commit="e", generator_commit="f", analysis_code_sha256="g",
-        bootstrap_seed=1)
+        train_validation_manifest_sha256="a" * 64, model_analysis_freeze_sha256="b" * 64,
+        test_manifest_sha256="c" * 64, config_sha256="d" * 64, protocol_commit="e" * 40,
+        generator_commit="f" * 40, analysis_code_sha256="a" * 64, bootstrap_seed=9014517173581927929)
     assert isinstance(ok, str) and len(ok) == 64
-    with pytest.raises(MI.ManifestIntegrityError):
+    with pytest.raises(MI.ManifestIntegrityError):     # None for a required field -> integrity error
         MI.combined_experiment_plan_hash(
-            train_validation_manifest_sha256=None, model_analysis_freeze_sha256="b", test_manifest_sha256="c",
-            config_sha256="d", protocol_commit="e", generator_commit="f")
+            train_validation_manifest_sha256=None, model_analysis_freeze_sha256="b" * 64,
+            test_manifest_sha256="c" * 64, config_sha256="d" * 64, protocol_commit="e" * 40,
+            generator_commit="f" * 40, analysis_code_sha256="a" * 64, bootstrap_seed=9014517173581927929)
 
 
 # ================= determinism / protocol =================
@@ -296,7 +324,7 @@ def test_no_generator_manifest_checkpoint_data():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT" in md
+    assert "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT" in md
     assert "select_best_single_confirmatory" in (_DOCS / "preregistration_v4.json").read_text()
 
 

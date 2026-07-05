@@ -232,8 +232,12 @@ INVALID_COUNTERS = {
 }
 
 # ============================ RANDOMIZATION / PROVENANCE ============================
+# FIX4 BLOCKER 4: layered hash fields replace the ambiguous singular "manifest_hash".
 MANIFEST_FIELDS = list(SEED_LABELS) + ["seed_root", "seed_derivation", "subseed_derivation",
-                                       "manifest_hash", "config_hash", "code_commit", "generator_commit",
+                                       "planned_structure_sha256", "train_validation_manifest_sha256",
+                                       "test_manifest_sha256", "model_analysis_freeze_sha256",
+                                       "combined_experiment_plan_sha256", "config_sha256",
+                                       "protocol_commit", "generator_commit", "runtime_commit",
                                        "environment_versions"]
 
 # ============================ ANALYSIS / PRIMARY ============================
@@ -294,6 +298,13 @@ BEST_SINGLE = {
                                     "test records", "success model"],
     "selection_algorithm": "equal denominators (57/offset) -> integer observed_success_count per offset; "
                            "max count; tie -> min|offset|; tie -> earliest in bank order",
+    "offset_domain_strict": {"canonicalizer": "_canonical_candidate_offset",
+                             "rule": "reject bool / non-numeric (incl. numeric strings) / non-finite; accept "
+                                     "only within isclose(rel_tol=0, abs_tol=1e-12) of a bank offset; return "
+                                     "the exact frozen float; round(.,3) NEVER decides legality",
+                             "rejects": ["+0.0004", "-0.0004", "-0.0396", "+0.0404", "'0.0'", "True/False",
+                                         "NaN", "+Inf", "-Inf", "None", "numpy.bool_"],
+                             "fail_fast_before_hash": True},
     "input_completeness": {"train_sessions": 45, "validation_sessions": 12, "total_sessions": 57,
                            "train_candidate_records": 135, "validation_candidate_records": 36,
                            "candidate_records": 171,
@@ -433,11 +444,48 @@ MANIFEST_INTEGRITY = {
                                    "nuisance_values", "residual_subseed", "nuisance_subseed", "block_order_key"],
                          "session": ["canonical_session_identity", "split", "block_index", "nominal_bias",
                                      "session_order_key", "nominal_order_key", "resolved_candidate_order"],
-                         "trial": ["canonical_trial_identity", "planned_episode_id", "role", "offset",
-                                   "trial_init_subseed", "execution_order_index", "resume_key"]},
-    "self_hash_field": "integrity.full_manifest_sha256 (excluded from its own payload; nothing else excluded)",
+                         "trial": ["canonical_trial_identity", "planned_episode_id", "session_ref", "role",
+                                   "offset", "trial_init_subseed", "execution_order_index", "resume_key"]},
+    "self_hash_field": "integrity.full_manifest_sha256 (FLAT top-level key; nested {'integrity':{...}} "
+                       "forbidden; excluded ONLY from its own payload; nothing else excluded)",
     "canonical_json": "sort_keys=True, separators=(',',':'), ensure_ascii=False, allow_nan=False; UTF-8; lowercase sha256",
     "structure_hash_not_equal_full_manifest_hash": True,
+    # FIX4 BLOCKER 2: the validator is DEEP (not shape-only). Full hash computed ONLY after it passes.
+    "deep_validation": {
+        "phase_split_composition": {"train_validation": {"blocks": {"train": 9, "validation": 6},
+                                                          "sessions": {"train": 45, "validation": 12},
+                                                          "trials": {"train": 180, "validation": 48}},
+                                    "test": {"blocks": {"test": 9}, "sessions": {"test": 18},
+                                             "trials": {"test": 72}}},
+        "checks": ["strict allowed keys (reject unexpected / nested 'integrity')",
+                   "per-phase split composition of blocks/sessions/trials",
+                   "global uniqueness: block identity, (split,block), session identity, (split,block,nominal), "
+                   "trial identity, planned_episode_id, execution_order_index",
+                   "recompute every canonical identity + planned_episode_id + resume_key via confirmatory_v4_identity",
+                   "planned_episode_id == planned_episode_id(canonical_trial_identity); resume_key == planned_episode_id",
+                   "referential: session->block, trial->session; split/block/nominal/role/offset consistency",
+                   "per session exactly probe(-0.04) + 3 candidates(bank); probe executes before candidates; "
+                   "resolved_candidate_order is a bank permutation",
+                   "block-shared single residual finite in [-0.01,+0.01]; one nuisance set per block",
+                   "recompute residual/nuisance/session-order/nominal-order/trial-init subseeds from frozen seeds",
+                   "execution_order_index non-bool int, unique, complete 0..N-1",
+                   "planned_structure_sha256 == canonical_planned_structure_hash(); trials == phase subset of 300",
+                   "frozen_seeds == preregistered 15; config/commit hex formats; manifest_algorithm_version; device==cpu",
+                   "all scientific numerics finite (recursive NaN/Inf reject)"],
+        "rejects_bogus": "a 228-duplicate / all-train / PID!=identity manifest is INVALID (no full hash)",
+    },
+    "combined_hash_required_fields": {"all_required_no_none": True,
+                                      "sha256_fields": ["train_validation_manifest_sha256",
+                                                        "model_analysis_freeze_sha256", "test_manifest_sha256",
+                                                        "config_sha256", "analysis_code_sha256"],
+                                      "commit_fields_40hex": ["protocol_commit", "generator_commit"],
+                                      "bootstrap_seed": "non-bool int == 9014517173581927929"},
+    "per_record_anchor": {"train_validation": "science_manifest_sha256 == train_validation_manifest_sha256",
+                          "test": "science_manifest_sha256 == test_manifest_sha256"},
+    "construction_order_scheme2": {"Step1": "resolve+freeze train_validation full manifest (228) -> train_validation_manifest_sha256",
+                                   "Step5": "freeze model_analysis_freeze -> model_analysis_freeze_sha256",
+                                   "Step6": "resolve+freeze test full manifest (72) -> test_manifest_sha256; then combined_experiment_plan_sha256",
+                                   "no_single_300_trial_serialization": True},
     "final_analysis_checks": ["train/val records match train_validation_manifest_sha256",
                               "test records match test_manifest_sha256", "model hashes match freeze",
                               "combined_experiment_plan_sha256 matches"],
@@ -461,25 +509,29 @@ DETERMINISM_ENV = {
     "library_versions_recorded_in": "model_analysis_freeze.json",
 }
 
-STATUS = "PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT"
+STATUS = "PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT"
 
 
 def preregistration_dict():
     return {
-        "title": "Confirmatory Preregistration v4 FIX3 -- calibration-bias diagnostic history & action selection",
+        "title": "Confirmatory Preregistration v4 FIX4 -- calibration-bias diagnostic history & action selection",
         "status": STATUS,
         "base_commit": BASE_COMMIT, "audit_commit": AUDIT_COMMIT, "v4_original_commit": V4_COMMIT,
-        "reaudit_commit_addressed": "83d860693bc788c0423d9e76d1c058df32218e8b (Claude C final reaudit)",
+        "reaudit_commit_addressed": "06f596597731ac5fb668fc4e41563a1a85c05d74 (Claude C fix3 final reaudit)",
         "power_certification": "test_geometry_power_verdict_v1.json = POWER_SUFFICIENT_FOR_PREREG_V4",
         "power_recertification_required": False,
-        "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX2 (Claude C final reaudit, 83d8606)",
+        "audit_verdict_addressed": "MODIFY_PREREGISTRATION_V4_FIX3 (Claude C fix3 final reaudit, 06f5965)",
         "blockers_fixed": ["A BLOCKER_SECRET_TIEBREAK (fix1)", "B BLOCKER_SEEDS_NOT_FROZEN (fix1)",
                            "C BLOCKER_SEAL_SCHEME_NOT_UNIQUE (fix1)", "D BLOCKER_MODEL_FAILURE_SEMANTICS (fix1)",
                            "1 BLOCKER_PRODUCTION_BEST_SINGLE_STILL_SECRET_DEPENDENT (fix2)",
                            "2 BLOCKER_PLANNED_IDENTITY_FORMAT_NOT_FROZEN (fix2)",
                            "I BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE (fix3)",
                            "II BLOCKER_IDENTITY_DOMAIN_NOT_VALIDATED (fix3)",
-                           "III BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY (fix3)"],
+                           "III BLOCKER_MANIFEST_INTEGRITY_HASH_STRUCTURE_ONLY (fix3)",
+                           "a BLOCKER_BEST_SINGLE_OFFSET_DOMAIN_NOT_STRICT (fix4)",
+                           "b BLOCKER_FULL_MANIFEST_VALIDATOR_SHALLOW (fix4)",
+                           "c BLOCKER_COMBINED_HASH_OPTIONAL_FIELDS (fix4)",
+                           "d BLOCKER_ACTIVE_MANIFEST_SPEC_STALE (fix4)"],
         "claim_scope": CLAIM_SCOPE,
         "design": {"candidate_bank": list(CANDIDATE_BANK), "train_nominals": list(TRAIN_NOMINALS),
                    "val_nominals": list(VAL_NOMINALS), "test_nominals": list(TEST_NOMINALS),
@@ -520,7 +572,7 @@ def preregistration_dict():
 
 def audit_checklist():
     return {
-        "for": "Claude C final re-audit of preregistration v4 FIX3",
+        "for": "Claude C final re-audit of preregistration v4 FIX4",
         "must_verify": [
             "FIX3 BLOCKER I: sole production entry select_best_single_confirmatory (one param, no override "
             "kwargs, __all__ frozen); completeness 45/12 -> 135/36 -> 171, globally-unique session_id, strict "
@@ -532,6 +584,10 @@ def audit_checklist():
             "(228/72) in confirmatory_v4_manifest_integrity covering residual/nuisance/order/seeds/env/commits; "
             "self-hash handling; combined_experiment_plan_sha256; per-record science_manifest_sha256 by phase",
             "FIX3 minor: determinism machine config device=='cpu'; RuntimeError->model_fit->retry<=1->INVALID",
+            "FIX4 a: best-single offset domain STRICT (_canonical_candidate_offset, isclose 1e-12, reject round-smuggled/bool/str/non-finite; fail-fast pre-hash)",
+            "FIX4 b: DEEP full-manifest validator (composition/uniqueness/identity+PID recompute/referential/per-session/residual/subseed/exec-order/planned-subset/frozen); bogus 228-dup rejected",
+            "FIX4 c: combined_experiment_plan_hash all 8 fields required, sha256/commit hex formats, frozen bootstrap_seed",
+            "FIX4 d: active docs/config purged of block=<i> / singular manifest_hash / science==frozen manifest_hash; layered fields + phase anchors + Scheme-2 order",
             "FIX2 BLOCKER 1/2 remain: production selector observed-only; canonical identity frozen; bridge 4500/4500",
             "input completeness: 45/12 -> 135/36 -> 171 -> EXPERIMENT_INVALID_BEST_SINGLE_INPUT",
             "BLOCKER A (fix1): best_single rule observable-only; no secret margin",

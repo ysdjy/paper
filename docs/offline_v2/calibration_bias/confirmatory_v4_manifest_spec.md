@@ -81,9 +81,8 @@ Storage/hash order (distinct from execution order, which follows the order seeds
 offset asc`. Canonical JSON: `sort_keys=True, separators=(",",":"), ensure_ascii=False, allow_nan=False`,
 UTF-8, no trailing newline; SHA256 lowercase hex.
 
-### 2.6 FIX3 — hash LAYERS: structure hash ≠ full-manifest integrity hash (BLOCKER 3)
-The old `canonical_manifest_hash()` is **structure-only** and is renamed
-`confirmatory_v4_identity.canonical_planned_structure_hash()`:
+### 2.6 FIX3/FIX4 — hash LAYERS: structure hash ≠ full-manifest integrity hash
+The structure-only hash is `confirmatory_v4_identity.canonical_planned_structure_hash()`:
 > covers ONLY planned identities + `planned_episode_id`s; **does NOT** cover residual/nuisance/
 > execution-order/seeds/environment/generator-commit. It is **not** a fully-resolved manifest anchor.
 
@@ -132,16 +131,20 @@ generator_commit     # git commit of the generator (future, post-GO)
 environment_versions # python/torch/numpy/isaac versions, GPU/driver, OS
 ```
 
-## 3. Construction order (pre-run, deterministic)
+## 3. Construction order (pre-run, deterministic; FIX4 — Scheme-2 phase-layered)
+Two phase manifests are resolved and hashed separately (NOT one 300-trial serialization):
 1. Instantiate the 15 seeds from the frozen rule (no drawing, no choosing).
-2. Draw **one residual per block** per split via `subseed(<split>_residual_seed, "block=<i>")` from
+2. Draw **one residual per block** per split via the canonical identity, i.e.
+   `subseed(<split>_residual_seed, canonical_block_identity + "|domain=residual")` from
    `TruncatedNormal(0, 0.005, [-0.01,0.01])`; splits use independent domain seeds (no shared residual).
 3. Resolve block/session/nominal/candidate order from the corresponding order seeds and per-item `subseed`
-   (probe forced first in each session; candidates otherwise ordered by `candidate_order_seed`).
-4. Serialize the fully-resolved plan; compute `manifest_hash` and `config_hash`.
-5. Record `code_commit`, `generator_commit`, `environment_versions`.
-6. Freeze. The manifest is immutable; execution reads from it only. `bootstrap_seed` is already fixed and is
-   frozen **before** test unseal.
+   keyed on the canonical block/session identity (probe forced first in each session).
+4. **Step 1** — resolve+freeze the **train_validation** full manifest (228 trials) → `train_validation_manifest_sha256`.
+5. **Step 5** — freeze `model_analysis_freeze` → `model_analysis_freeze_sha256`.
+6. **Step 6** — resolve+freeze the **test** full manifest (72 trials) → `test_manifest_sha256`; then compute
+   `combined_experiment_plan_sha256`. Each phase full hash is produced by
+   `confirmatory_v4_manifest_integrity.fully_resolved_phase_manifest_hash()` **only after** deep validation.
+   `bootstrap_seed` is already fixed and is frozen **before** test unseal.
 
 ## 4. Per-trial provenance (recorded, not chosen at run time)
 Each executed trial records: `episode_id`, `planned_episode_id`, `session_id`, `block_id`,
@@ -150,10 +153,12 @@ Each executed trial records: `episode_id`, `planned_episode_id`, `session_id`, `
 `science_manifest_sha256`, `code_commit`. (These fields already exist in the 306 schema, confirming the
 runtime can emit them.)
 
-## 5. Integrity checks (any failure → technical-invalid; see analysis plan §9)
-- `science_manifest_sha256` on each trial == frozen `manifest_hash`.
-- `config_sha256` == frozen `config_hash`.
-- `git_commit` == frozen `code_commit`; `dirty_worktree == False`.
+## 5. Integrity checks (any failure → EXPERIMENT_INVALID_MANIFEST_INTEGRITY / technical-invalid; see §2.6, analysis plan §9)
+- **Per-record phase anchor (FIX4):** each **train/validation** record `science_manifest_sha256 ==
+  train_validation_manifest_sha256`; each **test** record `science_manifest_sha256 == test_manifest_sha256`.
+  (There is no single ambiguous `manifest_hash`.)
+- `config_sha256` == frozen `config_sha256`.
+- `git_commit` == frozen `runtime_commit`; `dirty_worktree == False`.
 - `full_reset_verified == True` before each trial.
 - ContactSensor available and reporting.
 

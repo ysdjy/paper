@@ -8,9 +8,31 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT`.** This phase authorizes nothing — Claude C
+**Status: `PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT`.** This phase authorizes nothing — Claude C
 must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, checkpoint, confirmatory data, or run authorization is produced here.
+
+## 0aaa. Fix4 changes (resolving Claude C's four fix3-reaudit blockers)
+- **a `BLOCKER_BEST_SINGLE_OFFSET_DOMAIN_NOT_STRICT`** — the selector now canonicalizes each candidate
+  offset with `_canonical_candidate_offset` (reject bool/non-numeric/numeric-string/non-finite; accept only
+  within `isclose(rel_tol=0, abs_tol=1e-12)` of a bank value, return the exact frozen float; `round(.,3)`
+  never decides legality). `+0.0004`, `-0.0396`, `'0.0'`, `True`, `NaN`, `None` → `BestSingleInputError`
+  (fail-fast **before** any hash/selection).
+- **b `BLOCKER_FULL_MANIFEST_VALIDATOR_SHALLOW`** — `validate_fully_resolved_phase_manifest` is now DEEP:
+  strict allowed keys (reject unexpected / nested `integrity`), per-phase split composition (train_validation
+  9tr+6val blk / 45+12 sess / 180+48 trials = 228; test 9/18/72), global uniqueness, identity↔PID recompute,
+  referential integrity, per-session probe+3-candidate structure with probe-first execution, block-shared
+  residual finite in [-0.01,+0.01], subseed recompute, complete `execution_order_index`, planned-structure
+  subset, frozen seeds/config/version. A 228-duplicate/all-train/PID-inconsistent manifest is INVALID and
+  yields **no** full hash.
+- **c `BLOCKER_COMBINED_HASH_OPTIONAL_FIELDS`** — `combined_experiment_plan_hash` makes **all 8** fields
+  required (no `None`); sha256 fields 64-lowercase-hex, commits 40-hex, `bootstrap_seed` the frozen non-bool
+  int `9014517173581927929`; else `EXPERIMENT_INVALID_MANIFEST_INTEGRITY`.
+- **d `BLOCKER_ACTIVE_MANIFEST_SPEC_STALE`** — active spec/config purged of `block=<i>`, singular
+  `manifest_hash`, and `science == frozen manifest_hash`; replaced with canonical block-subseed form, the
+  layered `*_sha256` fields, per-phase per-record anchors, and Scheme-2 phase construction order.
+- `power_recertification_required = false` (only guards/validators/hashes/docs; no change to legal-input
+  selection or design).
 
 ## 0aa. Fix3 changes (resolving Claude C's three final-reaudit blockers)
 - **I `BLOCKER_BEST_SINGLE_INPUT_GUARD_INCOMPLETE`** — the ONLY confirmatory production entry is

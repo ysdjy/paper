@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from typing import Literal
 
@@ -57,26 +58,47 @@ class ObservedCandidateOutcome:
     success: bool
 
 
+_OFFSET_ABS_TOL = 1e-12
+
+
+def _canonical_candidate_offset(value) -> float:
+    """FIX4 BLOCKER 1: STRICT offset domain. Reject bool / non-numeric (incl. numeric strings) / non-finite;
+    accept only a value within isclose(abs_tol=1e-12) of a frozen bank offset and return the EXACT frozen
+    float. `round(.,3)` must NEVER decide legality (so +0.0004 / -0.0396 / '0.0' are rejected)."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise BestSingleInputError(f"offset must be a real number (no bool/str), got {value!r}")
+    fv = float(value)
+    if not math.isfinite(fv):
+        raise BestSingleInputError(f"offset must be finite, got {value!r}")
+    for a in CANDIDATE_BANK:
+        if math.isclose(fv, a, rel_tol=0.0, abs_tol=_OFFSET_ABS_TOL):
+            return a
+    raise BestSingleInputError(f"offset {value!r} not in candidate bank {CANDIDATE_BANK} (abs_tol 1e-12)")
+
+
 def _round_offset(x) -> float:
+    # display/bucketing helper for values ALREADY canonicalized to an exact bank float
     return round(float(x), 3)
 
 
 def _project_records(records) -> list:
     """Allowlist-project raw records -> ObservedCandidateOutcome. Reads ONLY the 6 legal fields.
 
-    Rejects (BestSingleInputError) any record that is not a train/validation candidate trial or whose
-    observed success is not a Python bool. Secret audit fields on the raw record are never read."""
+    Rejects (BestSingleInputError) any record that is not a train/validation candidate trial, whose observed
+    success is not a Python bool, or whose offset is not strictly in the frozen bank. Fails fast BEFORE any
+    hash/selection. Secret audit fields on the raw record are never read."""
     out = []
     for i, r in enumerate(records):
         try:
             split = r["split"]
             session_id = r["session_id"]
             role = r["trial_role"]
-            offset = _round_offset(r["theta"]["grasp_offset_local_y"])
+            raw_offset = r["theta"]["grasp_offset_local_y"]
             pid = r["planned_episode_id"]
             success = r["y"]["success"]
         except (KeyError, TypeError) as e:
             raise BestSingleInputError(f"record {i} missing allowlisted field: {e}")
+        offset = _canonical_candidate_offset(raw_offset)     # strict domain (fail-fast, pre-hash)
         if role != "candidate":
             raise BestSingleInputError(f"record {i} trial_role={role!r} (only 'candidate'; probe/test excluded)")
         if split not in ("train", "validation"):
@@ -180,8 +202,9 @@ def _canonical_hash(obj) -> str:
 def _finalize(artifact, proj, raw_records, candidate_bank):
     proj_rows = sorted([[o.split, o.session_id, o.planned_episode_id, f"{_round_offset(o.offset):+.3f}",
                          bool(o.success)] for o in proj])
+    # raw offsets are already validated by _project_records; canonicalize for the hash (never round-to-legal)
     raw_rows = sorted([[r["split"], r["session_id"], r["trial_role"],
-                        f"{_round_offset(r['theta']['grasp_offset_local_y']):+.3f}",
+                        f"{_canonical_candidate_offset(r['theta']['grasp_offset_local_y']):+.3f}",
                         bool(r["y"]["success"]), r["planned_episode_id"]] for r in raw_records])
     artifact["input_projection_hash"] = _canonical_hash(proj_rows)
     artifact["input_record_set_hash"] = _canonical_hash(raw_rows)
