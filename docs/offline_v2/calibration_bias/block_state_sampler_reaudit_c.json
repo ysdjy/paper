@@ -1,0 +1,75 @@
+{
+  "verdict": "BLOCK_STATE_SAMPLER_FREEZE_INCOMPLETE",
+  "auditor": "Claude C (independent, read-only, block-state sampler blocker re-audit only)",
+  "audited_commit": "5a515001e43872abf2f2c492845373418288c5b8",
+  "source_blocker_commit": "33806f0654396c4ef53b5e17beb25166c2db1f13",
+  "prior_go_commit": "45599ca69fbbf415c08c41579506ae9010fff94f",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "scope": "block-state sampler blocker only (no reopening of FINAL-001..005, no full re-audit)",
+  "residual_sampler": "RESOLVED",
+  "nuisance_none_v1": "RESOLVED",
+  "validator_recomputation": "RESOLVED",
+  "reference_placeholder_removal": "RESOLVED",
+  "production_source_uniqueness": "RESOLVED",
+  "known_answer_compatibility_gate": "INCOMPLETE",
+  "active_spec_consistency": "INCOMPLETE",
+  "power_recertification_required": false,
+  "authorizes_generator_implementation": false,
+  "authorizes_generator_smoke": false,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "incomplete_items": [
+    {
+      "id": "known_answer_compatibility_gate",
+      "area": "§4",
+      "summary": "The subseed->residual mapping is deterministic on THIS environment, but there is no MANDATORY production gate guaranteeing it stays fixed across NumPy versions. numpy.random.PCG64 raw bits are stable, but Generator.normal (ziggurat transform) is NumPy distribution code that can change between versions; a future NumPy could produce a different, equally in-support residual set.",
+      "evidence": [
+        "No production function validate_known_answer_vectors (or equivalent mandatory compatibility check) exists in confirmatory_v4_block_state.py / confirmatory_v4_manifest_integrity.py / preregistration_v4.py (grep: none).",
+        "The known-answers live only in confirmatory_v4_block_state_known_answers.json and test_confirmatory_v4_block_state.py; no active spec requires running them before manifest construction (manifest_spec §215 merely points to the JSON).",
+        "No BLOCKING NumPy-version freeze: config records numpy only in environment_versions (reference builder default {'numpy':'1.26.0'}); config block_state_sampler has no numpy_version_frozen; per the audit's Scheme-B, 'environment_versions records but does not block' is not a freeze.",
+        "The deep validator recomputes residual_value via BS.residual_value_from_subseed on the SAME NumPy, so it is a self-consistency check that CANNOT detect a Generator.normal transform drift (both generation and validation would drift together)."
+      ],
+      "minimal_fix": "Adopt Scheme A OR Scheme B. Scheme A (recommended): add a pure production function (e.g. confirmatory_v4_block_state.validate_known_answer_vectors()) that recomputes the 6+ frozen vectors and asserts residual_value.float.hex() exact match; make the active protocol REQUIRE it to run (and pass) before any phase manifest is constructed or hashed, else EXPERIMENT_INVALID_MANIFEST_INTEGRITY; cover sampler version + PCG64 + normal transform + float.hex() exact. Scheme B: freeze the exact NumPy version in the active machine spec with a blocking check (mismatch -> INVALID) and still run the KAT.",
+      "acceptance_test": "test_block_state_sampler_reaudit_c.py::test_mandatory_known_answer_or_version_gate_exists (currently xfail).",
+      "power_recertification_required": false
+    },
+    {
+      "id": "active_spec_consistency",
+      "area": "§9.1",
+      "summary": "The CODE exact-recomputes residual_value and nuisance_values (verified), and block_state_sampler config records validator_recomputes_exact_values=true, but the AUTHORITATIVE deep_manifest_validator.checks list still reads only 'block-shared residual finite in [-0.01,+0.01]; one nuisance set per block' and omits the exact-recompute semantics.",
+      "evidence": [
+        "confirmatory_v4_config.json / preregistration_v4.json deep_manifest_validator.checks contain no 'residual_value == frozen block-state sampler output' and no 'nuisance_values == none_v1 {}'; only the pre-sampler line 'block-shared residual finite in [-0.01,+0.01]; one nuisance set per block'.",
+        "This is the same authoritative-single-source-of-truth requirement established in the FINAL-001/002 rounds; §9.1 declares this a remaining gap of the SAME blocker, to be marked this round."
+      ],
+      "minimal_fix": "Update the authoritative deep_manifest_validator.checks to add: 'residual_value == confirmatory_v4_block_state.residual_value_from_subseed(residual_subseed) (exact float, no tolerance)' and 'nuisance_values == none_v1 {} == nuisance_values_from_subseed(nuisance_subseed)'. Keep exactly one authoritative, complete description.",
+      "acceptance_test": "test_block_state_sampler_reaudit_c.py::test_authoritative_checks_describe_exact_recompute (currently xfail).",
+      "power_recertification_required": false
+    }
+  ],
+  "resolved_verification": {
+    "residual_sampler": "law (mean 0.0, sigma 0.005, support [-0.01,+0.01] inclusive) consistent across confirmatory_v4_block_state / residual_nuisance.DEFAULT_RESIDUAL / config.design.residual (verified); algorithm = fresh Generator(PCG64(block_residual_subseed)), normal(0,0.005), rejection <=1000, no default_rng/hash()/global-RNG/clip/fallback, exhaustion -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY (source-verified); subseed domain rejects bool/float/None/negative/>=2**63-1, accepts 0 and 2**63-2 (verified).",
+    "nuisance_none_v1": "NUISANCE_POLICY_VERSION == 'none_v1'; nuisance_values_from_subseed returns a fresh {} each call; additional_block_nuisance_enabled=false; placeholder {'joint_delta':0.0} removed; residual is the only block hidden variation; consistent with the certified v3 power law (which used only residual).",
+    "validator_recomputation": "deep validator recomputes residual/nuisance subseeds + values from the frozen sampler; requires type(residual_value) is float and EXACT equality; rejects 1-ULP tamper, other-in-support float, int 0, bool, nuisance extra key, and residual_subseed tamper -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY (verified); full hash computed only after deep validation.",
+    "reference_placeholder_removal": "reference_phase_manifest fills each block via BS.resolved_block_state; placeholders residual_value=0.001 and nuisance_values={'joint_delta':0.0} gone; train_validation 15/57/228 and test 9/18/72 deep-validate; two constructions -> identical canonical JSON + hash (verified in prior regression, storage-order code unchanged).",
+    "production_source_uniqueness": "confirmatory_v4_block_state is the unique production sampler; confirmatory_v4_manifest_integrity (validator + reference builder) imports only it; config block_state_sampler.module designates only it and lists generator_may_not_choose [RNG/bit generator, truncation method, additional block nuisance]; the exploratory/power samplers (residual_nuisance._truncnorm/draw_block_residuals, learned_selector_power, power) are not on the production path.",
+    "power": "candidate bank {-0.04,0,+0.04}, test nominals +-0.035, blocks 9/6/9, residual TruncatedNormal(0,0.005,[-0.01,0.01]), DeepSets+HP+seeds, primary estimator, bootstrap, 0.15 threshold all unchanged; models_v2 and test_geometry_power_verdict_v1.json byte-unchanged -> power_recertification_required=false. The fixed subseed->draw mapping preserves each block's marginal law and block independence, so it is not a power change."
+  },
+  "independent_known_answers": {
+    "recomputed": ["train/0", "train/8", "validation/0", "validation/5", "test/0", "test/8"],
+    "result": "all 6 residual_subseed / nuisance_subseed / residual_value.hex() / nuisance_values={} match confirmatory_v4_block_state_known_answers.json exactly; all 24 blocks in support, deterministic, order- and global-RNG-independent."
+  },
+  "tests": {
+    "b_block_state_suite": "test_confirmatory_v4_block_state.py -> 15 passed (does not assert a mandatory production KAT gate or the authoritative-checks description sync)",
+    "c_reaudit_suite": "test_block_state_sampler_reaudit_c.py -> 9 passed, 2 xfailed (known_answer_compatibility_gate, active_spec_consistency)"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/block_state_sampler_reaudit_c.md",
+    "docs/offline_v2/calibration_bias/block_state_sampler_reaudit_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_block_state_sampler_reaudit_c.py"
+  ]
+}
