@@ -175,20 +175,29 @@ def test_leakage_scan_catches_injected_secret():
 
 
 def test_session_state_machine_probe_first_and_selection_freeze():
-    c = GEN.SessionRunController("s0")
+    import hashlib
+    ev = hashlib.sha256(b"probe-evidence").hexdigest()              # valid 64-hex evidence
+    order = tuple(ID.resolve_candidate_order("test", 0, -0.035))    # frozen resolved order (bank permutation)
+    pid = "v4ep-" + "0" * 24
+    c = GEN.SessionRunController("s0", resolved_candidate_order=order)
     c.probe_ready(); c.probe_complete()
-    # candidate outcome must never reach the selector
-    with pytest.raises(GEN.SelectionOrderError):
+    with pytest.raises(GEN.SelectionOrderError):                    # candidate outcome never reaches the selector
         c.offer_candidate_outcome_to_selector(0.0, True)
-    c.freeze_selection(0.0, "evhash")                                # frozen on probe evidence, before candidates
+    c.freeze_selection(0.0, ev)                                     # frozen on probe evidence, before candidates
     assert c.state == "SELECTION_FROZEN"
-    c.candidates_ready(); c.session_complete()
+    c.candidates_ready()
+    with pytest.raises(GEN.SelectionOrderError):                    # cannot complete before recording candidates
+        c.session_complete()
+    for i, off in enumerate(order):
+        aid = c.record_candidate_complete(off, planned_episode_id=pid, attempt_index=0)
+        assert aid.endswith("attempt=00")
+    c.session_complete()
     assert c.state == "SESSION_COMPLETE"
     # cannot freeze before probe complete
     c2 = GEN.SessionRunController("s1"); c2.probe_ready()
     with pytest.raises(GEN.SelectionOrderError):
-        c2.freeze_selection(0.0, "e")
-    assert c.attempt_id("v4ep-" + "0" * 24, 1).endswith("attempt=01")
+        c2.freeze_selection(0.0, ev)
+    assert c.attempt_id(pid, 1).endswith("attempt=01")
 
 
 # ----------------------------------------------------------------- 24.6 smoke isolation

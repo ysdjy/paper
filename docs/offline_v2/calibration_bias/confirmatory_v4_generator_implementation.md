@@ -74,3 +74,12 @@ ARTIFACT ***` first and last; refuses (exit 2, zero side effects) without `--smo
 ## Not authorized in this phase
 Formal train_validation/test manifests, combined experiment plan, model checkpoints, confirmatory records,
 the 300-trial run, and Isaac data collection are all out of scope and gate-locked.
+
+## GEN-B-001..007 batch fix (post Claude B audit)
+Claude B's generator+smoke consistency audit (`c0ff67e`, `GENERATOR_SMOKE_BATCH_FIX_REQUIRED`) raised 7
+frozen issues; all are closed in this branch — see `confirmatory_v4_generator_gen_b_fix.md` /
+`.json`. Summary: immutable copy-on-read `GeneratedPhase` + `TrialExecutionEnvelope` (hash/scan cannot be
+bypassed post-validation), unfrozen `target_open_position` removed, smoke build requires the placeholder
+commit context, a frozen 10-key smoke environment provenance contract with an atomic auditable summary
+(temp+fsync+os.replace, read-back, idempotent, collision-guarded), and a strict selection + candidate-
+completion FSM. Still smoke-only; no formal authorization is claimed.

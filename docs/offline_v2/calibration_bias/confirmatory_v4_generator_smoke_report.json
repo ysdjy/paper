@@ -39,5 +39,14 @@
   "full_calibration_bias_suite": "415 passed, 25 failed, 2 xfailed",
   "preexisting_failures_note": "the 25 failures are historical Claude-C audit/reaudit regression files (frozen_issue_regression_final_001_005_c, one_shot_full_audit_c, preregistration_v4_audit_c, fix1/fix2/fix3_reaudit_c); superseded by the fix4/FINAL/KAT reaudit that issued the GO; PROVEN pre-existing on the pristine c8ac0af tree with all A files removed; none imports the generator; all ACTIVE KAT/block-state/final/generator tests pass",
   "authorizes_formal_manifest_generation": false,
-  "authorizes_confirmatory_run": false
+  "authorizes_confirmatory_run": false,
+  "gen_b_001_007_fixed": true,
+  "source_b_audit_commit": "c0ff67ee049f35cde1e7d6d21d6ebf29081f60f9",
+  "manifest_snapshot_immutable": true,
+  "envelope_snapshot_immutable": true,
+  "smoke_commits_placeholder_only": true,
+  "environment_provenance_contract_10_key": true,
+  "smoke_summary_atomic": true,
+  "smoke_summary_write_complete": true,
+  "smoke_environment_keys": 10
 }
