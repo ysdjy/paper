@@ -1,0 +1,66 @@
+{
+  "verdict": "GO_TO_GENERATOR_IMPLEMENTATION",
+  "auditor": "Claude C (independent, read-only, validator-description final regression only)",
+  "audited_commit": "390ccaeb69143dd9a11967b02fd9c8c1677b0057",
+  "previous_correction_commit": "6f584f002b3810f5115fe6ccd7fda5fea40fe995",
+  "completion_commit": "48f28ac3dc9836680c010ff58e0cccd1c669b01e",
+  "frozen_issue_source_commit": "01ac19d287e2106ecddd9662dad7351f4d621361",
+  "audited_snapshot": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "issue_list_frozen": true,
+  "scope_note": "Narrow regression of the single remaining root cause (duplicate/stale validator-description block). No re-audit of algorithms/science/power/runtime/statistics/FINAL-003/004/005. No new issue IDs.",
+  "FINAL-001": "RESOLVED",
+  "FINAL-002": "RESOLVED",
+  "FINAL-003": "UNCHANGED_RESOLVED",
+  "FINAL-004": "UNCHANGED_RESOLVED",
+  "FINAL-005": "UNCHANGED_RESOLVED",
+  "authorizes_generator_implementation": true,
+  "authorizes_generator_smoke": true,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "critical_new_evidence": [],
+  "generator_smoke_constraint": "smoke_only=true; only isolated, clearly-marked informal test artifacts. NO formal phase manifest instance, NO model checkpoint, NO confirmatory records, NO 300-trial run.",
+  "root_cause_closed": "The completion patch had left the originally-flagged manifest_integrity.deep_validation.checks block (stale) alongside the corrected deep_manifest_validator.checks. This consolidation removes the stale block entirely, leaving exactly ONE authoritative validator description.",
+  "final_001_verification": {
+    "single_authoritative_block": "confirmatory_v4_config.json and preregistration_v4.json each expose exactly one full manifest-validator checks list at .deep_manifest_validator.checks (the best_single.input_completeness list is a distinct validator, excluded); deep_manifest_validator.authoritative == true (verified both files).",
+    "stale_duplicate_removed": "manifest_integrity.deep_validation is ABSENT in both files; only an explanatory 'deep_validation_removed' string remains (no checks list) (verified).",
+    "no_stale_semantics": "aggregate scan of both active machine files finds NONE of: 'resolved_candidate_order is a bank permutation', 'execution_order_index non-bool int, unique, complete 0..N-1' (verified).",
+    "correct_semantics_present": "authoritative block contains 'candidate_order_keys == ID.candidate_order_key_map(...)', 'resolved_candidate_order == ID.resolve_candidate_order(...) (seed-recomputed exact order)', 'execution_order_index == index in ID.resolve_phase_execution_plan(phase)', 'blocks/sessions/trials lists == frozen canonical storage order' (verified).",
+    "code_unchanged": "confirmatory_v4_identity.py and confirmatory_v4_manifest_integrity.py are byte-unchanged vs 48f28ac -> the §2.1-2.4 storage-order code (verified in the prior regression) is intact."
+  },
+  "final_002_verification": {
+    "no_stale_summary": "aggregate scan finds NEITHER 'config/commit hex formats' NOR 'device==cpu' in either active machine file (verified).",
+    "correct_semantics_present": "authoritative block states 'config_sha256 == canonical_config_sha256()', 'schema_version == confirmatory_v4_phase_manifest_v1', 'deterministic_environment == frozen 7-key contract (exact values + types, no extras, no GPU)', 'protocol/generator/runtime commits 40-hex at validation; exact values frozen at generator Step 0' (verified).",
+    "code_unchanged": "the exact-value validator code (canonical_config_sha256 / PHASE_MANIFEST_SCHEMA_VERSION / 7-key contract) is byte-unchanged; the prior regression verified tampering -> INVALID."
+  },
+  "invariance_check": {
+    "identity_code_unchanged": true,
+    "manifest_integrity_code_unchanged": true,
+    "models_v2_unchanged": true,
+    "power_verdict": "POWER_SUFFICIENT_FOR_PREREG_V4",
+    "claim_scope_unchanged": true,
+    "manifest_spec_unchanged": true,
+    "snapshot_manifest_unchanged": true,
+    "candidate_bank": [-0.04, 0.0, 0.04],
+    "test_nominals": [-0.035, 0.035],
+    "blocks": {"train": 9, "val": 6, "test": 9},
+    "data_306_sha256_prefix": "131750e158032e53"
+  },
+  "tests": {
+    "c_prior_regression_runxfail": "test_final_001_002_regression_c.py --runxfail -> 11 passed (test_08_no_stale_candidate_order_description_in_any_active_block and test_09_no_stale_final002_description_in_any_active_block now PASS)",
+    "b_consolidation_suite": "test_validator_description_consolidation.py -> 7 passed",
+    "b_completion_plus_frozen_runxfail": "test_final_001_002_completion.py + test_frozen_issue_regression_final_001_005_c.py --runxfail -> 22 passed",
+    "c_final_regression_suite": "test_validator_description_final_regression_c.py -> 5 passed (single-authoritative-block, stale-removed, no-stale-semantics, correct-semantics, invariance)"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/validator_description_final_regression_c.md",
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/validator_description_final_regression_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_validator_description_final_regression_c.py"
+  ]
+}
