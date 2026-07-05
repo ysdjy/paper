@@ -1,0 +1,89 @@
+{
+  "verdict": "FROZEN_ISSUE_BATCH_FIX_INCOMPLETE",
+  "auditor": "Claude C (independent, read-only, frozen-issue regression only)",
+  "audited_commit": "673d9fe7a7651bc07ec21e758b370ee6747ce618",
+  "frozen_issue_source_commit": "01ac19d287e2106ecddd9662dad7351f4d621361",
+  "audited_snapshot": "b983b7e9e638e2ed03589e2bd061139b073ce53f",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "issue_list_frozen": true,
+  "scope_note": "Regression restricted to FINAL-001..005. No new issue IDs. All findings below are within the acceptance criteria the one-shot audit defined for these five IDs; no ordinary naming/style/maintainability item was escalated.",
+  "FINAL-001": "INCOMPLETE",
+  "FINAL-002": "INCOMPLETE",
+  "FINAL-003": "RESOLVED",
+  "FINAL-004": "RESOLVED",
+  "FINAL-005": "RESOLVED",
+  "failed_ids": ["FINAL-001", "FINAL-002"],
+  "authorizes_generator_implementation": false,
+  "authorizes_generator_smoke": false,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_data_generation": false,
+  "authorizes_confirmatory_run": false,
+  "power_recertification_required": false,
+  "critical_new_evidence": [],
+  "details": {
+    "FINAL-001": {
+      "status": "INCOMPLETE",
+      "resolved_parts": [
+        "§3.1 resolve_order: SHA256-key + stable sort + canonical-index tie-break; no RNG/hash()/dict-order; input-permutation-independent; rejects duplicate item / bool-or-out-of-range key / duplicate canonical index; returns a tuple (verified).",
+        "§3.2 seed/domain: block_order_key uses <split>_block_order_seed + domain 'block_order'; session order = (session_order_key, nominal_order_key, canonical nominal index); candidate order keyed by candidate trial identity with bank index final tie-break; probe forced first (code verified).",
+        "§3.3 resolve_phase_execution_plan: 228 / 72 unique trial identities, byte-identical on re-run, split->block->session->probe->candidate order (verified).",
+        "§3.4 validator recompute cross-check: valid reference fixture passes; tampering block_order_key / resolved_candidate_order / candidate_order_keys / two execution_order_index (kept 0..N-1) each -> EXPERIMENT_INVALID_MANIFEST_INTEGRITY (verified)."
+      ],
+      "incomplete_parts": [
+        "§3.5 canonical storage/hash uniqueness NOT enforced: shuffling the blocks/sessions/trials LISTS (identical content, valid) still passes validate_fully_resolved_phase_manifest AND changes fully_resolved_phase_manifest_hash (verified: validates=True, hash_changed=True). There is no canonical storage-order requirement and no list normalization before hashing -> two byte-different, equally-valid manifests yield different per-record integrity anchors; the manifest is NOT uniquely determined by its content. This is the explicit §3.5 acceptance criterion of FINAL-001.",
+        "§3.2 active-spec sync: confirmatory_v4_config.json deep_manifest_validator.checks (line ~626) still describes 'resolved_candidate_order is a bank permutation' rather than the seed-recomputed exact order the code now enforces."
+      ],
+      "minimal_fix": "Require a canonical storage order for blocks/sessions/trials (e.g. sort blocks by canonical_block_identity, sessions by canonical_session_identity, trials by execution_order_index) and (a) reject a manifest whose lists are not in that order, OR (b) normalize the lists to that order inside fully_resolved_phase_manifest_hash before hashing. Update the config deep_manifest_validator.checks description to state 'resolved_candidate_order == ID.resolve_candidate_order(...) (seed-determined)'.",
+      "acceptance_test": "test_frozen_issue_regression_final_001_005_c.py::test_final001_manifest_uniquely_determined_by_content (reordered lists -> rejected OR identical hash) and ::test_final001_config_describes_seed_recomputed_order.",
+      "power_recertification_required": false
+    },
+    "FINAL-002": {
+      "status": "INCOMPLETE",
+      "resolved_parts": [
+        "canonical_config_sha256() == sha256(raw active confirmatory_v4_config.json bytes); config does not self-reference; validator exact-checks config_sha256 (1-bit flip -> INVALID) (verified).",
+        "PHASE_MANIFEST_SCHEMA_VERSION == 'confirmatory_v4_phase_manifest_v1' exact-checked (wrong version -> INVALID) (verified).",
+        "deterministic_environment contract = the exact 7 keys; validator checks key set + value + TYPE (True-for-1 -> INVALID; GPU -> INVALID; extra key -> INVALID) (verified).",
+        "§4.4 freeze-source table added to manifest_spec §2.3b; commit fields stay 40-hex format until generator Step 0 (legitimate)."
+      ],
+      "incomplete_parts": [
+        "§4.5 active-config description stale: confirmatory_v4_config.json deep_manifest_validator.checks (line ~631) still states 'frozen_seeds == preregistered 15; config/commit hex formats; manifest_algorithm_version; device==cpu' -- describing the OLD format-only config check and device-only determinism check, omitting the now-implemented exact config-hash, exact schema_version, and full deterministic-environment-contract checks. Per the one-shot audit's §4.5, code-correct-but-active-config-states-old-semantics -> FINAL-002 INCOMPLETE."
+      ],
+      "minimal_fix": "Update the config deep_manifest_validator.checks line to reflect the implemented exact checks: 'config_sha256 == canonical_config_sha256() (raw active config bytes); schema_version == confirmatory_v4_phase_manifest_v1; deterministic_environment == frozen 7-key contract (value+type); commits 40-hex format until generator Step 0'. (Code is already correct; only the description must be synced.)",
+      "acceptance_test": "test_frozen_issue_regression_final_001_005_c.py::test_final002_config_description_reflects_exact_checks (no 'config/commit hex formats'/'device==cpu'; states exact checks) plus test_final002_exact_value_checks_enforced (code, already passing).",
+      "power_recertification_required": false
+    },
+    "FINAL-003": {
+      "status": "RESOLVED",
+      "evidence": "confirmatory_v4_manifest_spec.md §2.3 uses the layered field set; no standalone manifest_hash/config_hash/code_commit field entries remain (only the FINAL-003 heading meta-reference); per-trial provenance uses runtime_commit; per-record anchor bound to the phase full-manifest hash (verified)."
+    },
+    "FINAL-004": {
+      "status": "RESOLVED",
+      "evidence": "claim_scope.md §7 and preregistration_v4.md §16b add: error/time regression heads are auxiliary multitask training signals; selection + primary use success only; no claim that multidimensional error/time prediction outperforms a success-only predictor. Model/loss/primary/power unchanged; no success-only ablation added (verified)."
+    },
+    "FINAL-005": {
+      "status": "RESOLVED",
+      "evidence": "snapshot_manifest.json: ambiguous 'snapshot_commit' removed; metadata_payload_commit=1abaa72d..., final_head_commit=b983b7e9..., audited_snapshot_commit=b983b7e9... (exact); README 'Commit disambiguation (FINAL-005)' explains 1abaa=phase-1 metadata (parent), b983=audited frozen HEAD, not the batch-fix HEAD, no self-reference (verified)."
+    }
+  },
+  "design_power_invariants_unchanged": {
+    "candidate_bank": [-0.04, 0.0, 0.04],
+    "test_nominals": [-0.035, 0.035],
+    "blocks": {"train": 9, "val": 6, "test": 9},
+    "power_verdict": "POWER_SUFFICIENT_FOR_PREREG_V4",
+    "data_306_sha256_prefix": "131750e158032e53",
+    "note": "Batch fix touched only order-resolution/validator/hash-fields/docs; bank, ±0.035, residual, probe, DeepSets+HP+5 seeds, primary comparator, bootstrap, 0.15 CI, seed gate, 300 trials, and 306 data unchanged -> no power recert."
+  },
+  "tests": {
+    "b_batch_fix_suite": "test_one_shot_batch_fix_final_001_005.py -> 17 passed (does NOT cover §3.5 storage/hash uniqueness or the stale config descriptions)",
+    "c_regression_suite": "test_frozen_issue_regression_final_001_005_c.py -> 7 passed, 3 xfailed (FINAL-001 §3.5 + §3.2, FINAL-002 §4.5)"
+  },
+  "no_isaac_launched": true,
+  "no_generator_implemented": true,
+  "no_manifest_instance": true,
+  "no_checkpoint_or_confirmatory_data": true,
+  "modified_only": [
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/frozen_issue_regression_final_001_005_c.md",
+    "docs/offline_v2/calibration_bias/final_snapshot_v1/frozen_issue_regression_final_001_005_c.json",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_frozen_issue_regression_final_001_005_c.py"
+  ]
+}
