@@ -35,7 +35,7 @@ def _pre():
 
 
 def test_status_is_fix4():
-    assert P.STATUS == "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION"
+    assert P.STATUS == "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT"
     assert _pre()["status"] == P.STATUS and _pre()["power_recertification_required"] is False
 
 
@@ -112,10 +112,11 @@ def test_valid_phase_manifests_pass_and_hash():
 
 
 def test_full_hash_covers_resolved_fields_valid_fixture():
+    # residual_value/nuisance_values are now recomputed+exact-checked by the frozen sampler, so mutate a
+    # validity-preserving covered field (environment_versions) to show the full hash covers it.
     m = _valid_manifest("test")
     h0 = MI.fully_resolved_phase_manifest_hash(m)
-    m2 = _valid_manifest("test"); m2["blocks"][0]["residual_value"] = 0.00777
-    m2["blocks"][0]["nuisance_values"] = {"joint_delta": 0.0}   # keep others; only residual changed
+    m2 = _valid_manifest("test"); m2["environment_versions"] = {"torch": "zzz", "numpy": "9.9.9"}
     assert MI.fully_resolved_phase_manifest_hash(m2) != h0
 
 
@@ -250,7 +251,7 @@ def test_no_generator_manifest_checkpoint_data():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION" in md
+    assert "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT" in md
 
 
 def test_306_hash_unchanged():

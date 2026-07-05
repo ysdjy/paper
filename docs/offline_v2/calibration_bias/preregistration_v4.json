@@ -1,6 +1,6 @@
 {
   "title": "Confirmatory Preregistration v4 FIX4 -- calibration-bias diagnostic history & action selection",
-  "status": "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION",
+  "status": "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT",
   "base_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
   "audit_commit": "2ab39063c42f545b35beb53015c6a16402660c37",
   "v4_original_commit": "9a02eb5ae320564bc8710380b919101d6537c02a",
@@ -850,6 +850,41 @@
       "resolved_candidate_order"
     ],
     "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY"
+  },
+  "block_state_sampler": {
+    "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_block_state",
+    "residual": {
+      "version": "pcg64_rejection_v1",
+      "bit_generator": "numpy.random.PCG64",
+      "seed_input": "block_residual_subseed",
+      "mean": 0.0,
+      "sigma": 0.005,
+      "support": [
+        -0.01,
+        0.01
+      ],
+      "support_inclusive": true,
+      "max_attempts": 1000,
+      "fallback": null,
+      "on_exhaustion": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+      "law_matches_default_residual": true,
+      "law": "TruncatedNormal(mean=0.0, sigma=0.005 m, support [-0.01,+0.01] m) == residual_nuisance.DEFAULT_RESIDUAL"
+    },
+    "nuisance": {
+      "version": "none_v1",
+      "seed_input": "block_nuisance_subseed",
+      "exact_values": {},
+      "additional_block_nuisance_enabled": false,
+      "note": "v3 removed the artificial grasp perturbation; nuisance_subseed stays a reserved, hash-covered, domain-separated field whose resolved value is exactly {}"
+    },
+    "residual_is_only_block_hidden_variation": true,
+    "generator_may_not_choose": [
+      "RNG / bit generator",
+      "truncation method",
+      "any additional block nuisance"
+    ],
+    "manifest_hash_uniquely_determined_by": "subseeds + frozen sampler",
+    "validator_recomputes_exact_values": true
   },
   "determinism_env": {
     "device": "cpu",

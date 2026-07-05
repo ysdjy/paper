@@ -555,7 +555,28 @@ DEEP_MANIFEST_VALIDATOR = {
     "on_violation": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
 }
 
-STATUS = "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION"
+# Frozen block-state sampler (unique subseed -> value mapping). residual is the ONLY current block-level
+# hidden variation; additional block nuisance is 'none_v1' (exactly {}); A may not choose RNG / truncation /
+# extra nuisance; the manifest hash is uniquely determined by the subseeds + this frozen sampler.
+BLOCK_STATE_SAMPLER = {
+    "module": "deployment_calibration.offline_v2.calibration_bias.confirmatory_v4_block_state",
+    "residual": {"version": "pcg64_rejection_v1", "bit_generator": "numpy.random.PCG64",
+                 "seed_input": "block_residual_subseed", "mean": 0.0, "sigma": 0.005,
+                 "support": [-0.01, 0.01], "support_inclusive": True, "max_attempts": 1000,
+                 "fallback": None, "on_exhaustion": "EXPERIMENT_INVALID_MANIFEST_INTEGRITY",
+                 "law_matches_default_residual": True,
+                 "law": "TruncatedNormal(mean=0.0, sigma=0.005 m, support [-0.01,+0.01] m) == residual_nuisance.DEFAULT_RESIDUAL"},
+    "nuisance": {"version": "none_v1", "seed_input": "block_nuisance_subseed", "exact_values": {},
+                 "additional_block_nuisance_enabled": False,
+                 "note": "v3 removed the artificial grasp perturbation; nuisance_subseed stays a reserved, "
+                         "hash-covered, domain-separated field whose resolved value is exactly {}"},
+    "residual_is_only_block_hidden_variation": True,
+    "generator_may_not_choose": ["RNG / bit generator", "truncation method", "any additional block nuisance"],
+    "manifest_hash_uniquely_determined_by": "subseeds + frozen sampler",
+    "validator_recomputes_exact_values": True,
+}
+
+STATUS = "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT"
 
 
 def preregistration_dict():
@@ -603,6 +624,7 @@ def preregistration_dict():
         "planned_identity_format": PLANNED_IDENTITY_FORMAT, "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
         "manifest_integrity": MANIFEST_INTEGRITY,
         "deep_manifest_validator": DEEP_MANIFEST_VALIDATOR,
+        "block_state_sampler": BLOCK_STATE_SAMPLER,
         "determinism_env": DETERMINISM_ENV,
         "deterministic_environment_manifest_contract": DETERMINISM_MANIFEST_CONTRACT,
         "phase_manifest_schema_version": PHASE_MANIFEST_SCHEMA_VERSION,
@@ -636,6 +658,10 @@ def audit_checklist():
     return {
         "for": "Claude C one-shot frozen-issue regression of preregistration v4 (FINAL-001..005 batch fix)",
         "must_verify": [
+            "BLOCK-STATE SAMPLER: confirmatory_v4_block_state is the unique subseed->value source; residual "
+            "pcg64_rejection_v1 (PCG64(block_residual_subseed) rejection TruncatedNormal(0,0.005,[-0.01,0.01]) "
+            "== DEFAULT_RESIDUAL; no clip; exhaustion->INVALID); nuisance none_v1 == {}; validator recomputes "
+            "residual (exact float equality) + nuisance ({}); reference placeholders removed; known-answers verified",
             "FINAL-001: frozen seed->order resolution (resolve_order/block/session/candidate/phase-plan); "
             "validator recomputes block_order_key/candidate_order_keys/resolved_candidate_order/"
             "execution_order_index; no random/RNG/hash()/dict-iteration",
@@ -700,6 +726,7 @@ def emit(docs_dir=None):
            "identity_template": PLANNED_IDENTITY_FORMAT["identity_template"],
            "manifest_integrity": MANIFEST_INTEGRITY,
            "deep_manifest_validator": DEEP_MANIFEST_VALIDATOR,
+           "block_state_sampler": BLOCK_STATE_SAMPLER,
            "determinism_env": DETERMINISM_ENV,
            "deterministic_environment_manifest_contract": DETERMINISM_MANIFEST_CONTRACT,
            "phase_manifest_schema_version": PHASE_MANIFEST_SCHEMA_VERSION,

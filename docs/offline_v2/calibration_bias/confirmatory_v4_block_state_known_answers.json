@@ -1,0 +1,61 @@
+{
+  "sampler_version": "pcg64_rejection_v1",
+  "nuisance_policy_version": "none_v1",
+  "note": "known-answer vectors for the frozen block-state sampler; residual via Generator(PCG64(subseed)) rejection, hex is float.hex()",
+  "vectors": [
+    {
+      "split": "train",
+      "block_index": 0,
+      "residual_subseed": 3900147458896997762,
+      "residual_value": -0.000179532459409731,
+      "residual_float_hex": "-0x1.7881c155e5258p-13",
+      "nuisance_subseed": 6562159524509754206,
+      "nuisance_values": {}
+    },
+    {
+      "split": "train",
+      "block_index": 8,
+      "residual_subseed": 7943510405471906039,
+      "residual_value": -0.000516669908981495,
+      "residual_float_hex": "-0x1.0ee242e52d4dfp-11",
+      "nuisance_subseed": 1000704721152147675,
+      "nuisance_values": {}
+    },
+    {
+      "split": "validation",
+      "block_index": 0,
+      "residual_subseed": 4622689590762937920,
+      "residual_value": -0.006371487678050825,
+      "residual_float_hex": "-0x1.a18fd3343f967p-8",
+      "nuisance_subseed": 4916055577791758597,
+      "nuisance_values": {}
+    },
+    {
+      "split": "validation",
+      "block_index": 5,
+      "residual_subseed": 1974286722429745049,
+      "residual_value": -0.0013673036081299729,
+      "residual_float_hex": "-0x1.666e311f5b1ecp-10",
+      "nuisance_subseed": 263647283272395115,
+      "nuisance_values": {}
+    },
+    {
+      "split": "test",
+      "block_index": 0,
+      "residual_subseed": 3357889320340643563,
+      "residual_value": -0.004166995998557855,
+      "residual_float_hex": "-0x1.111697894f781p-8",
+      "nuisance_subseed": 7725492040517457760,
+      "nuisance_values": {}
+    },
+    {
+      "split": "test",
+      "block_index": 8,
+      "residual_subseed": 1871260554784712498,
+      "residual_value": 0.003498130263835245,
+      "residual_float_hex": "0x1.ca81c6291fbbap-9",
+      "nuisance_subseed": 6818819167133771356,
+      "nuisance_values": {}
+    }
+  ]
+}

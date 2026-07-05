@@ -228,15 +228,28 @@ def validate_fully_resolved_phase_manifest(manifest) -> None:
         if b["block_order_key"] in blk_order:
             _err("duplicate block_order_key")
         blk_order.add(b["block_order_key"])
-        res = _finite(b["residual_value"], "residual_value")
-        if not (RESIDUAL_LO - _ABS_TOL <= res <= RESIDUAL_HI + _ABS_TOL):
-            _err(f"residual_value {res} out of [{RESIDUAL_LO},{RESIDUAL_HI}]")
-        if not isinstance(b["nuisance_values"], dict):
-            _err("nuisance_values must be a dict")
-        if b["residual_subseed"] != ID.block_residual_subseed(split, bi):
+        # block state: subseeds + residual/nuisance recomputed EXACTLY from the frozen block-state sampler
+        from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_block_state as BS
+        expected_rs = ID.block_residual_subseed(split, bi)
+        expected_ns = ID.block_nuisance_subseed(split, bi)
+        if b["residual_subseed"] != expected_rs:
             _err(f"residual_subseed mismatch for {split} {bi}")
-        if b["nuisance_subseed"] != ID.block_nuisance_subseed(split, bi):
+        if b["nuisance_subseed"] != expected_ns:
             _err(f"nuisance_subseed mismatch for {split} {bi}")
+        try:
+            expected_r = BS.residual_value_from_subseed(expected_rs)
+            expected_n = BS.nuisance_values_from_subseed(expected_ns)
+        except (BS.BlockStateSamplerError, BS.BlockStateSamplerExhausted) as e:
+            _err(f"block-state sampler failed for {split} {bi}: {e}")
+        rv = b["residual_value"]
+        if type(rv) is not float:                      # reject bool / int posing as float
+            _err(f"residual_value must be a float, got {type(rv).__name__} for {split} {bi}")
+        if rv != expected_r:                            # EXACT equality (no tolerance)
+            _err(f"residual_value != frozen sampler output for {split} {bi}")
+        if not (RESIDUAL_LO <= rv <= RESIDUAL_HI):
+            _err(f"residual_value {rv} out of [{RESIDUAL_LO},{RESIDUAL_HI}]")
+        if not isinstance(b["nuisance_values"], dict) or b["nuisance_values"] != expected_n:
+            _err(f"nuisance_values != frozen none_v1 policy (must be {{}}) for {split} {bi}")
         blk_by_key[key] = b
         blk_split_count[split] = blk_split_count.get(split, 0) + 1
     if blk_split_count != PHASE_BLOCK_SPLIT_COUNTS[phase]:
@@ -391,17 +404,18 @@ def reference_phase_manifest(phase, *, protocol_commit="0" * 40, generator_commi
     values, so `validate_fully_resolved_phase_manifest` accepts the result."""
     from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_identity as ID
     from deployment_calibration.offline_v2.calibration_bias import preregistration_v4 as PRE
+    from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_block_state as BS
     if phase not in PHASES:
         _err(f"unknown phase {phase!r}")
     splits = PHASE_SPLITS[phase]
     blocks, sessions, trials = [], [], []
     for split in splits:
         for bi in ID.BLOCKS[split]:
+            bst = BS.resolved_block_state(split, bi)     # frozen sampler; no placeholders
             blocks.append({"split": split, "block_index": bi,
                            "canonical_block_identity": ID.block_identity(split, bi),
-                           "residual_value": 0.001, "nuisance_values": {"joint_delta": 0.0},
-                           "residual_subseed": ID.block_residual_subseed(split, bi),
-                           "nuisance_subseed": ID.block_nuisance_subseed(split, bi),
+                           "residual_value": bst["residual_value"], "nuisance_values": bst["nuisance_values"],
+                           "residual_subseed": bst["residual_subseed"], "nuisance_subseed": bst["nuisance_subseed"],
                            "block_order_key": ID.block_order_key(split, bi)})
             for nom in ID.NOMINALS[split]:
                 sessions.append({"canonical_session_identity": ID.session_identity(split, bi, nom),

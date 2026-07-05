@@ -87,3 +87,9 @@ Sampled dims (round-1): `grasp_offset_local_y ∈ [-0.06,0.06]` (the only bank a
 (fixed to the 3 bank values); `max_pos_step=0.02`, `pull_lead=0.08` are held at their exploration values.
 `THETA_FIXED` (pre_grasp_clearance 0.12, approach_line_lead 0.03, reach/pull_timeout 16.0, close 1.0, settle
 0.5) unchanged.
+
+## 10. Block state (frozen sampler)
+`block.residual_value` and `block.nuisance_values` come from the frozen `confirmatory_v4_block_state` sampler
+(residual = `pcg64_rejection_v1` PCG64(block_residual_subseed) rejection TruncatedNormal(0, 0.005, [-0.01,
+0.01]); nuisance = `none_v1` -> `{}`). The deep validator recomputes both exactly; residual is a Python float
+compared with exact equality. residual is the only block-level hidden variation.

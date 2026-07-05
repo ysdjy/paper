@@ -8,9 +8,25 @@ emitted from `deployment_calibration/offline_v2/calibration_bias/preregistration
 are `preregistration_v4.json`, `confirmatory_v4_config.json`, `confirmatory_v4_audit_checklist.json`.
 Markdown and JSON are kept consistent (guarded by tests).
 
-**Status: `PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION`.** This phase authorizes nothing — Claude C
+**Status: `PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT`.** This phase authorizes nothing — Claude C
 must return GO before Claude A implements the generator. No confirmatory generator, runtime code, manifest
 instance, checkpoint, confirmatory data, or run authorization is produced here.
+
+## 0y. Block-state sampler freeze (closes GENERATOR_IMPLEMENTATION_BLOCKED_MISSING_FROZEN_BLOCK_STATE_SAMPLER)
+- New unique production module `confirmatory_v4_block_state`: the deterministic `subseed -> value` mapping
+  for each block's `residual_value` and `nuisance_values` (both hash-covered). Residual = `pcg64_rejection_v1`
+  (`numpy.random.Generator(numpy.random.PCG64(block_residual_subseed))` rejection-sampling
+  `TruncatedNormal(0, 0.005, [-0.01,+0.01])`, identical law to `residual_nuisance.DEFAULT_RESIDUAL`; fresh
+  Generator per block, no global RNG/`default_rng`/`hash()`; no clip/fallback; 1000-attempt exhaustion ->
+  `EXPERIMENT_INVALID_MANIFEST_INTEGRITY`). Nuisance = `none_v1` -> exactly `{}` (residual is the only
+  current block-level hidden variation; v3 removed the artificial grasp perturbation).
+- The deep validator now **recomputes and exact-checks** `residual_value` (Python float, exact equality) and
+  `nuisance_values` (`== {}`); reference-fixture placeholders (`0.001` / `{joint_delta:0.0}`) removed.
+- Probability law, candidate bank, nominals, block counts, probe, model/HP/seeds, primary estimator, and
+  bootstrap are unchanged, and no new block nuisance is introduced -> `power_recertification_required = false`.
+  > The target probability law is unchanged. The amendment fixes only the deterministic mapping from each
+  > preregistered subseed to one residual draw and declares the already-absent additional block nuisance to
+  > be none_v1.
 
 ## 0z. One-shot batch fix (Claude C frozen issue list FINAL-001..005)
 - **FINAL-001** — the only legal manifest ordering is now a frozen SHA256-derived-key + stable sort +

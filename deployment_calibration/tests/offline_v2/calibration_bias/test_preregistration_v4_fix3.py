@@ -33,7 +33,7 @@ def _pre():
 
 
 def test_status_is_fix3():
-    assert P.STATUS == "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION"
+    assert P.STATUS == "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT"
     assert _pre()["status"] == P.STATUS and _pre()["power_recertification_required"] is False
 
 
@@ -218,14 +218,14 @@ def test_full_hash_mutation_sensitivity():
     h0 = MI.fully_resolved_phase_manifest_hash(_manifest())
     def mut(fn):
         m = _manifest(); fn(m); return MI.fully_resolved_phase_manifest_hash(m)
-    # only mutate fields that remain VALID (FINAL-002 now exact-checks config_sha256 / schema_version, and
-    # order keys/subseeds are recomputed, so those can't be freely mutated); commits are 40-hex format-only.
-    assert mut(lambda m: m["blocks"][0].__setitem__("residual_value", 0.002)) != h0
-    assert mut(lambda m: m["blocks"][0].__setitem__("nuisance_values", {"joint_delta": 0.5})) != h0
+    # only mutate fields that remain VALID (config_sha256/schema_version exact-checked; order keys/subseeds
+    # AND residual_value/nuisance_values are recomputed from frozen sampler, so those can't be freely
+    # mutated); commits are 40-hex format-only.
     assert mut(lambda m: m.__setitem__("generator_commit", "9" * 40)) != h0
     assert mut(lambda m: m.__setitem__("runtime_commit", "9" * 40)) != h0
     assert mut(lambda m: m.__setitem__("protocol_commit", "9" * 40)) != h0
     assert mut(lambda m: m["environment_versions"].__setitem__("torch", "zzz")) != h0
+    assert mut(lambda m: m["environment_versions"].__setitem__("numpy", "9.9.9")) != h0
 
 
 def test_full_hash_excludes_only_self_field():
@@ -284,7 +284,7 @@ def test_no_generator_manifest_checkpoint_data():
 def test_md_json_consistency():
     P.emit()
     md = (_DOCS / "preregistration_v4.md").read_text()
-    assert "PREREGISTRATION_V4_VALIDATOR_DESCRIPTION_CONSOLIDATED_READY_FOR_C_REGRESSION" in md
+    assert "PREREGISTRATION_V4_BLOCK_STATE_SAMPLER_FROZEN_READY_FOR_C_REAUDIT" in md
     assert "select_best_single_confirmatory" in (_DOCS / "preregistration_v4.json").read_text()
 
 

@@ -195,3 +195,22 @@ schema, confirming the runtime can emit them.)
 ## 7. Not produced in this phase
 No manifest instance, no seeds materialized, no generator. The generator that consumes this spec is
 implemented by Claude A **only after** Claude C returns GO.
+
+## 8. Frozen block-state sampler (unique subseed -> value; closes the missing-sampler blocker)
+Each block's `residual_value` and `nuisance_values` (both covered by the full phase hash) are produced by
+the SINGLE production sampler `confirmatory_v4_block_state`, and the deep validator **recomputes and
+exact-checks** them:
+- **residual** (`pcg64_rejection_v1`): `rng = numpy.random.Generator(numpy.random.PCG64(block_residual_subseed))`,
+  then rejection-sample `TruncatedNormal(mean=0.0, sigma=0.005 m, support [-0.01,+0.01] m)` — identical law
+  to `residual_nuisance.DEFAULT_RESIDUAL` and the active `design.residual`. A fresh Generator per block (no
+  global RNG, no `default_rng`, no `hash()`, iteration-order independent); no clip / no fallback-to-mean; on
+  `max_attempts=1000` rejections the manifest construction fails
+  (`EXPERIMENT_INVALID_MANIFEST_INTEGRITY`). `residual_value` must be a Python `float` and **exactly equal**
+  (no tolerance) to `residual_value_from_subseed(block_residual_subseed)`.
+- **nuisance** (`none_v1`): `nuisance_values` is exactly `{}`. residual is the ONLY current block-level hidden
+  variation (v3 removed the artificial grasp perturbation). `nuisance_subseed` remains a reserved,
+  hash-covered, domain-separated field whose resolved value is empty; trial-level init is
+  `trial_init_subseed` + runtime commit, never block nuisance.
+- The generator (Claude A) may NOT choose the RNG, the truncation method, or any additional block nuisance;
+  the manifest hash is uniquely determined by the subseeds + this frozen sampler. Known-answer vectors:
+  `confirmatory_v4_block_state_known_answers.json`.

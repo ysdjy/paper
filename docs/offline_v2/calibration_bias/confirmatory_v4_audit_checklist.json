@@ -1,6 +1,7 @@
 {
   "for": "Claude C one-shot frozen-issue regression of preregistration v4 (FINAL-001..005 batch fix)",
   "must_verify": [
+    "BLOCK-STATE SAMPLER: confirmatory_v4_block_state is the unique subseed->value source; residual pcg64_rejection_v1 (PCG64(block_residual_subseed) rejection TruncatedNormal(0,0.005,[-0.01,0.01]) == DEFAULT_RESIDUAL; no clip; exhaustion->INVALID); nuisance none_v1 == {}; validator recomputes residual (exact float equality) + nuisance ({}); reference placeholders removed; known-answers verified",
     "FINAL-001: frozen seed->order resolution (resolve_order/block/session/candidate/phase-plan); validator recomputes block_order_key/candidate_order_keys/resolved_candidate_order/execution_order_index; no random/RNG/hash()/dict-iteration",
     "FINAL-002: exact config_sha256==canonical_config_sha256(), schema_version, determinism contract (key set + value + type; no extra; no GPU); future commits 40-hex until Step 0",
     "FINAL-003: manifest_spec stale manifest_hash/config_hash/code_commit removed -> layered set + freeze-source table; per-trial runtime_commit",
