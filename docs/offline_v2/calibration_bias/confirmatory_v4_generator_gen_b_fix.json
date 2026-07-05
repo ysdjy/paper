@@ -12,6 +12,8 @@
   "envelope_snapshot_immutable": true,
   "smoke_commits_placeholder_only": true,
   "environment_provenance_contract": true,
+  "gen_b_005_public_builder_gate": true,
+  "partial_environment_provenance_rejected_before_build": true,
   "unfrozen_target_value_removed": true,
   "selection_interface_strict": true,
   "smoke_summary_atomic": true,
@@ -20,7 +22,7 @@
     "GEN-B-002": "TrialExecutionEnvelope stores canonical-JSON snapshots for public/secret; public_trial_spec/secret_environment_spec are copy-on-read; assert_no_secret_in_public scans the mutable payload BEFORE freezing; post-scan injection into a returned copy cannot persist.",
     "GEN-B-003": "removed hardcoded target_open_position=0.20 from build_trial_execution_envelope; public payload now only frozen identity/order fields (no unfrozen task level); no synthetic fixture added.",
     "GEN-B-004": "build_phase_manifest_in_memory now calls require_smoke_commit_context (SmokeCommitContextError) after 40-hex validation; only the a/b/c*40 placeholder is accepted under smoke; a real-looking commit is rejected before any build/hash.",
-    "GEN-B-005": "EnvironmentVersionContext is immutable (validates+copies, rejects empty/non-str/bool/None/empty-string); a frozen 10-key SMOKE_ENV contract is enforced by validate_smoke_environment_provenance at the CLI layer; CLI._env_versions records python_implementation/version, numpy, torch (explicit UNAVAILABLE:<Exc>, no silent pass), os system/release/machine, isaac_status=NOT_IMPORTED_NOT_LAUNCHED, gpu_status=NOT_USED_CPU_SMOKE, execution_mode=SMOKE_ONLY; the full env enters the manifest+hash.",
+    "GEN-B-005": "EnvironmentVersionContext is immutable (validates+copies, rejects empty/non-str/bool/None/empty-string). The EXACT 10-key smoke provenance contract (SMOKE_ENV_VERSION_KEYS + SMOKE_ENV_FIXED markers) is enforced by the PUBLIC build_phase_manifest_in_memory entry point itself, not merely by the CLI: validate_smoke_environment_provenance runs after the smoke-commit gate and BEFORE any manifest construction/hash, so a partial env (single wrong-named key / missing key / extra key / wrong execution_mode|isaac_status|gpu_status) raises EnvironmentProvenanceError and returns no phase and no hash. A caller cannot bypass the CLI and obtain a phase hash with partial provenance. CLI._env_versions records python_implementation/version, numpy, torch (explicit UNAVAILABLE:<Exc>, no silent pass), os system/release/machine, isaac_status=NOT_IMPORTED_NOT_LAUNCHED, gpu_status=NOT_USED_CPU_SMOKE, execution_mode=SMOKE_ONLY; the full env enters the manifest+hash (changing one allowed version string changes the full hash). Consequence: the two frozen audit-b PASS tests that build via the module-level 1-key _ENV helper (test_builder_counts_and_orders_and_reference_equal, test_authorization_gate_and_formal_writer_locked) flip to failing — expected and unavoidable (frozen file not modified); the covered behaviours stay green in the generator suite with a full 10-key env.",
     "GEN-B-006": "canonical_selected_offset (reject bool/str/non-finite/out-of-bank; abs_tol 1e-12; exact frozen float); evidence_hash must be 64 lowercase hex; SessionRunController holds frozen resolved_candidate_order, adds record_candidate_complete (next-in-order, no duplicate, attempt in {0,1} via ID.attempt_id); session_complete requires all 3 completed; candidate OUTCOMES never enter the selector.",
     "GEN-B-007": "CLI._atomic_write_smoke_summary: same-dir temp -> flush -> os.fsync -> os.replace -> dir fsync -> read-back verify; idempotent on identical content; SmokeArtifactCollisionError on differing existing file; temp cleaned on failure; parent dir created only after KAT/build/rebuild succeed; returned dict == on-disk JSON (no _summary_path); summary_schema_version + write_complete added."
   },
@@ -31,10 +33,11 @@
     "public/secret field definitions", "no Isaac", "no formal manifest/checkpoint/confirmatory data"
   ],
   "tests": {
-    "test_confirmatory_v4_generator": "24 passed (updated for the strict FSM)",
-    "test_confirmatory_v4_generator_gen_b_fix": "12 passed (reverse-property proofs for all 7)",
-    "test_confirmatory_v4_generator_audit_b -k 'not test_GEN_B'": "5 passed (B PASS region intact)",
-    "test_GEN_B_00x demonstrations": "6/7 flipped to fail (002-007); GEN-B-001 demo still passes because it only asserts the hash is unchanged (true both pre/post fix) - the mutability it demonstrates IS fixed and proven by test_gen_b_001_generated_phase_is_immutable_snapshot",
+    "test_confirmatory_v4_generator": "24 passed (all build sites use a full 10-key env)",
+    "test_confirmatory_v4_generator_gen_b_fix": "17 passed (12 prior + 5 new GEN-B-005 section-5 proofs: public builder rejects partial provenance; gate runs before _build_unsealed_manifest; full env passes deep validation 228/72; provenance bound into full hash)",
+    "test_confirmatory_v4_generator_audit_b": "3 passed / 9 failed - all 7 test_GEN_B_* demonstrations now flip (each frozen finding demonstrated closed) + 2 PASS-region tests that build via the frozen module-level 1-key _ENV helper flip (test_builder_counts_and_orders_and_reference_equal, test_authorization_gate_and_formal_writer_locked) - expected consequence of the GEN-B-005 builder gate; audit-b file NOT modified",
+    "full_calibration_bias_suite": "34 failed / 435 passed / 2 xfailed - 0 new active failures: 25 documented historical Claude-C reaudit baseline (do not import generator) + 9 frozen audit-b (7 demos + 2 partial-env PASS-region flips)",
+    "behaviours_still_green_full_env": "reference equality (test_independent_build_equals_reference), auth gate (test_authorization_requires_smoke_only), formal writer locked zero-side-effect (test_formal_writer_zero_side_effect)",
     "block_state regressions": "test_block_state_kat_final_reaudit_c 12, test_confirmatory_v4_block_state 15, test_confirmatory_v4_block_state_kat_gate 10 - all passed"
   },
   "smoke": {

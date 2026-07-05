@@ -16,13 +16,23 @@ from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_m
 from deployment_calibration.offline_v2.calibration_bias import preregistration_v4 as PRE
 
 AUTH = GEN.GeneratorAuthorization(smoke_only=True)
-ENV = GEN.EnvironmentVersionContext({"numpy": "1.26.0"})
 
 
-def _build(phase, commits=None):
+def full_smoke_env_mapping():
+    """Complete 10-key smoke provenance (the public builder enforces the exact contract, GEN-B-005)."""
+    return {"python_implementation": "CPython", "python_version": "3.10.0", "numpy_version": "1.26.0",
+            "torch_version": "2.7.0+cu128", "os_system": "Linux", "os_release": "test", "machine": "x86_64",
+            "isaac_status": "NOT_IMPORTED_NOT_LAUNCHED", "gpu_status": "NOT_USED_CPU_SMOKE",
+            "execution_mode": "SMOKE_ONLY"}
+
+
+ENV = GEN.EnvironmentVersionContext(full_smoke_env_mapping())
+
+
+def _build(phase, commits=None, env=None):
     return GEN.build_phase_manifest_in_memory(phase, auth=AUTH,
                                               commits=commits or GEN.smoke_placeholder_commits(),
-                                              environment_versions=ENV)
+                                              environment_versions=env or ENV)
 
 
 # ---------------- GEN-B-001: immutable manifest/kat snapshot bound to hash ----------------
@@ -107,6 +117,66 @@ def test_gen_b_005_smoke_provenance_ten_key_contract():
     wrong = dict(full); wrong["execution_mode"] = "FORMAL"
     with pytest.raises(GEN.EnvironmentProvenanceError):
         GEN.validate_smoke_environment_provenance(GEN.EnvironmentVersionContext(wrong))
+
+
+# ---- GEN-B-005 (§5): the PUBLIC builder itself enforces the exact 10-key provenance (not merely the CLI) ----
+def test_gen_b_005_public_builder_rejects_partial_provenance():
+    """§5.1: build_phase_manifest_in_memory must reject any env that is not exactly the 10-key smoke contract,
+    even when the env is a validly-constructed EnvironmentVersionContext. No phase/hash may be returned."""
+    full = full_smoke_env_mapping()
+    bad_envs = {
+        "single_wrong_named_key": {"numpy_version": "1.26.0"},
+        "missing_one_key": {k: v for k, v in full.items() if k != "machine"},
+        "extra_one_key": {**full, "cuda_version": "12.8"},
+        "wrong_execution_mode": {**full, "execution_mode": "FORMAL"},
+        "wrong_isaac_status": {**full, "isaac_status": "LAUNCHED"},
+        "wrong_gpu_status": {**full, "gpu_status": "USED_GPU"},
+    }
+    for name, mapping in bad_envs.items():
+        env = GEN.EnvironmentVersionContext(mapping)             # constructs fine (permissive constructor)
+        with pytest.raises(GEN.EnvironmentProvenanceError):
+            GEN.build_phase_manifest_in_memory("test", auth=AUTH,
+                                               commits=GEN.smoke_placeholder_commits(),
+                                               environment_versions=env), name
+
+
+def test_gen_b_005_provenance_gate_runs_before_any_build(monkeypatch):
+    """§5.2: the provenance gate fires BEFORE manifest construction. If _build_unsealed_manifest is poisoned to
+    explode on call, a partial env still raises EnvironmentProvenanceError (never the poison) -> gate is first."""
+    def _poison(*_a, **_k):
+        raise AssertionError("_build_unsealed_manifest must NOT be reached for partial provenance")
+    monkeypatch.setattr(GEN, "_build_unsealed_manifest", _poison)
+    partial = GEN.EnvironmentVersionContext({"numpy_version": "1.26.0"})
+    with pytest.raises(GEN.EnvironmentProvenanceError):
+        GEN.build_phase_manifest_in_memory("test", auth=AUTH,
+                                           commits=GEN.smoke_placeholder_commits(),
+                                           environment_versions=partial)
+
+
+@pytest.mark.parametrize("phase,blocks,sessions,trials",
+                         [("train_validation", 15, 57, 228), ("test", 9, 18, 72)])
+def test_gen_b_005_full_provenance_passes_deep_validation(phase, blocks, sessions, trials):
+    """§5.3: a complete 10-key env passes deep validation + full hash and yields the frozen counts."""
+    g = _build(phase, env=GEN.EnvironmentVersionContext(full_smoke_env_mapping()))
+    m = g.unsealed_manifest
+    assert m["counts"] == {"blocks": blocks, "sessions": sessions, "trials": trials}
+    assert m["environment_versions"] == full_smoke_env_mapping()
+    assert len(g.full_manifest_sha256) == 64
+    MI.validate_fully_resolved_phase_manifest(m)                 # deep re-validation still passes
+
+
+def test_gen_b_005_provenance_is_bound_into_full_hash():
+    """§5.4: changing one allowed version string (python_version) changes the full hash; fixed markers cannot
+    change (they are gated), so provenance genuinely enters the hash."""
+    base = full_smoke_env_mapping()
+    variant = dict(base); variant["python_version"] = "3.11.7"
+    h_base = _build("test", env=GEN.EnvironmentVersionContext(base)).full_manifest_sha256
+    h_var = _build("test", env=GEN.EnvironmentVersionContext(variant)).full_manifest_sha256
+    assert h_base != h_var
+    # a changed fixed marker is rejected outright (cannot even produce a hash)
+    bad = dict(base); bad["execution_mode"] = "FORMAL"
+    with pytest.raises(GEN.EnvironmentProvenanceError):
+        _build("test", env=GEN.EnvironmentVersionContext(bad))
 
 
 def test_gen_b_005_cli_env_versions_complete_and_no_silent_drop():

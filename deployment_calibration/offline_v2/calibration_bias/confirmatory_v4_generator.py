@@ -110,7 +110,8 @@ class EnvironmentVersionContext:
 
 def validate_smoke_environment_provenance(env: "EnvironmentVersionContext") -> None:
     """GEN-B-005: enforce the EXACT 10-key smoke provenance contract (key set + non-empty str values + the
-    three fixed markers). Used by the CLI smoke path; NOT by build (build stays permissive for ref equality)."""
+    three fixed markers). Enforced by the PUBLIC `build_phase_manifest_in_memory` entry point itself (and by
+    the CLI smoke path): a caller cannot bypass the CLI and obtain a phase hash with partial provenance."""
     if not isinstance(env, EnvironmentVersionContext):
         raise EnvironmentProvenanceError("env must be an EnvironmentVersionContext")
     v = env.values
@@ -302,14 +303,17 @@ def _build_unsealed_manifest(phase: str, commits: CommitContext,
 def build_phase_manifest_in_memory(phase: Literal["train_validation", "test"], *,
                                    auth: GeneratorAuthorization, commits: CommitContext,
                                    environment_versions: EnvironmentVersionContext) -> GeneratedPhase:
-    """Frozen order: auth gate -> mandatory KAT -> 40-hex commit -> smoke-placeholder commit -> build ->
-    DEEP validate -> full hash -> IMMUTABLE snapshot."""
+    """Frozen order: auth gate -> mandatory KAT -> 40-hex commit -> smoke-placeholder commit ->
+    EXACT 10-key smoke provenance gate -> build -> DEEP validate -> full hash -> IMMUTABLE snapshot."""
     require_generator_authorization(auth)                      # 1
     kat = BS.require_known_answer_compatibility()              # 2  MANDATORY KAT (first real work)
     validate_commit_context(commits)                          # 3  40-hex format
     require_smoke_commit_context(commits)                     # 3b GEN-B-004 placeholder-only under smoke
     if not isinstance(environment_versions, EnvironmentVersionContext):
         raise EnvironmentProvenanceError("environment_versions must be an EnvironmentVersionContext")
+    validate_smoke_environment_provenance(environment_versions)   # 3c GEN-B-005 EXACT 10-key provenance
+    #     enforced at the PUBLIC builder itself (not merely the CLI): a caller cannot bypass the CLI and
+    #     obtain a phase hash with partial provenance. Runs BEFORE any manifest construction / hashing.
     manifest = _build_unsealed_manifest(phase, commits, environment_versions)   # 4-7
     MI.validate_fully_resolved_phase_manifest(manifest)       # 8  (re-runs KAT + recomputes residual/nuisance)
     full_hash = MI.fully_resolved_phase_manifest_hash(manifest)   # 9

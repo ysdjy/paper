@@ -31,13 +31,14 @@
   "reference_phase_manifest_not_wrapped": true,
   "smoke_output_dir": "artifacts/smoke_only/confirmatory_v4_generator/ (gitignored; SMOKE_ONLY only)",
   "generator_tests": "24 passed",
+  "gen_b_fix_tests": "17 passed (12 prior + 5 new GEN-B-005 section-5 proofs)",
   "named_regressions": {
     "test_block_state_kat_final_reaudit_c": "12 passed",
     "test_confirmatory_v4_block_state": "15 passed",
     "test_confirmatory_v4_block_state_kat_gate": "10 passed"
   },
-  "full_calibration_bias_suite": "415 passed, 25 failed, 2 xfailed",
-  "preexisting_failures_note": "the 25 failures are historical Claude-C audit/reaudit regression files (frozen_issue_regression_final_001_005_c, one_shot_full_audit_c, preregistration_v4_audit_c, fix1/fix2/fix3_reaudit_c); superseded by the fix4/FINAL/KAT reaudit that issued the GO; PROVEN pre-existing on the pristine c8ac0af tree with all A files removed; none imports the generator; all ACTIVE KAT/block-state/final/generator tests pass",
+  "full_calibration_bias_suite": "435 passed, 34 failed, 2 xfailed",
+  "preexisting_failures_note": "0 new active failures. 25 of the 34 are historical Claude-C audit/reaudit regression files (block_state_sampler_reaudit_c, final_001_002_regression_c, frozen_issue_regression_final_001_005_c, one_shot_full_audit_c, preregistration_v4_audit_c, fix1/fix2/fix3_reaudit_c) - none imports the generator, proven pre-existing on the pristine tree. The remaining 9 are in the frozen audit-b file: all 7 test_GEN_B_* demonstrations flip (each frozen finding demonstrated closed) + 2 PASS-region tests (test_builder_counts_and_orders_and_reference_equal, test_authorization_gate_and_formal_writer_locked) that build via the frozen module-level 1-key _ENV helper and now correctly hit the GEN-B-005 public-builder provenance gate; audit-b file NOT modified; the covered behaviours stay green under a full 10-key env",
   "authorizes_formal_manifest_generation": false,
   "authorizes_confirmatory_run": false,
   "gen_b_001_007_fixed": true,
@@ -46,6 +47,8 @@
   "envelope_snapshot_immutable": true,
   "smoke_commits_placeholder_only": true,
   "environment_provenance_contract_10_key": true,
+  "gen_b_005_public_builder_gate": true,
+  "partial_environment_provenance_rejected_before_build": true,
   "smoke_summary_atomic": true,
   "smoke_summary_write_complete": true,
   "smoke_environment_keys": 10

@@ -16,7 +16,18 @@ from deployment_calibration.offline_v2.calibration_bias import confirmatory_v4_g
 
 SMOKE = GEN.GeneratorAuthorization(smoke_only=True)
 COMMITS = GEN.smoke_placeholder_commits()
-ENV = GEN.EnvironmentVersionContext({"torch": "2.7.0+cu128", "numpy": "1.26.0"})
+
+
+def full_smoke_env_mapping():
+    """Complete 10-key smoke provenance (the public builder now enforces the exact contract, GEN-B-005)."""
+    return {"python_implementation": "CPython", "python_version": "3.10.0", "numpy_version": "1.26.0",
+            "torch_version": "2.7.0+cu128", "os_system": "Linux", "os_release": "test", "machine": "x86_64",
+            "isaac_status": "NOT_IMPORTED_NOT_LAUNCHED", "gpu_status": "NOT_USED_CPU_SMOKE",
+            "execution_mode": "SMOKE_ONLY"}
+
+
+FULL_ENV_MAPPING = full_smoke_env_mapping()
+ENV = GEN.EnvironmentVersionContext(FULL_ENV_MAPPING)
 
 
 def _build(phase):
@@ -132,7 +143,7 @@ def test_independent_build_equals_reference(phase):
     mine = _build(phase).unsealed_manifest
     ref = MI.reference_phase_manifest(phase, protocol_commit="a" * 40, generator_commit="b" * 40,
                                       runtime_commit="c" * 40,
-                                      environment_versions={"torch": "2.7.0+cu128", "numpy": "1.26.0"})
+                                      environment_versions=full_smoke_env_mapping())
     assert ID.canonical_json(mine) == ID.canonical_json(ref)
 
 

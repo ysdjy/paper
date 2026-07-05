@@ -83,3 +83,15 @@ bypassed post-validation), unfrozen `target_open_position` removed, smoke build 
 commit context, a frozen 10-key smoke environment provenance contract with an atomic auditable summary
 (temp+fsync+os.replace, read-back, idempotent, collision-guarded), and a strict selection + candidate-
 completion FSM. Still smoke-only; no formal authorization is claimed.
+
+### GEN-B-005 follow-up: provenance enforced at the public builder
+The exact 10-key smoke provenance contract is enforced by the public `build_phase_manifest_in_memory` entry
+point, not merely by the CLI. A caller cannot bypass the CLI and obtain a phase hash with partial provenance.
+`validate_smoke_environment_provenance(environment_versions)` runs immediately after the smoke-commit gate and
+before `_build_unsealed_manifest`, so any partial env (single wrong-named key / missing key / extra key /
+wrong fixed marker) raises `EnvironmentProvenanceError` and produces no phase and no hash. All generator-test
+build sites now use a full 10-key env, and `reference_phase_manifest` is compared with the same full env.
+Because the builder now rejects partial provenance, the two frozen audit-b PASS tests that build via the
+module-level 1-key `_ENV` helper (`test_builder_counts_and_orders_and_reference_equal`,
+`test_authorization_gate_and_formal_writer_locked`) flip — an expected, unavoidable consequence (the frozen
+audit-b file is not modified); the covered behaviours stay green in the generator suite under a full env.

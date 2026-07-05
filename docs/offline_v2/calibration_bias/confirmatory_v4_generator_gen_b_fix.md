@@ -20,13 +20,25 @@ No Claude B/C file and no frozen active module was modified.
   accepted, so a smoke manifest is machine-unmistakable from a future formal freeze. Real-commit freezing is
   a separate future gate, not opened here.
 - **GEN-B-005 (smoke environment provenance)** — `EnvironmentVersionContext` is immutable and validates +
-  copies at construction (rejects empty mapping / non-str keys / bool / non-str / empty-string values). A
-  frozen **10-key** contract (`SMOKE_ENV_VERSION_KEYS`) is enforced by `validate_smoke_environment_provenance`
-  at the CLI layer (keeping build permissive so the audit-b reference-equality PASS tests stay green).
-  `CLI._env_versions` records `python_implementation`, `python_version`, `numpy_version`, `torch_version`
-  (explicit `UNAVAILABLE:<ExcType>` — no silent `except: pass`), `os_system`, `os_release`, `machine`,
-  `isaac_status=NOT_IMPORTED_NOT_LAUNCHED`, `gpu_status=NOT_USED_CPU_SMOKE`, `execution_mode=SMOKE_ONLY`. The
-  full env enters the manifest and its hash. No Isaac import to fetch versions.
+  copies at construction (rejects empty mapping / non-str keys / bool / non-str / empty-string values). The
+  exact **10-key** smoke provenance contract (`SMOKE_ENV_VERSION_KEYS` + `SMOKE_ENV_FIXED` markers) is
+  enforced by the public `build_phase_manifest_in_memory` entry point itself, not merely by the CLI. A caller
+  cannot bypass the CLI and obtain a phase hash with partial provenance: `validate_smoke_environment_provenance`
+  runs immediately after the smoke-commit gate and **before** any manifest construction / hashing, so a
+  partial env (e.g. `{"numpy_version": "1.26.0"}`, or a missing/extra key, or a wrong fixed marker) raises
+  `EnvironmentProvenanceError` and yields no phase and no hash. `CLI._env_versions` records
+  `python_implementation`, `python_version`, `numpy_version`, `torch_version` (explicit `UNAVAILABLE:<ExcType>`
+  — no silent `except: pass`), `os_system`, `os_release`, `machine`, `isaac_status=NOT_IMPORTED_NOT_LAUNCHED`,
+  `gpu_status=NOT_USED_CPU_SMOKE`, `execution_mode=SMOKE_ONLY`. The full env enters the manifest and its hash
+  (changing one allowed version string changes the full hash). No Isaac import to fetch versions.
+  Because the builder now rejects partial provenance, the two frozen audit-b PASS tests
+  (`test_builder_counts_and_orders_and_reference_equal`, `test_authorization_gate_and_formal_writer_locked`)
+  that build via the frozen module-level 1-key `_ENV` helper flip to failing — an expected, unavoidable
+  consequence of closing GEN-B-005 at the builder (the frozen audit-b file cannot be modified). The
+  behaviours those tests covered — reference equality, counts/orders, the authorization gate, and the locked
+  formal writer — remain independently green in the generator suite with a full 10-key env
+  (`test_independent_build_equals_reference`, `test_authorization_requires_smoke_only`,
+  `test_formal_writer_zero_side_effect`).
 - **GEN-B-006 (strict selection / candidate evidence)** — `canonical_selected_offset` (reject
   bool/str/non-finite/out-of-bank; `abs_tol=1e-12`; returns the exact frozen bank float, using
   `ID.CANDIDATE_BANK`, not a hand-copied bank); `evidence_hash` must be 64 lowercase hex.
@@ -46,14 +58,18 @@ seed-derived execution order, deep validation before full hash, locked formal wr
 definitions, no Isaac, no formal manifest/checkpoint/data. `power_recertification_required=false`.
 
 ## Tests
-`test_confirmatory_v4_generator` 24 passed (updated for the strict FSM); new
-`test_confirmatory_v4_generator_gen_b_fix` 12 passed (reverse-property proofs for all 7);
-`test_confirmatory_v4_generator_audit_b -k "not test_GEN_B"` 5 passed (B PASS region intact); the 7
-`test_GEN_B_*` demonstrations flip 6/7 (002–007 fail as expected — GEN-B-001's demo asserts only that the
-hash is unchanged, true both before and after, so it still passes while the mutability it demonstrates is
-fixed and proven by `test_gen_b_001_generated_phase_is_immutable_snapshot`); block-state regressions
-12/15/10 passed. Claude B audit files were not modified.
+`test_confirmatory_v4_generator` 24 passed (all build sites now use a full 10-key env);
+`test_confirmatory_v4_generator_gen_b_fix` 17 passed (12 prior reverse-property proofs + 5 new GEN-B-005 §5
+proofs: public builder rejects partial provenance, the gate runs before `_build_unsealed_manifest`, a full env
+passes deep validation for 228/72, and provenance is bound into the full hash); block-state regressions
+12/15/10 passed. Full `calibration_bias` suite: **34 failed / 435 passed / 2 xfailed**, with **0 new active
+failures** — 25 are the documented historical Claude-C reaudit baseline (files that do not import the
+generator) and 9 are in the frozen audit-b file: all 7 `test_GEN_B_*` demonstrations now flip (each frozen
+finding is demonstrated closed) plus the 2 PASS-region tests that build via the frozen 1-key `_ENV` helper
+(`test_builder_counts_and_orders_and_reference_equal`, `test_authorization_gate_and_formal_writer_locked`),
+which correctly hit the new provenance gate. Claude B/C audit files were not modified.
 
 ## Status
 `GENERATOR_GEN_B_001_007_FIXED_READY_FOR_C_AUDIT` — does NOT authorize a formal manifest, combined plan,
-checkpoint, confirmatory data, or the 300-trial run.
+checkpoint, confirmatory data, or the 300-trial run. GEN-B-005 is now closed at the public builder itself
+(`gen_b_005_public_builder_gate = true`, `partial_environment_provenance_rejected_before_build = true`).
