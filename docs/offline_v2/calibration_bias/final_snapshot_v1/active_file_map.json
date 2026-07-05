@@ -1,0 +1,151 @@
+{
+  "description": "Active v4 file map at Fix4 freeze. 'active'=current authoritative; 'generated-evidence'=power/bridge proof; 'historical'=retained baseline not for production.",
+  "source_fix4_commit": "f8fedd45d2c0e2f9587ae8740c61a1b9eedb64ea",
+  "files": [
+    {
+      "logical_role": "preregistration_master",
+      "path": "docs/offline_v2/calibration_bias/preregistration_v4.md",
+      "sha256": "59affc9dabe7b37bc74bc2c71014535cd0ed24a610e90d43efd2d14a770ced34",
+      "git_blob_sha": "845d95e1a14df29b0fed4988ea11002cc4a5fe10",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "preregistration_machine",
+      "path": "docs/offline_v2/calibration_bias/preregistration_v4.json",
+      "sha256": "06e36bbd8c6787ed69fa52b90d84708ccf619a6e947543faecbcf3096b04bb44",
+      "git_blob_sha": "a20d889bc1c3b5c182596dc4a72c368d5c755fed",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "confirmatory_config",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_config.json",
+      "sha256": "d038a143867111c8a4869d7466f78cdc09ee9a4a8efd8d0ded8f2b49b418c0f6",
+      "git_blob_sha": "4cc3d8f8e4384b578e25371af547f9fdc93f82ae",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "schema",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_schema.md",
+      "sha256": "3ad1dbd1b9e2002a51adc9080f1cb8da771eb998dcf6dcad5378f988779329d9",
+      "git_blob_sha": "2ee94a13c222a6aa503dea3d2df38a867348d93f",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "analysis_plan",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_analysis_plan.md",
+      "sha256": "6e178e3802b8c840b4e8e105522207b5fa8c599f25d217151ef517fcccc7cfc8",
+      "git_blob_sha": "3a9e679ee5010b3e2b296254ad23e1ccc58a8138",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "manifest_spec",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_manifest_spec.md",
+      "sha256": "bbc15adedf609499d8bd3c2a9e680a3de1df353d074823396f2343eae5b092bb",
+      "git_blob_sha": "970e85fea636375b45ddd8d20091f0080429b34e",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "seal_unseal_protocol",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_seal_unseal_protocol.md",
+      "sha256": "f70a1e19b3807ccf71f2b7286d6356cb9faca2f663838f13cce711dbd4039b81",
+      "git_blob_sha": "2de4bafe78d11669d3ef530e21a07d8c48b1e6c8",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "claim_scope",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_claim_scope.md",
+      "sha256": "fdf704857a0af811c404d067241e512c2727b3a3295ca762b8e3ac892e8c8b4d",
+      "git_blob_sha": "95c48ca25c83abe67f0eb36114f08fef2cc81dee",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "audit_checklist",
+      "path": "docs/offline_v2/calibration_bias/confirmatory_v4_audit_checklist.json",
+      "sha256": "0be54f2418a99e2062659fcf2b6d8a65e8e3dc214f8795f617757e358c1a9c50",
+      "git_blob_sha": "b24c896814d366ef27b2cb05d6b423926ef1802c",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "frozen_constants_module",
+      "path": "deployment_calibration/offline_v2/calibration_bias/preregistration_v4.py",
+      "sha256": "0e598a27ae740e93754451966cd99b204e3aee12d46cf9bc87cba3a887cfa737",
+      "git_blob_sha": "5bc9f029944031471177e6bddc56363829fe98fc",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "production_best_single_selector",
+      "path": "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_selection.py",
+      "sha256": "9ea2162cbf78a93fa5e7de94cd0c96053e63c108600dee39b4f4581ab3393ea5",
+      "git_blob_sha": "ba00f9be3a3a31e6a22b5d337a14ead391d1a369",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "canonical_identity",
+      "path": "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_identity.py",
+      "sha256": "918966a96b2290cbf5bd646e8eb0e7230cc5b706435192a4c6b9f778f7ec0535",
+      "git_blob_sha": "d6910f3cae066c95d5de438d23df062d58caee7a",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "manifest_integrity",
+      "path": "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_manifest_integrity.py",
+      "sha256": "b1dfda4e172ff3a2e769fe77e4a2a79e3555e1dfd4d0f7a004af606f89ad1285",
+      "git_blob_sha": "46a976dbc580bc431cac392ef4d579781f15d684",
+      "status": "active",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "power_certification_verdict",
+      "path": "docs/offline_v2/calibration_bias/test_geometry_power_verdict_v1.json",
+      "sha256": "a2893b30c598a15d664429c244995034fd691d3d570aa314632f9d07948e77a9",
+      "git_blob_sha": "acd91d25c91cc22fabc5d7a23c353be733bdc3ea",
+      "status": "generated-evidence",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "bridge_invariance",
+      "path": "docs/offline_v2/calibration_bias/production_best_single_bridge_invariance_v1.json",
+      "sha256": "0bf3dd16c13bab84d8755d00321da6d4a27f805a67f2dedcf93eed0d27c40748",
+      "git_blob_sha": "c9258a6b7d4835c707d90a483e5a25f1cbd8a9f6",
+      "status": "generated-evidence",
+      "replaces": [],
+      "must_not_be_used_by_generator": false
+    },
+    {
+      "logical_role": "simulation_only_reference",
+      "path": "deployment_calibration/offline_v2/calibration_bias/learned_selector_power.py",
+      "sha256": "b2e5e6593b6959bebf9a4fdfeffbb3c0393d3c4620519c1a736ce231636d9400",
+      "git_blob_sha": "06afc269ad59db66d47ca4ccbd36f027f98f32d3",
+      "status": "historical",
+      "replaces": [],
+      "must_not_be_used_by_generator": true,
+      "note": "best_single_legal = SIMULATION_ONLY_REFERENCE (secret-dependent); production selector is confirmatory_v4_selection.select_best_single_confirmatory"
+    }
+  ]
+}

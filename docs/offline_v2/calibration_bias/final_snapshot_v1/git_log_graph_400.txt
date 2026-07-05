@@ -1,0 +1,134 @@
+* f8fedd4 (HEAD -> audit/offline-calibration-prereg-v4-final-snapshot-v1, origin/experiment/offline-calibration-preregistration-v4-fix4, experiment/offline-calibration-preregistration-v4-fix4) prereg v4 FIX4 -> PREREGISTRATION_V4_FIX4_READY_FOR_FINAL_C_REAUDIT (offline)
+* 06f5965 (origin/experiment/offline-calibration-preregistration-v4-fix3-final-reaudit-c) final reaudit(prereg v4 fix3) -> MODIFY_PREREGISTRATION_V4_FIX3 (Claude C)
+* 7304530 (origin/experiment/offline-calibration-preregistration-v4-fix3, experiment/offline-calibration-preregistration-v4-fix3) prereg v4 FIX3 -> PREREGISTRATION_V4_FIX3_READY_FOR_FINAL_C_REAUDIT (offline)
+* 83d8606 (origin/experiment/offline-calibration-preregistration-v4-fix2-final-reaudit-c) final reaudit(prereg v4 fix2) -> MODIFY_PREREGISTRATION_V4_FIX2 (Claude C)
+* 48976e4 (origin/experiment/offline-calibration-preregistration-v4-fix2, experiment/offline-calibration-preregistration-v4-fix2) prereg v4 FIX2 -> PREREGISTRATION_V4_FIX2_READY_FOR_FINAL_C_REAUDIT (offline)
+* 21b676b (origin/experiment/offline-calibration-preregistration-v4-fix1-reaudit-c) reaudit(prereg v4 fix1) -> MODIFY_PREREGISTRATION_V4_FIX1 (Claude C 2nd pass)
+* 91a41e5 (origin/experiment/offline-calibration-preregistration-v4-fix1, experiment/offline-calibration-preregistration-v4-fix1) prereg v4 FIX1 -> PREREGISTRATION_V4_FIX1_READY_FOR_C_REAUDIT (offline)
+* 2ab3906 (origin/experiment/offline-calibration-preregistration-v4-audit-c) independent audit(prereg v4) -> MODIFY_PREREGISTRATION_V4 (Claude C)
+* 9a02eb5 (origin/experiment/offline-calibration-preregistration-v4, experiment/offline-calibration-preregistration-v4) preregistration v4 -> PREREGISTRATION_V4_READY_FOR_INDEPENDENT_AUDIT (offline)
+* 2bf7217 (origin/experiment/offline-calibration-test-geometry-power-v1, experiment/offline-calibration-test-geometry-power-v1) test-geometry power (+-0.035) -> POWER_SUFFICIENT_FOR_PREREG_V4 (offline)
+* 46d03af (origin/experiment/offline-calibration-learned-selector-power-v1, experiment/offline-calibration-learned-selector-power-v1) learned-selector power (Design A) -> REDESIGN_MODEL_OR_CLAIM (offline)
+* c19d434 (origin/experiment/offline-calibration-confirmatory-redesign-v1, experiment/offline-calibration-confirmatory-redesign-v1) confirmatory redesign -> SELECT_CANDIDATE_BANK_REDESIGN (Design A 3-point)
+* 93d8b16 (origin/experiment/offline-calibration-band-edge-analysis-v1, experiment/offline-calibration-band-edge-analysis-v1) band-edge: read-only 306 analysis -> MODIFY_RESIDUAL_OR_DESIGN
+* 04e2acc (origin/experiment/runtime-calibration-band-edge-reliability-v1, experiment/runtime-calibration-band-edge-reliability-v1) data: band-edge full 306 exploratory characterization run (authorized one-run dataset)
+| * 0fbe68a (origin/experiment/offline-calibration-band-edge-authorization-v1, experiment/offline-calibration-band-edge-authorization-v1) band-edge: reliability re-audit -> AUTHORIZE_306_EXPLORATORY_RUN (read-only)
+|/  
+* e447f00 band-edge reliability smoke artifacts (resume + forced-invalid fail-fast)
+* ca9fa42 band-edge full-run reliability: resume + fail-fast + dirty-refusal + hard self-check
+* 630d81c (origin/experiment/offline-calibration-band-edge-pre-run-audit-v1, experiment/offline-calibration-band-edge-pre-run-audit-v1) band-edge: pre-run runtime compliance audit -> MODIFY_RUNTIME (read-only)
+* 2ac0c9f (origin/experiment/runtime-calibration-band-edge-v1, experiment/runtime-calibration-band-edge-v1) band-edge smoke artifacts: manifest(306) + contact-sensor + clear-zone (smoke_only)
+* 05c9f0f band-edge runtime: generator + 6 instrumentation groups + collision + validators (v1)
+* 5f0dfdb (origin/experiment/offline-calibration-bias-v4, experiment/offline-calibration-bias-v4) calibration-bias: freeze band-edge protocol + schema + learned-selector power plan (docs)
+* f2ad5b9 calibration-bias: band-edge characterization config + schema + frozen analysis (code)
+* e21aa14 (origin/experiment/scientific-audit-calibration-bias-v3) scientific-audit(calibration-bias v3): independent pre-run audit -> MODIFY_PREREGISTRATION
+* 2102563 (origin/experiment/integration-calibration-bias-preregistered-v3, experiment/integration-calibration-bias-preregistered-v3) docs: calibration-bias preregistered-v3 integration manifest
+*   f18b0fb integration: merge offline-calibration-bias-v1 (capability-map analysis + preregistration v1/v2/v3 + residual nuisance + design validation + power analysis)
+|\  
+| * 8b3f638 (origin/experiment/offline-calibration-bias-v1, experiment/offline-calibration-bias-v1) calibration-bias: publish preregistration v3 (power-model/runtime alignment)
+| * 349026e calibration-bias: v3 runtime-aligned residual nuisance (schema + validation + power)
+| * a4dc2db calibration-bias: publish preregistration v2 (supersedes v1; pre-data split fix)
+| * 98bf2d6 calibration-bias: v2 pre-data split validation + power sizing (code)
+| * 2fad10c calibration-bias: final preregistration_v1 + confirmatory freeze proposal
+| * dfc92ce calibration-bias: capability-map analysis + independence + failure + gate docs
+| * 0367411 calibration-bias: read-only analysis of A capability map (driver + artifacts)
+| * 17cc4a9 calibration-bias: protocol revision — AND gate + exploration/confirmatory nuisance rules
+| * b11942e calibration-bias: preregistration draft + status + synthetic demo
+| * b565e75 calibration-bias: decision-value oracle, VOI, synthetic + pipeline
+| * 88a2877 calibration-bias: bias-level split + independence audit
+| * af5a449 calibration-bias: schema spec + leakage validator
+* |   d967800 integration: merge runtime-calibration-bias-v1 (bias injection + capability-map v2 + 135-ep data + report)
+|\ \  
+| |/  
+|/|   
+| * 24919cd (origin/experiment/runtime-calibration-bias-v1, experiment/runtime-calibration-bias-v1) docs: calibration-bias capability map runtime report v1 (exploratory)
+| * 13b152b data: calibration_bias_capability_map_v2_20260703_162715 (135 eps, block nuisance)
+| * 63da3d6 selfcheck v2: two-layer replicate-independence metric (fix all-cell-median pollution)
+| * 4fcfeba fix(calib v2 generator): drop duplicate bias_injection_version/bias_axis kwargs
+| * d65960e design-freeze v2: calibration-bias capability map with BLOCK-level nuisance
+| * 013cb43 design-freeze: calibration-bias capability map (v1, exploratory)
+| * 20af597 bias-injection freeze: hidden handle calibration-bias (v1), verified
+|/  
+* c2fd546 (tag: milestone/damping-decision-value-v1, origin/experiment/integration-damping-v1, experiment/integration-damping-v1) docs: damping stage final summary (verdict MODIFY)
+*   caf0277 integration: merge scientific-audit-v2 (independent audit, verdict MODIFY)
+|\  
+| * 63fba7b (origin/experiment/scientific-audit-v2) scientific-audit-v2: independent audit of runtime-selection + offline-eval (verdict MODIFY)
+| * 742ff4d paper drawers: APPROACH tracks the LIVE handle every step (no frozen target)
+| * d13ccf2 paper: sync skill backend to latest -> drawer ARC_TO_FACE fix (joint-1-first turn)
+| * 1611754 paper: fix skill-test controller load + hide-grasp-blocks toggle (default hidden)
+| * acdddc1 paper: default UIs OFF in cloned test_mode_ui (--ui default none)
+| * 045c070 paper: clone full franka_v1_skill_lab harness -> exact latest scene, isolated
+| * 513886a paper isolation fix: share stable scene assets, keep code+proxy private (1:1 clone)
+| * 7b3e266 paper full isolation: private scene + task, decoupled from shared isaaclab_tasks
+| * b0e9353 move paper reports into projects/paper/docs/
+| * ab1a250 isolate paper project under projects/paper/ (code-isolated, scene-shared)
+| * befed42 round-1 kill test: open_drawer (36 indep episodes) + eval + MODIFY verdict
+| * 0c3d5d3 deployment_calibration round-1: clean episode pipeline + baselines + eval
+| * 36e2aef paper audit v1: platform/data/bias/maturity/reuse/contract docs
+| * f2e77e7 stage1 commit 6: sensitivity runs, analysis, reports
+| * a7f169b stage1 commit 5: batch pilot runner + default regression
+| * 4693462 stage1 commit 4: episode + trajectory loggers
+| * 220e226 stage1 commit 3: open-drawer skill parameterization
+| * 2722474 stage1 commit 2: place skill parameterization + object-verified success
+| * bacb695 stage1 commit 1: experiment parameter parsing + result schema
+| * 9564866 Add teleop/data-collection projects: GELLO teleop module, FR3 FCI setup, pi05 baseline tooling, foundationpose & scene-layout, SAPIEN assets
+| * 28e1999 Add HANDOFF.md: detailed project handoff for the next AI/engineer
+| * 111ca37 Drawer open/close: go to neutral home seed first (fixes reachability)
+| * 7e10928 Fix joint-UI issues: reorg import crash, auto-reset, grasp orientation, drawer geometry
+| * c9348a3 Reorganize skill state machine into projects/franka_skill_state_machine/
+| * 9d69733 IK open/close drawer skills + scene (coffeemachine, region randomization, handle proxies)
+| * a7cfd46 Stage 6: learned drawer policy in state machine + unify cabinet pose
+| * ae682fb Add joint UI, drawer diagnostics, and selected-drawer RL task
+| * efb7ae2 Add joint-action state machine (method B)
+| * c6aeaf5 Add scripted drawer joint open and close baseline
+| * 9ce63ca Stabilize drawer handle close hold
+| * 65fd36c Implement bottom drawer open and close skills
+| * e3bbd80 Add persistent skill hold and unified runtime controls
+| * cc8b777 Add place point controls and pose arrows
+| * e36a43a Fix knife grasp yaw offset
+| * 43667c8 Fix simultaneous grasp orientation tracking
+| * 2d53bec Add lightweight pose frame visualizations
+| * bf48d8e Fix grasp depth orientation and knife handle targeting
+| * fe6573d Simplify scene layout for skill testing
+| * 4368b32 Sync IsaacLab workspace
+| * 4f4d59e Update skill test UI for layout flow
+| * 072dedd Update scene state provider for layout flow
+| * 56f60fd Add scene layout sampler test
+| * 679af93 Add layout debug visualizer
+| * 0c49580 Add Franka skill runtime test UI
+| * 716c200 Export IsaacLab workspace with simv2 assets
+*   d488832 integration: merge offline-eval-v2 (offline evaluation / modeling framework)
+|\  
+| * 537caf3 (origin/experiment/offline-eval-v2, experiment/offline-eval-v2) offline: analyze selection interaction pilot (MODIFY)
+| * d33b45b offline: matched-bank pairing, replicate audit, decision-value baselines + driver
+| * 98c418c offline: reanalyze 72-episode pilot
+| * 2c51256 offline: add end-to-end evaluation pipeline and CLI
+| * 2df1c05 offline: add history models
+| * 5e4b539 offline: add oracle decision-value analysis
+| * 729a6c9 offline: add leakage-safe history builder
+| * 977235a offline: add robust metrics and split audit
+* |   e17c57f integration: merge runtime-selection-v2 (matched candidate bank + selection-interaction pilot data)
+|\ \  
+| |/  
+|/|   
+| * af4a270 (origin/experiment/runtime-selection-v2, experiment/runtime-selection-v2) docs: selection-interaction pilot runtime self-check report v1
+| * b061cdf data: selection_interaction_pilot_v1_20260703_110727 (162 eps, matched bank)
+| * 2e37927 selection-interaction pilot: runtime self-check tool + leakage-reuse path fix
+| * 1921641 design-freeze: selection-interaction pilot v1 (matched candidate bank)
+|/  
+* 00a5f57 (origin/main, main) docs: parallel-work checkpoint (work plan + runtime->offline handoff + file ownership)
+* 63cf5a6 data: retain smoke-test runs (n=1 stage0, n=2 capmap; superseded by full runs)
+* 3077be4 fix: leakage test glob matches damping_pilot_v2_* (checks real pilot run)
+* bd33b1a stage3: damping pilot result + eval + Go/Modify/Stop verdict (MODIFY, borderline-GO)
+* ec18e4c stage3: damping micro-sweep result + finalize pilot levels [3,20,40]
+* 5f59fe7 stage1: capability map result + frozen theta + report
+* 654f146 stage3: damping micro-sweep + pilot config (placeholders pending sweep/capmap freeze)
+* 7fbf18e stage2/3: session/history protocol + baselines + eval + leakage test (v2)
+* 300f67a stage1: shared drawer harness v2 + capability-map generator + config
+* 873c75c stage0: 4 validation tests + run (3 stable drawers) + report
+* f57d02d depcal: contract v2 + member-aware drawer adapter v2 + Stage-0 driver
+* 9629945 docs: paper_dependency_freeze_v2 (in-repo vs external, frozen mechanism identity, mitigation)
+* bcc14bf scene: add paper_scene_v2 (single scene source) + export/validate tools
+* 822d14d archive: platform snapshot pre-drawer-v2 (recovery point)
+* ade8e77 (tag: archive/pre_drawer_experiment_v2_20260702_204058) docs: rewrite README to current state (skill lab + skills + deployment_calibration)
+* d01e15b paper: standalone repo — coffee (world-Z sweep) + Sektion/desktop drawer skills, single-source handle pose
