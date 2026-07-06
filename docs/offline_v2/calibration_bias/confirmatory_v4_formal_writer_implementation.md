@@ -1,5 +1,17 @@
 # Confirmatory v4 formal manifest writer — implementation (generation LOCKED)
 
+> **HARDENED (FW-B-001..014).** After Claude B's adversarial audit (B commit `1075105`, audited A1 `e1a5a67`),
+> the writer was re-architected so the production **trust root is a git commit** — the committed bytes of a
+> fixed allowlisted authorization artifact that pins the hardened writer commit (F1), re-verified against the
+> real repository (HEAD==authorization commit, clean tree, F1 ancestry, byte-identical critical blobs) on every
+> production entry. The old local-path loader is permanently locked; hand-built / mutated / duplicate-key /
+> arbitrary-path authorizations are rejected; the test-phase Step-5 gate verifies real sealed artifacts; the
+> writer re-runs MI deep validation on the prepared payload; the output root is bound to the verified repo; the
+> one-shot claim is an atomic `renameat2(RENAME_NOREPLACE)` with a defined commit point; every writer exception
+> carries a stable `.verdict`; and the bundle gains a tamper-evident `bundle_index.json`. See
+> `confirmatory_v4_formal_writer_fw_b_fix.md` for the per-issue closure. Everything below describes the original
+> A1 design; the git-pinned hardening supersedes the authorization/commit-freeze/bundle sections.
+
 Implements the FORMAL manifest writer + real commit-freeze interface authorized by Claude C's
 generator-smoke final gate (`GENERATOR_SMOKE_GATE_PASS`, commit `f41e366`, audited generator fix `4330a8a`).
 The gate authorizes **implementing** the writer, not running it: it carries
