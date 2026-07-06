@@ -1,5 +1,9 @@
 {
-  "status": "FORMAL_MANIFEST_WRITER_IMPLEMENTATION_READY_FOR_AUDIT",
+  "status": "SUPERSEDED_BY_FW_B_FIX",
+  "superseded_note": "This A1 (e1a5a67) report is superseded after Claude B's audit (FW-B-001..014). The hardened, git-pinned writer is F1 e3eb24d36e81ef04d58baecbee6e7d5f9abc90cb; future authorizations must pin F1 (NOT A1). Current status is FORMAL_WRITER_FW_B_001_014_FIXED_READY_FOR_C_AUDIT — see confirmatory_v4_formal_writer_fw_b_fix.json.",
+  "hardened_writer_implementation_commit": "e3eb24d36e81ef04d58baecbee6e7d5f9abc90cb",
+  "b_formal_writer_audit_commit": "107510597b2e1b0ae23eed5fed4f2b9ee21e3c8f",
+  "status_a1_original": "FORMAL_MANIFEST_WRITER_IMPLEMENTATION_READY_FOR_AUDIT",
   "source_c_gate_commit": "f41e36620b721455263fb8489bc906096a2f7442",
   "source_c_gate_verdict": "GENERATOR_SMOKE_GATE_PASS",
   "audited_generator_fix_commit": "4330a8ab596167f59a9308a91600ef9fe253cb97",
