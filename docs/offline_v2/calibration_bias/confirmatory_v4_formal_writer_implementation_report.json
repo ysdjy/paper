@@ -1,0 +1,118 @@
+{
+  "status": "FORMAL_MANIFEST_WRITER_IMPLEMENTATION_READY_FOR_AUDIT",
+  "source_c_gate_commit": "f41e36620b721455263fb8489bc906096a2f7442",
+  "source_c_gate_verdict": "GENERATOR_SMOKE_GATE_PASS",
+  "audited_generator_fix_commit": "4330a8ab596167f59a9308a91600ef9fe253cb97",
+  "b_generator_audit_commit": "c0ff67ee049f35cde1e7d6d21d6ebf29081f60f9",
+  "generator_go_commit": "c8ac0af29a0884c8efb520151729d515613d70bb",
+  "power_certification_commit": "2bf7217907f24ae54a08db71bbdcf624b110ccf0",
+  "writer_implementation_commit": "e1a5a67bc10110b157798b028480116eb0627582",
+  "report_commit_parent": "e1a5a67bc10110b157798b028480116eb0627582",
+  "two_commit_strategy": {
+    "A1_code_anchor": "e1a5a67bc10110b157798b028480116eb0627582 (writer + commit-freeze interface + tests + implementation doc); future authorizations pin A1 as generator_commit / writer_implementation_commit",
+    "A2_report": "this file only; records A1 SHA; does not modify A1 writer source or tests"
+  },
+  "new_files": [
+    "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_formal_manifest_writer.py",
+    "deployment_calibration/offline_v2/calibration_bias/confirmatory_v4_formal_writer_cli.py",
+    "deployment_calibration/tests/offline_v2/calibration_bias/test_confirmatory_v4_formal_manifest_writer.py",
+    "docs/offline_v2/calibration_bias/confirmatory_v4_formal_writer_implementation.md",
+    "docs/offline_v2/calibration_bias/confirmatory_v4_formal_writer_implementation_report.json"
+  ],
+  "generator_reused_unchanged": true,
+  "generator_reuse_point": "GEN._build_unsealed_manifest (C-gate-approved independent construction) reused by the formal builder; the generator module is byte-unchanged",
+  "authorization_boundary": {
+    "current_c_gate_authorizes_writer_implementation": true,
+    "current_c_gate_authorizes_generation": false,
+    "current_c_gate_rejected_for_actual_generation": true,
+    "rejection_reason": "verdict GENERATOR_SMOKE_GATE_PASS is not one of AUTHORIZE_TRAIN_VALIDATION_MANIFEST_GENERATION / AUTHORIZE_TEST_MANIFEST_GENERATION and authorizes_formal_manifest_generation=false",
+    "verified_authorization_only_via_loader": true,
+    "loader_token_gate": true,
+    "no_force_or_env_or_flag_bypass": true
+  },
+  "authorization_schema": {
+    "type": "VerifiedFormalManifestAuthorization",
+    "verdicts": ["AUTHORIZE_TRAIN_VALIDATION_MANIFEST_GENERATION", "AUTHORIZE_TEST_MANIFEST_GENERATION"],
+    "one_authorization_authorizes_exactly_one_phase": true,
+    "requires": "audited_writer_commit==expected_writer_commit==generator_commit (40hex), protocol/runtime commit 40hex, authorized_output_relpath==artifacts/formal/confirmatory_v4/<phase>, authorizes_formal_manifest_generation=true, confirmatory data/run false, one_shot=true, power_recertification_required=false",
+    "test_phase_additional": ["model_analysis_freeze_sha256(64hex)", "train_validation_manifest_sha256(64hex)", "analysis_code_sha256(64hex)"],
+    "process_evidence": ["_raw_authorization_canonical_json", "authorization_evidence_sha256=sha256(canonical)", "_verified_loader_version"]
+  },
+  "commit_freeze": {
+    "type": "FormalCommitFreeze",
+    "checks": "all 40hex, non-empty, not smoke placeholder a/b/c*40, field-for-field equal to verified authorization, generator_commit==audited_writer_commit, evidence hash bound",
+    "repo_verifiers": ["verify_commit_exists (git cat-file -e <sha>^{commit})", "verify_clean_worktree", "verify_head_or_ancestor_policy (HEAD==auth or descendant; never auto-substitute HEAD)"],
+    "resolver_injectable_for_tests": true
+  },
+  "formal_environment_contract": {
+    "type": "FormalManifestEnvironmentContext",
+    "exact_10_keys": true,
+    "fixed_markers": {"execution_mode": "FORMAL_MANIFEST_GENERATION", "isaac_status": "NOT_IMPORTED_NOT_LAUNCHED", "gpu_status": "NOT_USED_MANIFEST_GENERATION"},
+    "immutable_copy_on_read": true,
+    "rejects": ["partial", "extra", "empty", "bool", "SMOKE_ONLY marker"],
+    "enters_full_hash": true,
+    "distinct_from_smoke_context": true
+  },
+  "phase_specific_authorization": true,
+  "test_early_access_guard": true,
+  "test_early_access_error": "EXPERIMENT_INVALID_EARLY_TEST_ACCESS (missing Step-5 model/analysis freeze prerequisite, wrong verdict, or wrong output path) — raised BEFORE any build; builder proven not reached",
+  "stamped_manifest_serializer_implemented": true,
+  "hash_layering": {
+    "full_manifest_sha256": "scientific anchor over the UN-stamped deep-validated payload (MI.fully_resolved_phase_manifest_hash); flat self-hash field integrity.full_manifest_sha256",
+    "stamped_file_sha256": "sha256 of the canonical stamped file bytes (on-disk byte integrity); separate from full_manifest_sha256",
+    "non_finite_rejected": true,
+    "canonical_bytes_deterministic": true
+  },
+  "atomic_one_shot_bundle_writer_implemented": true,
+  "bundle_layout": {
+    "per_phase_dir": "artifacts/formal/confirmatory_v4/<phase>/",
+    "files": ["phase_manifest.json", "phase_manifest.sha256", "write_receipt.json", "SEALED"],
+    "phase_manifest_sha256_line": "<stamped_file_sha256>  phase_manifest.json\\n",
+    "receipt_schema_version": "confirmatory_v4_formal_manifest_receipt_v1",
+    "atomic": "unique same-parent staging dir -> flush+fsync each file -> fsync dir -> read-back verify -> os.replace(staging->final) -> fsync parent -> re-read final",
+    "one_shot_create": true,
+    "already_exists_error": "FORMAL_MANIFEST_ALREADY_EXISTS (second write refused even if byte-identical; no overwrite/resume/force)",
+    "failure_leaves_no_final_dir_and_no_staging_residue": true
+  },
+  "path_safety_implemented": true,
+  "path_safety": "relative only, no '..', exactly artifacts/formal/confirmatory_v4/<phase>, dir name==phase, resolved existing prefix contained in repo root (symlink-escape rejected)",
+  "tests": {
+    "test_confirmatory_v4_formal_manifest_writer": "34 passed (offline; §17.1-17.8)",
+    "no_full_228_72_formal_payload_built": true,
+    "no_write_under_repo_artifacts_formal": true,
+    "active_regressions": {
+      "test_confirmatory_v4_generator": "24 passed",
+      "test_confirmatory_v4_generator_gen_b_fix": "17 passed",
+      "test_confirmatory_v4_generator_smoke_final_audit_c": "9 passed",
+      "test_block_state_kat_final_reaudit_c": "12 passed",
+      "test_confirmatory_v4_block_state": "15 passed",
+      "test_confirmatory_v4_block_state_kat_gate": "10 passed"
+    },
+    "full_calibration_bias_suite": "478 passed / 34 failed / 2 xfailed",
+    "full_suite_note": "0 new active failures; the 34 failures are the documented baseline (25 historical Claude-C reaudit files that do not import the writer + 9 frozen audit-b demonstration/PASS-region flips from the GEN-B fixes); no failure comes from the formal writer or its tests"
+  },
+  "cli": {
+    "mode": "--preflight-only",
+    "output_status": "FORMAL_WRITER_IMPLEMENTED_GENERATION_LOCKED",
+    "no_force_or_unauthorized_write_path": true
+  },
+  "formal_writer_implemented": true,
+  "real_commit_freeze_interface_implemented": true,
+  "current_c_gate_rejected_for_actual_generation": true,
+  "actual_formal_manifest_generated": false,
+  "formal_artifacts_directory_created": false,
+  "checkpoint_generated": false,
+  "confirmatory_data_generated": false,
+  "combined_experiment_plan_generated": false,
+  "isaac_launched": false,
+  "frozen_scientific_modules_modified": false,
+  "b_or_c_audit_files_modified": false,
+  "power_recertification_required": false,
+  "authorizes_formal_manifest_generation": false,
+  "authorizes_confirmatory_run": false,
+  "next_steps": [
+    "Claude B: one-shot consistency audit of the writer + commit-freeze implementation; freeze issue list",
+    "Claude C: independent formal-writer gate",
+    "Only a subsequent C AUTHORIZE_TRAIN_VALIDATION_MANIFEST_GENERATION (pinning A1 e1a5a67) permits one STEP-1 formal train_validation manifest generation"
+  ]
+}
