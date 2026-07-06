@@ -1,0 +1,78 @@
+{
+  "label": "EXPLORATORY / PILOT \u2014 NOT CONFIRMATORY",
+  "data_path": "/home1/banghai/Documents/IsaacLab/projects/paper_runtime_calibration_band_edge_reliability_v1/deployment_calibration/data/band_edge_full_306_v1/episodes.jsonl",
+  "data_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+  "n_episodes": 306,
+  "n_blocks": 18,
+  "n_offsets": 17,
+  "offsets": [
+    -0.05,
+    -0.04,
+    -0.035,
+    -0.03,
+    -0.025,
+    -0.02,
+    -0.015,
+    -0.01,
+    0.0,
+    0.01,
+    0.015,
+    0.02,
+    0.025,
+    0.03,
+    0.035,
+    0.04,
+    0.05
+  ],
+  "trials_per_block": {
+    "0": 17,
+    "1": 17,
+    "2": 17,
+    "3": 17,
+    "4": 17,
+    "5": 17,
+    "6": 17,
+    "7": 17,
+    "8": 17,
+    "9": 17,
+    "10": 17,
+    "11": 17,
+    "12": 17,
+    "13": 17,
+    "14": 17,
+    "15": 17,
+    "16": 17,
+    "17": 17
+  },
+  "grid_complete_18x17": true,
+  "emulated_probe_offset": 0.0,
+  "probe_present_all_blocks": true,
+  "nominal_bias_y_set": [
+    0.0
+  ],
+  "residual_bias_y_min": -0.006722843954208888,
+  "residual_bias_y_max": 0.009229520094278335,
+  "native_session_probe_plus_3candidate_design": false,
+  "native_role_counts": {
+    "candidate": 306,
+    "probe": 0
+  },
+  "fields_present": {
+    "block_id": true,
+    "block_seed": true,
+    "planned_episode_id": true,
+    "theta.grasp_offset_local_y": true,
+    "secret_deployment_state.residual_bias_y": true,
+    "secret_deployment_state.nominal_bias_y": true,
+    "y.success": true,
+    "y.task_outcome_error": true,
+    "y.phase_goal_error": true,
+    "y.phase_durations": true,
+    "x.robot_joint_pos": true
+  },
+  "missing_for_native_probe_candidate_design": [
+    "episode_role=probe",
+    "explicit per-session candidate triplet"
+  ],
+  "sufficiency": "SUFFICIENT for block-level oracle-headroom + probe-EMULATED identifiability/selection; does NOT contain a native probe+3-candidate session design, and all blocks share nominal_bias_y=0 so hidden-state variation is limited to small residual draws."
+}

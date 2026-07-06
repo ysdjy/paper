@@ -1,0 +1,191 @@
+{
+  "label": "EXPLORATORY / PILOT \u2014 NOT CONFIRMATORY",
+  "status": "SCIENTIFIC_PILOT_REQUIRES_HYPOTHESIS_OR_TASK_REVISION",
+  "data_sha256": "131750e158032e53e5c8daab6e94530c70de1224f05b8fc79a7497009524c20e",
+  "n_blocks": 18,
+  "n_offsets": 17,
+  "go_nogo_1_oracle_headroom": {
+    "value": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "pass": false,
+    "threshold": 0.15
+  },
+  "go_nogo_2_identifiability": {
+    "k0_signacc": 0.7166666666666666,
+    "k1_signacc": 0.8666666666666666,
+    "k1_minus_k0": 0.15000000000000002,
+    "pass": true
+  },
+  "go_nogo_3_selection_gain": {
+    "k1_minus_k0": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "k1_minus_best_single": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "pass": false
+  },
+  "q1": {
+    "oracle_success_mean": 1.0,
+    "best_single_success_mean": 1.0,
+    "oracle_headroom": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "per_offset_success": {
+      "-0.05": 0.0,
+      "-0.04": 0.1111111111111111,
+      "-0.035": 0.3888888888888889,
+      "-0.03": 0.7222222222222222,
+      "-0.025": 1.0,
+      "-0.02": 1.0,
+      "-0.015": 1.0,
+      "-0.01": 1.0,
+      "0.0": 1.0,
+      "0.01": 1.0,
+      "0.015": 1.0,
+      "0.02": 1.0,
+      "0.025": 1.0,
+      "0.03": 0.7777777777777778,
+      "0.035": 0.5555555555555556,
+      "0.04": 0.16666666666666666,
+      "0.05": 0.0
+    },
+    "n_blocks_any_success": 18,
+    "go_nogo_1_pass": false
+  },
+  "q2": {
+    "k0_signacc_mean": 0.7166666666666666,
+    "k1_signacc_mean": 0.8666666666666666,
+    "k1_minus_k0_signacc": 0.15000000000000002,
+    "k0_signacc_seeds": [
+      0.7166666666666666,
+      0.7166666666666666,
+      0.7166666666666666,
+      0.7166666666666666,
+      0.7166666666666666
+    ],
+    "k1_signacc_seeds": [
+      0.8666666666666666,
+      0.8666666666666666,
+      0.8666666666666666,
+      0.8666666666666666,
+      0.8666666666666666
+    ],
+    "k0_residual_r2": -0.12510810955898954,
+    "k1_residual_r2": 0.8616629410239177,
+    "k1_residual_mae": 0.0011101758443965125,
+    "top_probe_feature_correlations": [
+      [
+        "probe_phasedur_MOVE_TO_PRE_GRASP",
+        -0.972
+      ],
+      [
+        "probe_phase_goal_error",
+        -0.959
+      ],
+      [
+        "probe_task_outcome_error",
+        0.535
+      ],
+      [
+        "probe_skill_elapsed_time",
+        -0.531
+      ],
+      [
+        "joint_0",
+        -0.515
+      ],
+      [
+        "tcp_pos_1",
+        -0.487
+      ]
+    ],
+    "leakage_check": {
+      "ok": true,
+      "violations": [],
+      "n_features": 34
+    },
+    "n_blocks": 18,
+    "n_pos_resid": 8,
+    "go_nogo_2_pass": true
+  },
+  "q3": {
+    "best_single_success": 1.0,
+    "k0_selected_success": 1.0,
+    "k1_selected_success": 1.0,
+    "oracle_success": 1.0,
+    "k1_minus_k0": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "k1_minus_best_single": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "k1_regret_to_oracle": {
+      "point": 0.0,
+      "lo": 0.0,
+      "hi": 0.0,
+      "n_blocks": 18
+    },
+    "k0_seed_means": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "k1_seed_means": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "seeds_k1_ge_k0": 5,
+    "candidate_offsets": [
+      -0.05,
+      -0.04,
+      -0.035,
+      -0.03,
+      -0.025,
+      -0.02,
+      -0.015,
+      -0.01,
+      0.01,
+      0.015,
+      0.02,
+      0.025,
+      0.03,
+      0.035,
+      0.04,
+      0.05
+    ],
+    "go_nogo_3_pass": false
+  },
+  "ablation": {
+    "A_probe_success_only": 0.6333333333333333,
+    "B_final_error_only": 0.9166666666666666,
+    "C_time_only": 0.5833333333333333,
+    "D_success_plus_error": 0.9166666666666666,
+    "E_full_history": 0.9166666666666666
+  },
+  "leakage_ok": true
+}
